@@ -1,5 +1,2 @@
-// deploy contract
-pub mod erc20_bribe;
-pub mod honey;
-
-pub use honey::*;
+pub mod deploy_contracts;
+pub mod precompile_contracts;
