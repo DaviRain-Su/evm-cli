@@ -63,6 +63,37 @@ async fn print_balances(
     Ok(())
 }
 
+// 2. Define an asynchronous function that takes a client provider and address as input
+async fn increment_number(
+    client: &Client,
+    contract_addr: &H160,
+) -> Result<(), Box<dyn std::error::Error>> {
+    println!("Incrementing number...");
+
+    // 3. Create contract instance
+    let contract = Incrementer::new(contract_addr.clone(), Arc::new(client.clone()));
+
+    // 4. Send contract transaction
+    let tx = contract.increment(U256::from(5)).send().await?.await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
+}
+
+// 2. Define an asynchronous function that takes a client provider and address as input
+async fn reset(client: &Client, contract_addr: &H160) -> Result<(), Box<dyn std::error::Error>> {
+    println!("Resetting number...");
+
+    // 3. Create contract instance
+    let contract = Incrementer::new(contract_addr.clone(), Arc::new(client.clone()));
+
+    // 4. Send contract transaction
+    let tx = contract.reset().send().await?.await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
+}
+
 // 1. Define an asynchronous function that takes a client provider and the from and to addresses as input
 async fn send_transaction(
     client: &Client,
@@ -140,21 +171,32 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("client: {:?}", client);
 
     // 2. Add from and to address
-    let address_from = "0xe907e66a480F2822354f0a343A17B73EeF1fe8cb".parse::<Address>()?;
-    let address_to = "0xfFD34F45115CB1BB97A49b6f37E557E15d0cAD3A".parse::<Address>()?;
+    // let address_from = "0xe907e66a480F2822354f0a343A17B73EeF1fe8cb".parse::<Address>()?;
+    // let address_to = "0xfFD34F45115CB1BB97A49b6f37E557E15d0cAD3A".parse::<Address>()?;
 
-    print_balances(&provider, address_from, address_to).await?;
+    // print_balances(&provider, address_from, address_to).await?;
 
     // 9. Call compile_deploy_contract function in main
-    let addr = compile_deploy_contract(&client).await?;
+    // let addr = compile_deploy_contract(&client).await?;
 
-    println!("addr: {:?}", addr);
+    // println!("addr: {:?}", addr);
 
     // let addr = H160::from_str("fff189efc3da781e7d4ec584b8304904517afac7")?;
-    // let addrs = H160::from_str("0x291280135e7bb88bfe2b86caa22439632d2f4486")?;
-    // println!("addr is {:?}", addrs);
+    let addrs = H160::from_str("0x291280135e7bb88bfe2b86caa22439632d2f4486")?;
+    println!("addr is {:?}", addrs);
     // 7. Call read_number function in main
-    read_number(&client, &addr).await?;
+    read_number(&client, &addrs).await?;
+
+    increment_number(&client, &addrs).await?;
+
+    // 7. Call read_number function in main
+    read_number(&client, &addrs).await?;
+
+    // 5. Call reset function in main
+    reset(&client, &addrs).await?;
+
+    // 7. Call read_number function in main
+    read_number(&client, &addrs).await?;
 
     Ok(())
 }
