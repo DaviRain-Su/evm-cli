@@ -137,3 +137,19 @@ pub async fn transfer_from(
     // 6. Return the number
     Ok(value)
 }
+
+/// TransferFrom 是一种将代币从一个地址转移到另一个地址的公共方法。
+pub async fn nonces(
+    client: &Client,
+    contract_addr: &H160,
+    address: Address,
+) -> Result<U256, Box<dyn std::error::Error>> {
+    // 3. Create contract instance
+    let contract = Honey::new(contract_addr.clone(), Arc::new(client.clone()));
+
+    // 4. Call contract's number function
+    let value = contract.nonces(address).await?;
+
+    // 6. Return the number
+    Ok(value)
+}
