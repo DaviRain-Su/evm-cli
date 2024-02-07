@@ -19,7 +19,7 @@ type Client = SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::SigningKey>>;
 // 1. Generate a type-safe interface for the Incrementer smart contract
 abigen!(
     Incrementer,
-    "./Incrementer_ABI.json",
+    "./contract/Incrementer_ABI.json",
     event_derives(serde::Deserialize, serde::Serialize)
 );
 
@@ -88,6 +88,7 @@ async fn send_transaction(
 async fn compile_deploy_contract(client: &Client) -> Result<H160, Box<dyn std::error::Error>> {
     // 2. Define a path as the directory that hosts the smart contracts in the project
     let source = Path::new(&env!("CARGO_MANIFEST_DIR"));
+    let source = source.join("contract");
     println!("source file: {:?}", source);
 
     // 3. Compile all of the smart contracts
@@ -103,6 +104,7 @@ async fn compile_deploy_contract(client: &Client) -> Result<H160, Box<dyn std::e
 
     // 5. Create a contract factory which will be used to deploy instances of the contract
     let factory = ContractFactory::new(abi, bytecode, Arc::new(client.clone()));
+    println!("factory {:?}", factory);
 
     // 6. Deploy
     let contract = factory.deploy(U256::from(5))?.send().await?;
@@ -141,8 +143,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 9. Call compile_deploy_contract function in main
     let addr = compile_deploy_contract(&client).await?;
 
+    println!("addr: {:?}", addr);
+
     // 7. Call read_number function in main
-    read_number(&client, &addr).await?;
+    // read_number(&client, &addr).await?;
 
     Ok(())
 }
