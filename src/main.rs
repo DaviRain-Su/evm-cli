@@ -1,3 +1,6 @@
+#![allow(unused_imports)]
+#![allow(dead_code)]
+
 // 1. Import ethers crate
 use ethers::prelude::LocalWallet;
 use ethers::prelude::SignerMiddleware;
@@ -6,7 +9,9 @@ use ethers::prelude::*;
 use ethers::providers::{Http, Provider};
 use ethers::signers::Signer;
 use ethers_solc::Solc;
+use std::str::FromStr;
 use std::{path::Path, sync::Arc};
+
 // 1. Add to imports
 use ethers::{prelude::*, utils};
 use ethers_solc::CompilerInput;
@@ -128,7 +133,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Do not include '0x' at the start of the private key
     let wallet: LocalWallet = "eca31d121880412e02e16295069348dcd18db64ea0f179b24a9e7ecfeb66983d"
         .parse::<LocalWallet>()?
-        .with_chain_id(1100u64);
+        .with_chain_id(80085u64);
 
     // 6. Wrap the provider and wallet together to create a signer client
     let client = SignerMiddleware::new(provider.clone(), wallet.clone());
@@ -145,8 +150,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("addr: {:?}", addr);
 
+    // let addr = H160::from_str("fff189efc3da781e7d4ec584b8304904517afac7")?;
+    // let addrs = H160::from_str("0x291280135e7bb88bfe2b86caa22439632d2f4486")?;
+    // println!("addr is {:?}", addrs);
     // 7. Call read_number function in main
-    // read_number(&client, &addr).await?;
+    read_number(&client, &addr).await?;
 
     Ok(())
 }
