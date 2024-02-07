@@ -1,5 +1,5 @@
 use super::Client;
-use ethers::{prelude::*, utils};
+use ethers::prelude::*;
 use ethers_solc::Solc;
 use std::path::Path;
 use std::sync::Arc;

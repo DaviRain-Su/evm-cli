@@ -1,5 +1,5 @@
-#![allow(unused_imports)]
-#![allow(dead_code)]
+// #![allow(unused_imports)]
+// #![allow(dead_code)]
 
 // 1. Import ethers crate
 use ethers::prelude::LocalWallet;
@@ -8,17 +8,13 @@ use ethers::prelude::Wallet;
 use ethers::prelude::*;
 use ethers::providers::{Http, Provider};
 use ethers::signers::Signer;
-use ethers_solc::Solc;
 use std::str::FromStr;
-use std::{path::Path, sync::Arc};
-// 1. Add to imports
-use ethers::{prelude::*, utils};
-use ethers_solc::CompilerInput;
 
 const BEAR_CHAIN_DECIMAL: u64 = 1_000_000_000_000_000_000;
 
 pub mod bear;
 pub mod incrementer;
+pub mod utils;
 
 // 2. Add client type
 type Client = SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::SigningKey>>;

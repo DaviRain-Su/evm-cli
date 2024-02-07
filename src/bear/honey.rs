@@ -1,5 +1,5 @@
 use super::super::Client;
-use ethers::{prelude::*, utils};
+use ethers::prelude::*;
 use std::sync::Arc;
 
 // 1. Generate a type-safe interface for the Incrementer smart contract

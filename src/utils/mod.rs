@@ -1,5 +1,9 @@
+// 1. Add to imports
+use super::Client;
+use ethers::{prelude::*, utils as ethers_utils};
+
 // 1. Create an asynchronous function that takes a provider reference and from and to address as input
-async fn print_balances(
+pub async fn print_balances(
     provider: &Provider<Http>,
     address_from: Address,
     address_to: Address,
@@ -16,7 +20,7 @@ async fn print_balances(
 }
 
 // 1. Define an asynchronous function that takes a client provider and the from and to addresses as input
-async fn send_transaction(
+pub async fn send_transaction(
     client: &Client,
     address_from: Address,
     address_to: Address,
@@ -29,7 +33,7 @@ async fn send_transaction(
     // 2. Create a TransactionRequest object
     let tx = TransactionRequest::new()
         .to(address_to)
-        .value(U256::from(utils::parse_ether(1)?))
+        .value(U256::from(ethers_utils::parse_ether(1)?))
         .from(address_from);
 
     // 3. Send the transaction with the client
