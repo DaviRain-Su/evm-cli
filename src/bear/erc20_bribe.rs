@@ -6,7 +6,7 @@ use std::sync::Arc;
 // 1. Generate a type-safe interface for the Incrementer smart contract
 abigen!(
     ERC20BribeModule,
-    "./contract/bear/ERC20BribeModule.abi.json",
+    "./contract/bear/deploy_contracts/ERC20BribeModule.abi.json",
     event_derives(serde::Deserialize, serde::Serialize)
 );
 
