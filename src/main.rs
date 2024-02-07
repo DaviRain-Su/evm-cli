@@ -7,6 +7,8 @@ use ethers::providers::{Http, Provider};
 use ethers::signers::Signer;
 use std::str::FromStr;
 
+use crate::bear::deploy_contracts::honey;
+
 const BEAR_CHAIN_DECIMAL: u64 = 1_000_000_000_000_000_000;
 
 pub mod bear;
@@ -64,24 +66,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let honey_addrs = H160::from_str("0x7EeCA4205fF31f947EdBd49195a7A88E6A91161B")?;
     println!("honey addrs {:?}", honey_addrs);
 
-    let name = bear::honey::name(&client, &honey_addrs).await?;
+    let name = honey::name(&client, &honey_addrs).await?;
 
     println!("honey name is {}", name);
 
-    let symbol = bear::honey::symbol(&client, &honey_addrs).await?;
+    let symbol = honey::symbol(&client, &honey_addrs).await?;
 
     println!("honey symbol is {}", symbol);
 
-    let decimals = bear::honey::decimals(&client, &honey_addrs).await?;
+    let decimals = honey::decimals(&client, &honey_addrs).await?;
 
     println!("honey decimals is {}", decimals);
 
-    let total_supply = bear::honey::total_supply(&client, &honey_addrs).await?;
+    let total_supply = honey::total_supply(&client, &honey_addrs).await?;
 
     println!("honey total_supply is {}", total_supply);
 
     let address = "0xfFD34F45115CB1BB97A49b6f37E557E15d0cAD3A".parse::<Address>()?;
-    let balance = bear::honey::balance_of(&client, &honey_addrs, address).await?;
+    let balance = honey::balance_of(&client, &honey_addrs, address).await?;
     println!("address({}) have honey balance is {}", address, balance);
 
     Ok(())
