@@ -1,6 +1,3 @@
-// #![allow(unused_imports)]
-// #![allow(dead_code)]
-
 // 1. Import ethers crate
 use ethers::prelude::LocalWallet;
 use ethers::prelude::SignerMiddleware;
@@ -34,7 +31,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // 6. Wrap the provider and wallet together to create a signer client
     let client = SignerMiddleware::new(provider.clone(), wallet.clone());
-    println!("client: {:?}", client);
+    // println!("client: {:?}", client);
 
     // 2. Add from and to address
     // let address_from = "0xe907e66a480F2822354f0a343A17B73EeF1fe8cb".parse::<Address>()?;
@@ -70,6 +67,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let name = bear::honey::name(&client, &honey_addrs).await?;
 
     println!("honey name is {}", name);
+
+    let symbol = bear::honey::symbol(&client, &honey_addrs).await?;
+
+    println!("honey symbol is {}", symbol);
+
+    let decimals = bear::honey::decimals(&client, &honey_addrs).await?;
+
+    println!("honey decimals is {}", decimals);
+
+    let total_supply = bear::honey::total_supply(&client, &honey_addrs).await?;
+
+    println!("honey total_supply is {}", total_supply);
+
+    let address = "0xfFD34F45115CB1BB97A49b6f37E557E15d0cAD3A".parse::<Address>()?;
+    let balance = bear::honey::balance_of(&client, &honey_addrs, address).await?;
+    println!("address({}) have honey balance is {}", address, balance);
 
     Ok(())
 }
