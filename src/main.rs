@@ -8,6 +8,7 @@ use ethers::signers::Signer;
 use std::str::FromStr;
 
 use crate::bear::deploy_contracts::honey;
+use crate::bear::precompile_contracts::dex;
 
 const BEAR_CHAIN_DECIMAL: u64 = 1_000_000_000_000_000_000;
 
@@ -86,5 +87,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let balance = honey::balance_of(&client, &honey_addrs, address).await?;
     println!("address({}) have honey balance is {}", address, balance);
 
+    let dex_addr = H160::from_str("0x9D0FBF9349F646F1435072F2B0212084752EF460")?;
+
+    let pool_addr = "0x0d5862FDbdd12490f9b4De54c236cff63B038074".to_uppercase();
+    // let base_addr = "WBERA".to_string();
+    // let quote_addr = "HONEY".to_string();
+    // let exchange_rate =
+    //     dex::get_exchange_rate(&client, &dex_addr, pool_addr, base_addr, quote_addr).await?;
+
+    // println!("exchange rate: {:?}", exchange_rate);
+
+    // let liquidity = dex::get_liquidity(&client, &dex_addr, pool_addr.clone()).await?;
+    // println!("Pool {} liquidity {:?}", pool_addr, liquidity);
+
+    let address = dex::get_pool_address(&client, &dex_addr, pool_addr).await?;
+    println!("address: {:?}", address);
     Ok(())
 }
