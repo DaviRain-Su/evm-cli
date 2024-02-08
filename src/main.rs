@@ -13,13 +13,16 @@ use std::str::FromStr;
 
 use crate::bear::deploy_contracts::honey;
 use crate::bear::precompile_contracts::bank;
-// use crate::bear::precompile_contracts::dex;
 use crate::bear::precompile_contracts::governance;
 
 const BEAR_CHAIN_DECIMAL: u64 = 1_000_000_000_000_000_000;
 
 pub mod airdrop;
 pub mod bear;
+pub mod command;
+pub mod config;
+pub mod constant;
+pub mod errors;
 pub mod incrementer;
 pub mod utils;
 
