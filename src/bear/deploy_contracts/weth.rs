@@ -5,8 +5,8 @@ use std::sync::Arc;
 
 // 1. Generate a type-safe interface for the Incrementer smart contract
 abigen!(
-    WBTC,
-    "./contract/bear/deploy_contracts/WBTC.abi.json",
+    WETH,
+    "./contract/bear/deploy_contracts/WETH.abi.json",
     event_derives(serde::Deserialize, serde::Serialize)
 );
 
@@ -15,7 +15,7 @@ pub async fn name(
     client: &Client,
     contract_addr: &H160,
 ) -> Result<String, Box<dyn std::error::Error>> {
-    let contract = WBTC::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = WETH::new(contract_addr.clone(), Arc::new(client.clone()));
     let value = contract.name().call().await?;
     Ok(value)
 }
@@ -25,7 +25,7 @@ pub async fn symbol(
     client: &Client,
     contract_addr: &H160,
 ) -> Result<String, Box<dyn std::error::Error>> {
-    let contract = WBTC::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = WETH::new(contract_addr.clone(), Arc::new(client.clone()));
     let value = contract.symbol().call().await?;
     Ok(value)
 }
@@ -35,7 +35,7 @@ pub async fn decimals(
     client: &Client,
     contract_addr: &H160,
 ) -> Result<u8, Box<dyn std::error::Error>> {
-    let contract = WBTC::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = WETH::new(contract_addr.clone(), Arc::new(client.clone()));
     let value = contract.decimals().call().await?;
     Ok(value)
 }
@@ -45,7 +45,7 @@ pub async fn total_supply(
     client: &Client,
     contract_addr: &H160,
 ) -> Result<U256, Box<dyn std::error::Error>> {
-    let contract = WBTC::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = WETH::new(contract_addr.clone(), Arc::new(client.clone()));
     let value = contract.total_supply().call().await?;
     Ok(value)
 }
@@ -56,7 +56,7 @@ pub async fn balance_of(
     contract_addr: &H160,
     address: Address,
 ) -> Result<U256, Box<dyn std::error::Error>> {
-    let contract = WBTC::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = WETH::new(contract_addr.clone(), Arc::new(client.clone()));
     let value = contract.balance_of(address).await?;
     Ok(value)
 }
@@ -68,7 +68,7 @@ pub async fn approve(
     address: Address,
     amount: U256,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    let contract = WBTC::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = WETH::new(contract_addr.clone(), Arc::new(client.clone()));
     let value = contract.approve(address, amount).await?;
     Ok(value)
 }
@@ -80,7 +80,7 @@ pub async fn transfer(
     address: Address,
     amount: U256,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    let contract = WBTC::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = WETH::new(contract_addr.clone(), Arc::new(client.clone()));
     let value = contract.transfer(address, amount).await?;
     Ok(value)
 }
@@ -93,7 +93,7 @@ pub async fn transfer_from(
     to: Address,
     amount: U256,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    let contract = WBTC::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = WETH::new(contract_addr.clone(), Arc::new(client.clone()));
     let value = contract.transfer_from(from, to, amount).await?;
     Ok(value)
 }

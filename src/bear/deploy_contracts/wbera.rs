@@ -15,13 +15,8 @@ pub async fn name(
     client: &Client,
     contract_addr: &H160,
 ) -> Result<String, Box<dyn std::error::Error>> {
-    // 3. Create contract instance
     let contract = WBERA::new(contract_addr.clone(), Arc::new(client.clone()));
-
-    // 4. Call contract's number function
     let value = contract.name().call().await?;
-
-    // 6. Return the number
     Ok(value)
 }
 
@@ -30,13 +25,8 @@ pub async fn symbol(
     client: &Client,
     contract_addr: &H160,
 ) -> Result<String, Box<dyn std::error::Error>> {
-    // 3. Create contract instance
     let contract = WBERA::new(contract_addr.clone(), Arc::new(client.clone()));
-
-    // 4. Call contract's number function
     let value = contract.symbol().call().await?;
-
-    // 6. Return the number
     Ok(value)
 }
 
@@ -45,13 +35,8 @@ pub async fn decimals(
     client: &Client,
     contract_addr: &H160,
 ) -> Result<u8, Box<dyn std::error::Error>> {
-    // 3. Create contract instance
     let contract = WBERA::new(contract_addr.clone(), Arc::new(client.clone()));
-
-    // 4. Call contract's number function
     let value = contract.decimals().call().await?;
-
-    // 6. Return the number
     Ok(value)
 }
 
@@ -60,13 +45,8 @@ pub async fn total_supply(
     client: &Client,
     contract_addr: &H160,
 ) -> Result<U256, Box<dyn std::error::Error>> {
-    // 3. Create contract instance
     let contract = WBERA::new(contract_addr.clone(), Arc::new(client.clone()));
-
-    // 4. Call contract's number function
     let value = contract.total_supply().call().await?;
-
-    // 6. Return the number
     Ok(value)
 }
 
@@ -76,13 +56,8 @@ pub async fn balance_of(
     contract_addr: &H160,
     address: Address,
 ) -> Result<U256, Box<dyn std::error::Error>> {
-    // 3. Create contract instance
     let contract = WBERA::new(contract_addr.clone(), Arc::new(client.clone()));
-
-    // 4. Call contract's number function
     let value = contract.balance_of(address).await?;
-
-    // 6. Return the number
     Ok(value)
 }
 
@@ -93,13 +68,8 @@ pub async fn approve(
     address: Address,
     amount: U256,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    // 3. Create contract instance
     let contract = WBERA::new(contract_addr.clone(), Arc::new(client.clone()));
-
-    // 4. Call contract's number function
     let value = contract.approve(address, amount).await?;
-
-    // 6. Return the number
     Ok(value)
 }
 
@@ -110,13 +80,8 @@ pub async fn transfer(
     address: Address,
     amount: U256,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    // 3. Create contract instance
     let contract = WBERA::new(contract_addr.clone(), Arc::new(client.clone()));
-
-    // 4. Call contract's number function
     let value = contract.transfer(address, amount).await?;
-
-    // 6. Return the number
     Ok(value)
 }
 
@@ -128,12 +93,7 @@ pub async fn transfer_from(
     to: Address,
     amount: U256,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    // 3. Create contract instance
     let contract = WBERA::new(contract_addr.clone(), Arc::new(client.clone()));
-
-    // 4. Call contract's number function
     let value = contract.transfer_from(from, to, amount).await?;
-
-    // 6. Return the number
     Ok(value)
 }

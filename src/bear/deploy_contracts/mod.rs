@@ -3,6 +3,7 @@ pub mod erc20_bribe;
 pub mod honey;
 pub mod wbera;
 pub mod wbtc;
+pub mod weth;
 
 use std::str::FromStr;
 
