@@ -13,6 +13,7 @@ pub mod erc20_dex;
 pub mod governance;
 pub mod honey;
 pub mod oracle;
+pub mod rewards;
 
 pub fn bank_addr() -> H160 {
     H160::from_str("0x4381dC2aB14285160c808659aEe005D51255adD7").unwrap()
