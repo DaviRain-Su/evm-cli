@@ -8,10 +8,12 @@ use ethers::signers::Signer;
 use std::str::FromStr;
 
 use crate::bear::deploy_contracts::honey;
+use crate::bear::precompile_contracts::bank;
 use crate::bear::precompile_contracts::dex;
 
 const BEAR_CHAIN_DECIMAL: u64 = 1_000_000_000_000_000_000;
 
+pub mod airdrop;
 pub mod bear;
 pub mod incrementer;
 pub mod utils;
@@ -100,7 +102,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // let liquidity = dex::get_liquidity(&client, &dex_addr, pool_addr.clone()).await?;
     // println!("Pool {} liquidity {:?}", pool_addr, liquidity);
 
-    let address = dex::get_pool_address(&client, &dex_addr, pool_addr).await?;
-    println!("address: {:?}", address);
+    // let address = dex::get_pool_address(&client, &dex_addr, pool_addr).await?;
+    // println!("address: {:?}", address);
+
+    let bank_addr = H160::from_str("0x4381dC2aB14285160c808659aEe005D51255adD7")?;
+    let all_supply = bank::get_all_supply(&client, &bank_addr).await?;
+    println!("all supply: {:#?}", all_supply);
     Ok(())
 }
