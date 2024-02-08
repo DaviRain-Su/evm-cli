@@ -18,8 +18,6 @@ pub async fn redeem(
     amount: U256,
 ) -> Result<U256, Box<dyn std::error::Error>> {
     let contract = BGTModule::new(contract_addr.clone(), Arc::new(client.clone()));
-
     let value = contract.redeem(receiver, amount).await?;
-
     Ok(value)
 }

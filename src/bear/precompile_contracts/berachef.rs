@@ -16,13 +16,8 @@ pub async fn get_active_cutting_board(
     contract_addr: &H160,
     operator_addr: Address,
 ) -> Result<berachef_module::CuttingBoard, Box<dyn std::error::Error>> {
-    // 3. Create contract instance
     let contract = BerachefModule::new(contract_addr.clone(), Arc::new(client.clone()));
-
-    // 4. Call contract's number function
     let value = contract.get_active_cutting_board(operator_addr).await?;
-
-    // 6. Return the number
     Ok(value)
 }
 
@@ -32,13 +27,8 @@ pub async fn get_delegation(
     contract_addr: &H160,
     operator_addr: Address,
 ) -> Result<Address, Box<dyn std::error::Error>> {
-    // 3. Create contract instance
     let contract = BerachefModule::new(contract_addr.clone(), Arc::new(client.clone()));
-
-    // 4. Call contract's number function
     let value = contract.get_delegation(operator_addr).await?;
-
-    // 6. Return the number
     Ok(value)
 }
 
@@ -48,13 +38,8 @@ pub async fn get_queued_cutting_board(
     contract_addr: &H160,
     operator_addr: Address,
 ) -> Result<berachef_module::CuttingBoard, Box<dyn std::error::Error>> {
-    // 3. Create contract instance
     let contract = BerachefModule::new(contract_addr.clone(), Arc::new(client.clone()));
-
-    // 4. Call contract's number function
     let value = contract.get_queued_cutting_board(operator_addr).await?;
-
-    // 6. Return the number
     Ok(value)
 }
 
@@ -66,15 +51,10 @@ pub async fn queue_new_cutting_board(
     weights: Vec<berachef_module::Weight>,
     start_epoch: i64,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    // 3. Create contract instance
     let contract = BerachefModule::new(contract_addr.clone(), Arc::new(client.clone()));
-
-    // 4. Call contract's number function
     let value = contract
         .queue_new_cutting_board(operator_addr, weights, start_epoch)
         .await?;
-
-    // 6. Return the number
     Ok(value)
 }
 
@@ -84,13 +64,8 @@ pub async fn set_delegation(
     contract_addr: &H160,
     delegation_address: Address,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    // Create contract instance
     let contract = BerachefModule::new(contract_addr.clone(), Arc::new(client.clone()));
-
-    // Call contract's number function
     let value = contract.set_delegation(delegation_address).await?;
-
-    // Return the number
     Ok(value)
 }
 
@@ -101,14 +76,9 @@ pub async fn update_friends_of_the_chef(
     receiver_address: Address,
     friend_of_the_chef: bool,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    // Create contract instance
     let contract = BerachefModule::new(contract_addr.clone(), Arc::new(client.clone()));
-
-    // Call contract's number function
     let value = contract
         .update_friends_of_the_chef(receiver_address, friend_of_the_chef)
         .await?;
-
-    // Return the number
     Ok(value)
 }
