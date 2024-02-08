@@ -1,3 +1,7 @@
+#![allow(unused_imports)]
+#![allow(unused_variables)]
+#![allow(dead_code)]
+
 // 1. Import ethers crate
 use ethers::prelude::LocalWallet;
 use ethers::prelude::SignerMiddleware;
@@ -9,7 +13,8 @@ use std::str::FromStr;
 
 use crate::bear::deploy_contracts::honey;
 use crate::bear::precompile_contracts::bank;
-use crate::bear::precompile_contracts::dex;
+// use crate::bear::precompile_contracts::dex;
+use crate::bear::precompile_contracts::governance;
 
 const BEAR_CHAIN_DECIMAL: u64 = 1_000_000_000_000_000_000;
 
@@ -105,8 +110,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // let address = dex::get_pool_address(&client, &dex_addr, pool_addr).await?;
     // println!("address: {:?}", address);
 
-    let bank_addr = H160::from_str("0x4381dC2aB14285160c808659aEe005D51255adD7")?;
-    let all_supply = bank::get_all_supply(&client, &bank_addr).await?;
-    println!("all supply: {:#?}", all_supply);
+    // let bank_addr = H160::from_str("0x4381dC2aB14285160c808659aEe005D51255adD7")?;
+    // let all_supply = bank::get_all_supply(&client, &bank_addr).await?;
+    // println!("all supply: {:#?}", all_supply);
+    //
+    let governance_addr = H160::from_str("0x7b5Fe22B5446f7C62Ea27B8BD71CeF94e03f3dF2")?;
+    let result = governance::get_constitution(&client, &governance_addr).await?;
+    println!("consitution: {:?}", result);
     Ok(())
 }
