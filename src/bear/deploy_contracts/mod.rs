@@ -1,6 +1,7 @@
 // deploy contract
 pub mod erc20_bribe;
 pub mod honey;
+pub mod wbera;
 
 use std::str::FromStr;
 
