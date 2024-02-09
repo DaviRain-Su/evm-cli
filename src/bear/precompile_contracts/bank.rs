@@ -1,7 +1,12 @@
 use crate::Client;
 use ethers::core::types::Address;
 use ethers::prelude::*;
+use std::str::FromStr;
 use std::sync::Arc;
+
+fn bank_addr() -> H160 {
+    H160::from_str("0x4381dC2aB14285160c808659aEe005D51255adD7").unwrap()
+}
 
 // 1. Generate a type-safe interface for the Incrementer smart contract
 abigen!(
@@ -13,10 +18,9 @@ abigen!(
 // get_all_balances
 pub async fn get_all_balances(
     client: &Client,
-    contract_addr: &H160,
     account_address: Address,
 ) -> Result<Vec<bank_module::Coin>, Box<dyn std::error::Error>> {
-    let contract = BankModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = BankModule::new(bank_addr(), Arc::new(client.clone()));
     let value = contract.get_all_balances(account_address).await?;
     Ok(value)
 }
@@ -24,10 +28,9 @@ pub async fn get_all_balances(
 // getAllSpendableBalances
 pub async fn get_all_spendable_balances(
     client: &Client,
-    contract_addr: &H160,
     account_address: Address,
 ) -> Result<Vec<bank_module::Coin>, Box<dyn std::error::Error>> {
-    let contract = BankModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = BankModule::new(bank_addr(), Arc::new(client.clone()));
     let value = contract.get_all_spendable_balances(account_address).await?;
     Ok(value)
 }
@@ -35,9 +38,8 @@ pub async fn get_all_spendable_balances(
 /// getAllSupply
 pub async fn get_all_supply(
     client: &Client,
-    contract_addr: &H160,
 ) -> Result<Vec<bank_module::Coin>, Box<dyn std::error::Error>> {
-    let contract = BankModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = BankModule::new(bank_addr(), Arc::new(client.clone()));
     let value = contract.get_all_supply().await?;
     Ok(value)
 }
@@ -45,11 +47,10 @@ pub async fn get_all_supply(
 /// getBalance
 pub async fn get_balance(
     client: &Client,
-    contract_addr: &H160,
     account_address: Address,
     denom: String,
 ) -> Result<U256, Box<dyn std::error::Error>> {
-    let contract = BankModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = BankModule::new(bank_addr(), Arc::new(client.clone()));
     let value = contract.get_balance(account_address, denom).await?;
     Ok(value)
 }
@@ -57,11 +58,10 @@ pub async fn get_balance(
 // getSpendableBalance
 pub async fn get_spendable_balance(
     client: &Client,
-    contract_addr: &H160,
     account_address: Address,
     denom: String,
 ) -> Result<U256, Box<dyn std::error::Error>> {
-    let contract = BankModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = BankModule::new(bank_addr(), Arc::new(client.clone()));
     let value = contract
         .get_spendable_balance(account_address, denom)
         .await?;
@@ -71,10 +71,9 @@ pub async fn get_spendable_balance(
 // getSupply
 pub async fn get_supply(
     client: &Client,
-    contract_addr: &H160,
     denom: String,
 ) -> Result<U256, Box<dyn std::error::Error>> {
-    let contract = BankModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = BankModule::new(bank_addr(), Arc::new(client.clone()));
     let value = contract.get_supply(denom).await?;
     Ok(value)
 }
@@ -82,11 +81,10 @@ pub async fn get_supply(
 /// send
 pub async fn send(
     client: &Client,
-    contract_addr: &H160,
     to_address: Address,
     amount: Vec<bank_module::Coin>,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    let contract = BankModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = BankModule::new(bank_addr(), Arc::new(client.clone()));
     let value = contract.send(to_address, amount).await?;
     Ok(value)
 }
