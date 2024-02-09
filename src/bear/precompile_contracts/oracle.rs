@@ -1,5 +1,4 @@
 use crate::Client;
-use ethers::core::types::Address;
 use ethers::prelude::*;
 use std::sync::Arc;
 

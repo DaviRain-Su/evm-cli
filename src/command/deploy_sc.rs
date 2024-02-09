@@ -1,12 +1,7 @@
-use crate::config::Config;
-use crate::constant::DEFAULT_CONFIG_FILE;
 use crate::errors::Error;
 use crate::incrementer::{compile_deploy_contract, increment_number, read_number, reset};
-use crate::utils::{get_all_keypairs, get_config, get_single_keypairs};
-use crate::Client;
+use crate::utils::{get_all_keypairs, get_config};
 use ethers::prelude::*;
-use ethers_solc::Solc;
-use std::{path::Path, sync::Arc};
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]

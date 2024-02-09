@@ -2,7 +2,6 @@ use crate::errors::Error;
 use crate::utils::{get_all_keypairs, get_config, get_single_keypairs, send_transaction};
 use colored::*;
 use ethers::prelude::SignerMiddleware;
-use ethers::prelude::Wallet;
 use ethers::prelude::*;
 use ethers::providers::{Http, Provider};
 use ethers_signers::Signer;

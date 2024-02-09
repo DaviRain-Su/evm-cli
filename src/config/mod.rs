@@ -1,6 +1,4 @@
-use crate::errors::Error;
-use serde::{Deserialize, Deserializer};
-use std::str::FromStr;
+use serde::Deserialize;
 
 /// This is what we're going to decode into. Each field is optional, meaning
 /// that it doesn't have to be present in TOML.

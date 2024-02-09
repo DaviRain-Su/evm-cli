@@ -1,5 +1,4 @@
 use crate::errors::Error;
-use ethers::core::k256::ecdsa::SigningKey;
 use ethers::core::rand::thread_rng;
 use ethers_signers::LocalWallet;
 use ethers_signers::Signer;
