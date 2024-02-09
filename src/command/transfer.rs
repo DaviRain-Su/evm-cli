@@ -66,31 +66,33 @@ impl Transfer {
                     balance.to_string().red()
                 );
 
-                loop {
-                    if let Err(_) = send_transaction(
-                        &client,
-                        single_keypair.address(),
-                        keypair.address(),
-                        self.amount,
-                    )
-                    .await
-                    {
-                        continue;
-                    } else {
-                        break;
+                if balance < U256::from(10000000000000000u64) {
+                    loop {
+                        if let Err(_) = send_transaction(
+                            &client,
+                            single_keypair.address(),
+                            keypair.address(),
+                            self.amount,
+                        )
+                        .await
+                        {
+                            continue;
+                        } else {
+                            break;
+                        }
                     }
+
+                    let balance = provider
+                        .get_balance(keypair.address(), None)
+                        .await
+                        .map_err(|e| Error::Custom(e.to_string()))?;
+
+                    println!(
+                        "{} has {}",
+                        format!("{:?}", keypair.address()).blue(),
+                        balance.to_string().red()
+                    );
                 }
-
-                let balance = provider
-                    .get_balance(keypair.address(), None)
-                    .await
-                    .map_err(|e| Error::Custom(e.to_string()))?;
-
-                println!(
-                    "{} has {}",
-                    format!("{:?}", keypair.address()).blue(),
-                    balance.to_string().red()
-                );
             }
         } else {
             for keypair in keypairs.keypairs {
