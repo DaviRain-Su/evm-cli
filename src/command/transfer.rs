@@ -66,7 +66,7 @@ impl Transfer {
                     balance.to_string().red()
                 );
 
-                if balance < U256::from(10000000000000000u64) {
+                if balance < U256::from(100000000000000000u64) {
                     loop {
                         if let Err(e) = send_transaction(
                             &client,

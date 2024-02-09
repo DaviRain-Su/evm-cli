@@ -3,9 +3,11 @@ use crate::errors::Error;
 use crate::utils::{get_all_keypairs, get_config};
 use ethers::prelude::SignerMiddleware;
 use ethers::providers::{Http, Middleware, Provider};
+use ethers::types::U256;
 use ethers_core::types::Address;
 use ethers_signers::Signer;
 use structopt::StructOpt;
+use time::OffsetDateTime;
 
 // notice must use erc20 dex
 #[derive(Debug, StructOpt)]
@@ -74,20 +76,24 @@ impl Dex {
             .map_err(|e| Error::Custom(e.to_string()))?;
             println!("preview swap: {:?}", preview_swap);
 
-            // let deadline = U256::zero();
-            // let result_swap = erc20_dex::swap(
-            //     &client,
-            //     kind,
-            //     pool_id,
-            //     base_asset,
-            //     base_asset_amount,
-            //     quote_asset,
-            //     preview_swap.1,
-            //     deadline,
-            // )
-            // .await
-            // .map_err(|e| Error::Custom(e.to_string()))?;
-            // println!("swap: {:?}", result_swap);
+            let time = OffsetDateTime::now_utc().unix_timestamp() + 100;
+
+            // todo(davirain)
+            // ERROR(Error: Custom("Contract call reverted with data: 0x"))
+            let deadline = U256::from(time as u64);
+            let result_swap = erc20_dex::swap(
+                &client,
+                kind,
+                pool_id,
+                base_asset,
+                base_asset_amount,
+                quote_asset,
+                preview_swap.1,
+                deadline,
+            )
+            .await
+            .map_err(|e| Error::Custom(e.to_string()))?;
+            println!("swap: {:?}", result_swap);
 
             // let total_shares = erc20_dex::get_total_shares(&client, pool_id.clone())
             //     .await
