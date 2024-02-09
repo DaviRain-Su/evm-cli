@@ -14,7 +14,21 @@ abigen!(
     event_derives(serde::Deserialize, serde::Serialize)
 );
 
-// getCurrentEpoch
+/// # Epoch
+///
+/// Epoch 代表一个时间间隔。有许多不同的纪元，但是大多数 PoL dApp 使用的纪元可以通过 berachain_epoch_identifier 来识别。
+/// Berachain 追踪以下纪元：
+///  - day
+/// - hour
+/// - week
+/// - berachain_epoch_identifier
+/// 一天的秒数 = (24 * 60 * 60) seconds = 86400
+/// 给定 5 秒的区块时间，一天的一个纪元将持续大约： 86400/5 = 17280
+/// 根据此数学计算，每个 17280 块将开始一个新纪元。
+///
+/// ## getCurrentEpoch
+///
+/// 根据标识符获取当前纪元。注意： berachain_epoch_identifier 是 berachain poof 流动性 dApp 的默认纪元标识符。
 pub async fn get_current_epoch(
     client: &Client,
     identifier: String,
