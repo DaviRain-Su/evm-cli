@@ -1257,29 +1257,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ethers-examples"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "colored",
- "dirs",
- "env_logger",
- "ethers",
- "ethers-core 2.0.13",
- "ethers-signers 2.0.13",
- "ethers-solc",
- "k256 0.13.3",
- "log",
- "reqwest",
- "serde",
- "serde_json",
- "structopt",
- "thiserror",
- "tokio",
- "toml 0.8.10",
-]
-
-[[package]]
 name = "ethers-middleware"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1407,6 +1384,29 @@ dependencies = [
  "tracing",
  "walkdir",
  "yansi",
+]
+
+[[package]]
+name = "evm-cli"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "colored",
+ "dirs",
+ "env_logger",
+ "ethers",
+ "ethers-core 2.0.13",
+ "ethers-signers 2.0.13",
+ "ethers-solc",
+ "k256 0.13.3",
+ "log",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "structopt",
+ "thiserror",
+ "tokio",
+ "toml 0.8.10",
 ]
 
 [[package]]
