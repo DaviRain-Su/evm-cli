@@ -66,14 +66,20 @@ impl Transfer {
                     balance.to_string().red()
                 );
 
-                send_transaction(
-                    &client,
-                    single_keypair.address(),
-                    keypair.address(),
-                    self.amount,
-                )
-                .await
-                .map_err(|e| Error::Custom(e.to_string()))?;
+                loop {
+                    if let Err(_) = send_transaction(
+                        &client,
+                        single_keypair.address(),
+                        keypair.address(),
+                        self.amount,
+                    )
+                    .await
+                    {
+                        continue;
+                    } else {
+                        break;
+                    }
+                }
 
                 let balance = provider
                     .get_balance(keypair.address(), None)
@@ -103,14 +109,21 @@ impl Transfer {
                     provider.clone(),
                     keypair.clone().with_chain_id(self.chain_id),
                 );
-                send_transaction(
-                    &client,
-                    keypair.address(),
-                    single_keypair.address(),
-                    self.amount,
-                )
-                .await
-                .map_err(|e| Error::Custom(e.to_string()))?;
+
+                loop {
+                    if let Err(_) = send_transaction(
+                        &client,
+                        keypair.address(),
+                        single_keypair.address(),
+                        self.amount,
+                    )
+                    .await
+                    {
+                        continue;
+                    } else {
+                        break;
+                    }
+                }
 
                 let balance = provider
                     .get_balance(keypair.address(), None)
