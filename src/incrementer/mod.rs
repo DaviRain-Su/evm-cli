@@ -12,7 +12,7 @@ abigen!(
 );
 
 // 1. Define an asynchronous function that takes a client provider as input and returns H160
-async fn compile_deploy_contract(client: &Client) -> Result<H160, Box<dyn std::error::Error>> {
+pub async fn compile_deploy_contract(client: &Client) -> Result<H160, Box<dyn std::error::Error>> {
     // 2. Define a path as the directory that hosts the smart contracts in the project
     let source = Path::new(&env!("CARGO_MANIFEST_DIR"));
     let source = source.join("contract");
