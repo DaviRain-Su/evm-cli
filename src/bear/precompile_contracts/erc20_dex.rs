@@ -14,7 +14,8 @@ abigen!(
     event_derives(serde::Deserialize, serde::Serialize)
 );
 
-// addLiquidity
+/// addLiquidity
+/// 为资金池增加流动性。
 pub async fn add_liquidity(
     client: &Client,
     pool: Address,
@@ -30,6 +31,8 @@ pub async fn add_liquidity(
 }
 
 /// batchSwap
+/// 与单个池执行交换。注意：如果限制设置为 0，则不设置最大滑点。
+/// 注意：交换的类型（GIVEN_IN 与 GIVEN_OUT）决定限制是最大输入还是最小输出。
 pub async fn batch_swap(
     client: &Client,
     kind: u8,
@@ -41,7 +44,8 @@ pub async fn batch_swap(
     Ok(value)
 }
 
-// createPool
+/// createPool
+/// 创建一个新池。
 pub async fn create_pool(
     client: &Client,
     name: String,
@@ -250,7 +254,8 @@ pub async fn get_total_shares(
     Ok(value)
 }
 
-//removeLiquidityBurningShares
+///removeLiquidityBurningShares
+/// 通过销毁股票来消除池中的流动性。
 pub async fn remove_liquidity_burning_shares(
     client: &Client,
     pool: Address,
@@ -266,6 +271,7 @@ pub async fn remove_liquidity_burning_shares(
 }
 
 /// removeLiquidityExactAmount
+/// 从池中移除特定数量的流动性，并烧毁最大数量的股票。
 pub async fn remove_liquidity_exact_amount(
     client: &Client,
     pool: Address,
