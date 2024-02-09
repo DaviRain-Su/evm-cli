@@ -12,7 +12,7 @@ use crate::command::keys::Generator;
 
 #[derive(Debug, StructOpt)]
 pub enum Command {
-    /// auto generate config.toml file to ~/.config/pomm/config.toml
+    /// auto generate config.toml file to ~/.config/evm-cli/config.toml
     #[structopt(name = "auto")]
     Auto(Auto),
     /// generate new keypair
