@@ -21,34 +21,71 @@ impl Generator {
 }
 
 #[derive(Debug, StructOpt)]
-pub struct Single {}
+pub enum Single {
+    Generator,
+    Load(Load),
+}
 
-impl Single {
+#[derive(Debug, StructOpt)]
+pub struct Load {
+    pub private_key: String,
+}
+
+impl Load {
     pub fn run(&self) -> Result<(), Error> {
-        // write single wallet
-        let keypairs = KeyPairs::from_keypairs(
-            (0..1)
-                .map(|_i| LocalWallet::new(&mut thread_rng()))
-                .collect::<Vec<LocalWallet>>(),
-        );
-        log::info!(
-            "keypairs: {:?}",
-            keypairs
-                .keypairs
-                .iter()
-                .map(|k| k.address())
-                .collect::<Vec<_>>()
-        );
+        let wallet: LocalWallet = self
+            .private_key
+            .parse::<LocalWallet>()
+            .map_err(|e| Error::Custom(e.to_string()))?;
 
-        let keypairs_str = KeyPairsString::from(keypairs);
+        let keypairs = KeyPairs {
+            keypairs: vec![wallet],
+        };
+
+        let keyparis_str = KeyPairsString::from(keypairs);
 
         let home_path = dirs::home_dir().ok_or(Error::Custom("can't open home dir".into()))?;
         let nobody_config_path = home_path.join(".config").join("evm-cli");
         let keypairs_path = nobody_config_path.join("keypairs.json");
-        keypairs_str
+        keyparis_str
             .write(keypairs_path.clone())
             .map_err(|e| Error::Custom(e.to_string()))?;
         Ok(())
+    }
+}
+
+impl Single {
+    pub fn run(&self) -> Result<(), Error> {
+        match self {
+            Single::Generator => {
+                // write single wallet
+                let keypairs = KeyPairs::from_keypairs(
+                    (0..1)
+                        .map(|_i| LocalWallet::new(&mut thread_rng()))
+                        .collect::<Vec<LocalWallet>>(),
+                );
+                log::info!(
+                    "keypairs: {:?}",
+                    keypairs
+                        .keypairs
+                        .iter()
+                        .map(|k| k.address())
+                        .collect::<Vec<_>>()
+                );
+
+                let keypairs_str = KeyPairsString::from(keypairs);
+
+                let home_path =
+                    dirs::home_dir().ok_or(Error::Custom("can't open home dir".into()))?;
+                let nobody_config_path = home_path.join(".config").join("evm-cli");
+                let keypairs_path = nobody_config_path.join("keypairs.json");
+                keypairs_str
+                    .write(keypairs_path.clone())
+                    .map_err(|e| Error::Custom(e.to_string()))?;
+                Ok(())
+            }
+            Single::Load(load) => load.run(),
+        }
     }
 }
 

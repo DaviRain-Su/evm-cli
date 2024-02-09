@@ -3,9 +3,10 @@ use structopt::StructOpt;
 
 pub mod auto;
 pub mod balance;
-pub mod generator;
+pub mod keys;
+pub mod transfer;
 use crate::command::auto::Auto;
-use crate::command::generator::Generator;
+use crate::command::keys::Generator;
 
 #[derive(Debug, StructOpt)]
 pub enum Command {

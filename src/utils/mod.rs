@@ -1,5 +1,5 @@
 use super::Client;
-use crate::command::generator::{KeyPairs, KeyPairsString};
+use crate::command::keys::{KeyPairs, KeyPairsString};
 use crate::config::Config;
 use crate::errors::Error;
 use ethers::{prelude::*, utils as ethers_utils};
