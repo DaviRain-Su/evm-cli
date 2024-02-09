@@ -28,16 +28,20 @@ impl DeploySc {
                 keypair.clone().with_chain_id(self.chain_id),
             );
 
+            println!("Address({:?}) deploy contract", keypair.address());
+
             let addr = loop {
                 if let Ok(addr) = compile_deploy_contract(&client).await {
                     break addr;
                 } else {
+                    log::warn!("deploy contract have error");
                     continue;
                 }
             };
 
             loop {
                 if let Err(_) = read_number(&client, &addr).await {
+                    log::warn!("read_number have error");
                     continue;
                 } else {
                     break;
@@ -46,6 +50,7 @@ impl DeploySc {
 
             loop {
                 if let Err(_) = increment_number(&client, &addr).await {
+                    log::warn!("increment_number have error");
                     continue;
                 } else {
                     break;
@@ -54,6 +59,7 @@ impl DeploySc {
 
             loop {
                 if let Err(_) = read_number(&client, &addr).await {
+                    log::warn!("read_number have error");
                     continue;
                 } else {
                     break;
@@ -62,6 +68,7 @@ impl DeploySc {
 
             loop {
                 if let Err(_) = reset(&client, &addr).await {
+                    log::warn!("reset have error");
                     continue;
                 } else {
                     break;
@@ -70,6 +77,7 @@ impl DeploySc {
 
             loop {
                 if let Err(_) = read_number(&client, &addr).await {
+                    log::warn!("read_number have error");
                     continue;
                 } else {
                     break;

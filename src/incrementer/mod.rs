@@ -31,7 +31,6 @@ pub async fn compile_deploy_contract(client: &Client) -> Result<H160, Box<dyn st
 
     // 5. Create a contract factory which will be used to deploy instances of the contract
     let factory = ContractFactory::new(abi, bytecode, Arc::new(client.clone()));
-    println!("factory {:?}", factory);
 
     // 6. Deploy
     let contract = factory.deploy(U256::from(5))?.send().await?;
