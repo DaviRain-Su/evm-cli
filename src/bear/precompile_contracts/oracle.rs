@@ -1,6 +1,11 @@
 use crate::Client;
 use ethers::prelude::*;
+use std::str::FromStr;
 use std::sync::Arc;
+
+fn oracle_addr() -> H160 {
+    H160::from_str("0x9202Af6Ce925b26AE6B25aDfff0B2705147e195F").unwrap()
+}
 
 // 1. Generate a type-safe interface for the Incrementer smart contract
 abigen!(
@@ -12,10 +17,9 @@ abigen!(
 // addCurrencyPairs
 pub async fn get_all_balances(
     client: &Client,
-    contract_addr: &H160,
     pairs: Vec<String>,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    let contract = OracleModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = OracleModule::new(oracle_addr(), Arc::new(client.clone()));
     let value = contract.add_currency_pairs(pairs).await?;
     Ok(value)
 }
@@ -23,19 +27,14 @@ pub async fn get_all_balances(
 // getAllCurrencyPairs
 pub async fn get_all_currency_pairs(
     client: &Client,
-    contract_addr: &H160,
 ) -> Result<Vec<String>, Box<dyn std::error::Error>> {
-    let contract = OracleModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = OracleModule::new(oracle_addr(), Arc::new(client.clone()));
     let value = contract.get_all_currency_pairs().await?;
     Ok(value)
 }
 // getDecimals
-pub async fn get_decimals(
-    client: &Client,
-    contract_addr: &H160,
-    pair: String,
-) -> Result<u8, Box<dyn std::error::Error>> {
-    let contract = OracleModule::new(contract_addr.clone(), Arc::new(client.clone()));
+pub async fn get_decimals(client: &Client, pair: String) -> Result<u8, Box<dyn std::error::Error>> {
+    let contract = OracleModule::new(oracle_addr(), Arc::new(client.clone()));
     let value = contract.get_decimals(pair).await?;
     Ok(value)
 }
@@ -43,10 +42,9 @@ pub async fn get_decimals(
 // getPrice
 pub async fn get_price(
     client: &Client,
-    contract_addr: &H160,
     pair: String,
 ) -> Result<(I256, U256, u64), Box<dyn std::error::Error>> {
-    let contract = OracleModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = OracleModule::new(oracle_addr(), Arc::new(client.clone()));
     let value = contract.get_price(pair).await?;
     Ok(value)
 }
@@ -54,10 +52,9 @@ pub async fn get_price(
 // hasCurrencyPair
 pub async fn has_currency_pair(
     client: &Client,
-    contract_addr: &H160,
     pair: String,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    let contract = OracleModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = OracleModule::new(oracle_addr(), Arc::new(client.clone()));
     let value = contract.has_currency_pair(pair).await?;
     Ok(value)
 }
@@ -65,10 +62,9 @@ pub async fn has_currency_pair(
 // removeCurrencyPairs
 pub async fn remove_currency_pairs(
     client: &Client,
-    contract_addr: &H160,
     pairs: Vec<String>,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    let contract = OracleModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = OracleModule::new(oracle_addr(), Arc::new(client.clone()));
     let value = contract.remove_currency_pairs(pairs).await?;
     Ok(value)
 }

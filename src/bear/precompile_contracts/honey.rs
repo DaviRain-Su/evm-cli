@@ -1,7 +1,12 @@
 use crate::Client;
 use ethers::core::types::Address;
 use ethers::prelude::*;
+use std::str::FromStr;
 use std::sync::Arc;
+
+fn honey_addr() -> H160 {
+    H160::from_str("0xA55E2E3846A51F6AD0ABFDFBDEA2BA0E5E0C76B5").unwrap()
+}
 
 // 1. Generate a type-safe interface for the Incrementer smart contract
 abigen!(
@@ -13,11 +18,10 @@ abigen!(
 // getAMOCurrentLimit
 pub async fn get_amo_current_limt(
     client: &Client,
-    contract_addr: &H160,
     amo_type: String,
     amo_addr: Address,
 ) -> Result<U256, Box<dyn std::error::Error>> {
-    let contract = HoneyModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
     let value = contract.get_amo_current_limit(amo_type, amo_addr).await?;
     Ok(value)
 }
@@ -25,9 +29,8 @@ pub async fn get_amo_current_limt(
 /// getParams
 pub async fn get_params(
     client: &Client,
-    contract_addr: &H160,
 ) -> Result<Vec<honey_module::Exchangeable>, Box<dyn std::error::Error>> {
-    let contract = HoneyModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
     let value = contract.get_params().await?;
     Ok(value)
 }
@@ -35,19 +38,15 @@ pub async fn get_params(
 // getTotalCollateral
 pub async fn get_total_collateral(
     client: &Client,
-    contract_addr: &H160,
 ) -> Result<Vec<honey_module::Coin>, Box<dyn std::error::Error>> {
-    let contract = HoneyModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
     let value = contract.get_total_collateral().await?;
     Ok(value)
 }
 
 // getTotalSupply
-pub async fn get_total_supply(
-    client: &Client,
-    contract_addr: &H160,
-) -> Result<U256, Box<dyn std::error::Error>> {
-    let contract = HoneyModule::new(contract_addr.clone(), Arc::new(client.clone()));
+pub async fn get_total_supply(client: &Client) -> Result<U256, Box<dyn std::error::Error>> {
+    let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
     let value = contract.get_total_supply().await?;
     Ok(value)
 }
@@ -55,11 +54,10 @@ pub async fn get_total_supply(
 // mint
 pub async fn mint(
     client: &Client,
-    contract_addr: &H160,
     to: Address,
     collateral: honey_module::Coin,
 ) -> Result<honey_module::Coin, Box<dyn std::error::Error>> {
-    let contract = HoneyModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
     let value = contract.mint(to, collateral).await?;
     Ok(value)
 }
@@ -67,10 +65,9 @@ pub async fn mint(
 // previewExactOutCollateral
 pub async fn preview_exact_out_collateral(
     client: &Client,
-    contract_addr: &H160,
     collateral_out: honey_module::Coin,
 ) -> Result<U256, Box<dyn std::error::Error>> {
-    let contract = HoneyModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
     let value = contract
         .preview_exact_out_collateral(collateral_out)
         .await?;
@@ -81,10 +78,9 @@ pub async fn preview_exact_out_collateral(
 //
 pub async fn preview_mint(
     client: &Client,
-    contract_addr: &H160,
     coin: honey_module::Coin,
 ) -> Result<U256, Box<dyn std::error::Error>> {
-    let contract = HoneyModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
     let value = contract.preview_mint(coin).await?;
     Ok(value)
 }
@@ -93,11 +89,10 @@ pub async fn preview_mint(
 
 pub async fn preview_redeem(
     client: &Client,
-    contract_addr: &H160,
     amount: U256,
     denom_out: String,
 ) -> Result<U256, Box<dyn std::error::Error>> {
-    let contract = HoneyModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
     let value = contract.preview_redeem(amount, denom_out).await?;
     Ok(value)
 }
@@ -106,11 +101,10 @@ pub async fn preview_redeem(
 
 pub async fn preview_required_collateral(
     client: &Client,
-    contract_addr: &H160,
     honey_out: U256,
     denom_in: String,
 ) -> Result<U256, Box<dyn std::error::Error>> {
-    let contract = HoneyModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
     let value = contract
         .preview_required_collateral(honey_out, denom_in)
         .await?;
@@ -120,12 +114,11 @@ pub async fn preview_required_collateral(
 // redeem
 pub async fn redeem(
     client: &Client,
-    contract_addr: &H160,
     from: Address,
     amount: U256,
     denom_out: String,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    let contract = HoneyModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
     let value = contract.redeem(from, amount, denom_out).await?;
     Ok(value)
 }
@@ -133,12 +126,11 @@ pub async fn redeem(
 // requestHoney
 pub async fn request_honey(
     client: &Client,
-    contract_addr: &H160,
     to: Address,
     amount: U256,
     amo_type: String,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    let contract = HoneyModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
     let value = contract.request_honey(to, amount, amo_type).await?;
     Ok(value)
 }
@@ -146,10 +138,9 @@ pub async fn request_honey(
 // updateParams
 pub async fn update_params(
     client: &Client,
-    contract_addr: &H160,
     params: Vec<honey_module::Exchangeable>,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    let contract = HoneyModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
     let value = contract.update_params(params).await?;
     Ok(value)
 }

@@ -1,7 +1,12 @@
 use crate::Client;
 use ethers::core::types::Address;
 use ethers::prelude::*;
+use std::str::FromStr;
 use std::sync::Arc;
+
+fn bgt_addr() -> H160 {
+    H160::from_str("0x09E585D2BDEB5ECF90ADE67DCE1125070D2714A3").unwrap()
+}
 
 // 1. Generate a type-safe interface for the Incrementer smart contract
 abigen!(
@@ -13,11 +18,10 @@ abigen!(
 // redeem
 pub async fn redeem(
     client: &Client,
-    contract_addr: &H160,
     receiver: Address,
     amount: U256,
 ) -> Result<U256, Box<dyn std::error::Error>> {
-    let contract = BGTModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = BGTModule::new(bgt_addr(), Arc::new(client.clone()));
     let value = contract.redeem(receiver, amount).await?;
     Ok(value)
 }

@@ -1,7 +1,12 @@
 use crate::Client;
 use ethers::core::types::Address;
 use ethers::prelude::*;
+use std::str::FromStr;
 use std::sync::Arc;
+
+fn bribe_addr() -> H160 {
+    H160::from_str("0xFCE07324E0E72E071842374E9997CF65DF990CBC").unwrap()
+}
 
 // 1. Generate a type-safe interface for the Incrementer smart contract
 abigen!(
@@ -13,13 +18,12 @@ abigen!(
 // createBribe
 pub async fn create_bribe(
     client: &Client,
-    contract_addr: &H160,
     operator: Address,
     start_epoch: u64,
     num_block_proposals: u64,
     bribe_per_proposal: Vec<bribe_module::Coin>,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    let contract = BribeModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = BribeModule::new(bribe_addr(), Arc::new(client.clone()));
     let value = contract
         .create_bribe(
             operator,
@@ -34,10 +38,9 @@ pub async fn create_bribe(
 //getActiveValidatorBribes
 pub async fn get_active_validator_bribes(
     client: &Client,
-    contract_addr: &H160,
     operator: Address,
 ) -> Result<Vec<bribe_module::Bribe>, Box<dyn std::error::Error>> {
-    let contract = BribeModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = BribeModule::new(bribe_addr(), Arc::new(client.clone()));
     let value = contract.get_active_validator_bribes(operator).await?;
     Ok(value)
 }
@@ -45,10 +48,9 @@ pub async fn get_active_validator_bribes(
 // getAllValidatorBribes
 pub async fn get_all_validator_bribes(
     client: &Client,
-    contract_addr: &H160,
     operator: Address,
 ) -> Result<Vec<bribe_module::Bribe>, Box<dyn std::error::Error>> {
-    let contract = BribeModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = BribeModule::new(bribe_addr(), Arc::new(client.clone()));
     let value = contract.get_all_validator_bribes(operator).await?;
     Ok(value)
 }
@@ -56,9 +58,8 @@ pub async fn get_all_validator_bribes(
 // getBribeFees
 pub async fn get_bribe_fees(
     client: &Client,
-    contract_addr: &H160,
 ) -> Result<Vec<bribe_module::Coin>, Box<dyn std::error::Error>> {
-    let contract = BribeModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = BribeModule::new(bribe_addr(), Arc::new(client.clone()));
     let value = contract.get_bribe_fees().await?;
     Ok(value)
 }
@@ -66,11 +67,10 @@ pub async fn get_bribe_fees(
 // getBribes
 pub async fn get_bribes(
     client: &Client,
-    contract_addr: &H160,
     operator: Address,
     start_epoch: u64,
 ) -> Result<Vec<bribe_module::Bribe>, Box<dyn std::error::Error>> {
-    let contract = BribeModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = BribeModule::new(bribe_addr(), Arc::new(client.clone()));
     let value = contract.get_bribes(operator, start_epoch).await?;
     Ok(value)
 }
@@ -78,10 +78,9 @@ pub async fn get_bribes(
 // updateParams
 pub async fn update_params(
     client: &Client,
-    contract_addr: &H160,
     fee: Vec<bribe_module::Coin>,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    let contract = BribeModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = BribeModule::new(bribe_addr(), Arc::new(client.clone()));
     let value = contract.update_params(fee).await?;
     Ok(value)
 }

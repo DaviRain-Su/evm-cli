@@ -1,7 +1,12 @@
 use crate::Client;
 use ethers::core::types::Address;
 use ethers::prelude::*;
+use std::str::FromStr;
 use std::sync::Arc;
+
+fn distribution_addr() -> H160 {
+    H160::from_str("0x0000000000000000000000000000000000000069").unwrap()
+}
 
 // 1. Generate a type-safe interface for the Incrementer smart contract
 abigen!(
@@ -13,10 +18,9 @@ abigen!(
 // getAllDelegatorRewards
 pub async fn get_all_delegator_rewards(
     client: &Client,
-    contract_addr: &H160,
     account_address: Address,
 ) -> Result<Vec<distribute_module::ValidatorReward>, Box<dyn std::error::Error>> {
-    let contract = DistributeModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = DistributeModule::new(distribution_addr(), Arc::new(client.clone()));
     let value = contract.get_all_delegator_rewards(account_address).await?;
     Ok(value)
 }
@@ -24,11 +28,10 @@ pub async fn get_all_delegator_rewards(
 /// getDelegatorValidatorReward
 pub async fn get_delegator_validator_reward(
     client: &Client,
-    contract_addr: &H160,
     delegator: Address,
     validator: Address,
 ) -> Result<Vec<distribute_module::Coin>, Box<dyn std::error::Error>> {
-    let contract = DistributeModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = DistributeModule::new(distribution_addr(), Arc::new(client.clone()));
     let value = contract
         .get_delegator_validator_reward(delegator, validator)
         .await?;
@@ -38,10 +41,9 @@ pub async fn get_delegator_validator_reward(
 /// getTotalDelegatorReward
 pub async fn get_total_delegator_reward(
     client: &Client,
-    contract_addr: &H160,
     delegator: Address,
 ) -> Result<Vec<distribute_module::Coin>, Box<dyn std::error::Error>> {
-    let contract = DistributeModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = DistributeModule::new(distribution_addr(), Arc::new(client.clone()));
     let value = contract.get_total_delegator_reward(delegator).await?;
     Ok(value)
 }
@@ -49,20 +51,16 @@ pub async fn get_total_delegator_reward(
 ///getWithdrawAddress
 pub async fn get_withdraw_address(
     client: &Client,
-    contract_addr: &H160,
     delegator: Address,
 ) -> Result<Address, Box<dyn std::error::Error>> {
-    let contract = DistributeModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = DistributeModule::new(distribution_addr(), Arc::new(client.clone()));
     let value = contract.get_withdraw_address(delegator).await?;
     Ok(value)
 }
 
 ///getWithdrawEnabled
-pub async fn get_withdraw_enabled(
-    client: &Client,
-    contract_addr: &H160,
-) -> Result<bool, Box<dyn std::error::Error>> {
-    let contract = DistributeModule::new(contract_addr.clone(), Arc::new(client.clone()));
+pub async fn get_withdraw_enabled(client: &Client) -> Result<bool, Box<dyn std::error::Error>> {
+    let contract = DistributeModule::new(distribution_addr(), Arc::new(client.clone()));
     let value = contract.get_withdraw_enabled().await?;
     Ok(value)
 }
@@ -70,10 +68,9 @@ pub async fn get_withdraw_enabled(
 // setWithdrawAddress
 pub async fn set_withdraw_address(
     client: &Client,
-    contract_addr: &H160,
     withdraw_address: Address,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    let contract = DistributeModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = DistributeModule::new(distribution_addr(), Arc::new(client.clone()));
     let value = contract.set_withdraw_address(withdraw_address).await?;
     Ok(value)
 }
@@ -81,11 +78,10 @@ pub async fn set_withdraw_address(
 // withdrawDelegatorReward
 pub async fn withdraw_delegator_reward(
     client: &Client,
-    contract_addr: &H160,
     delegator: Address,
     validator: Address,
 ) -> Result<Vec<distribute_module::Coin>, Box<dyn std::error::Error>> {
-    let contract = DistributeModule::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = DistributeModule::new(distribution_addr(), Arc::new(client.clone()));
     let value = contract
         .withdraw_delegator_reward(delegator, validator)
         .await?;
