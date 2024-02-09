@@ -1,5 +1,6 @@
 use crate::errors::Error;
 use crate::utils::{get_all_keypairs, get_config};
+use colored::*;
 use ethers::prelude::SignerMiddleware;
 use ethers::prelude::Wallet;
 use ethers::prelude::*;
@@ -30,7 +31,11 @@ impl Balance {
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
 
-            println!("{:?} has {}", keypair.address(), balance);
+            println!(
+                "{} has {}",
+                format!("{:?}", keypair.address()).blue(),
+                balance.to_string().red()
+            );
         }
         Ok(())
     }
