@@ -68,7 +68,7 @@ impl Transfer {
 
                 if balance < U256::from(10000000000000000u64) {
                     loop {
-                        if let Err(_) = send_transaction(
+                        if let Err(e) = send_transaction(
                             &client,
                             single_keypair.address(),
                             keypair.address(),
@@ -76,6 +76,7 @@ impl Transfer {
                         )
                         .await
                         {
+                            log::warn!("transfer command send_transaction have Err({:?})", e);
                             continue;
                         } else {
                             break;
