@@ -68,7 +68,7 @@ pub async fn send_transaction(
     amount: f64,
 ) -> Result<(), Box<dyn std::error::Error>> {
     println!(
-        "Beginning transfer of {} native currency from {} to {}.",
+        "Beginning transfer of {:?} native currency from {:?} to {}.",
         address_from, address_to, amount
     );
 
