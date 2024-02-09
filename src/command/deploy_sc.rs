@@ -28,29 +28,53 @@ impl DeploySc {
                 keypair.clone().with_chain_id(self.chain_id),
             );
 
-            let addr = compile_deploy_contract(&client)
-                .await
-                .map_err(|e| Error::Custom(e.to_string()))?;
+            let addr = loop {
+                if let Ok(addr) = compile_deploy_contract(&client).await {
+                    break addr;
+                } else {
+                    continue;
+                }
+            };
 
-            read_number(&client, &addr)
-                .await
-                .map_err(|e| Error::Custom(e.to_string()))?;
+            loop {
+                if let Err(_) = read_number(&client, &addr).await {
+                    continue;
+                } else {
+                    break;
+                }
+            }
 
-            increment_number(&client, &addr)
-                .await
-                .map_err(|e| Error::Custom(e.to_string()))?;
+            loop {
+                if let Err(_) = increment_number(&client, &addr).await {
+                    continue;
+                } else {
+                    break;
+                }
+            }
 
-            read_number(&client, &addr)
-                .await
-                .map_err(|e| Error::Custom(e.to_string()))?;
+            loop {
+                if let Err(_) = read_number(&client, &addr).await {
+                    continue;
+                } else {
+                    break;
+                }
+            }
 
-            reset(&client, &addr)
-                .await
-                .map_err(|e| Error::Custom(e.to_string()))?;
+            loop {
+                if let Err(_) = reset(&client, &addr).await {
+                    continue;
+                } else {
+                    break;
+                }
+            }
 
-            read_number(&client, &addr)
-                .await
-                .map_err(|e| Error::Custom(e.to_string()))?;
+            loop {
+                if let Err(_) = read_number(&client, &addr).await {
+                    continue;
+                } else {
+                    break;
+                }
+            }
         }
 
         Ok(())
