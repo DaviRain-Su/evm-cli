@@ -6,26 +6,68 @@ use std::path::PathBuf;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
-pub struct Generator {
+pub enum Generator {
+    Single(Single),
+    Multi(Multi),
+}
+
+impl Generator {
+    pub fn run(&self) -> Result<(), Error> {
+        match self {
+            Generator::Single(single) => single.run(),
+            Generator::Multi(multi) => multi.run(),
+        }
+    }
+}
+
+#[derive(Debug, StructOpt)]
+pub struct Single {}
+
+impl Single {
+    pub fn run(&self) -> Result<(), Error> {
+        // write single wallet
+        let keypairs = KeyPairs::from_keypairs(
+            (0..1)
+                .map(|_i| LocalWallet::new(&mut thread_rng()))
+                .collect::<Vec<LocalWallet>>(),
+        );
+        log::info!(
+            "keypairs: {:?}",
+            keypairs
+                .keypairs
+                .iter()
+                .map(|k| k.address())
+                .collect::<Vec<_>>()
+        );
+
+        let keypairs_str = KeyPairsString::from(keypairs);
+
+        let home_path = dirs::home_dir().ok_or(Error::Custom("can't open home dir".into()))?;
+        let nobody_config_path = home_path.join(".config").join("evm-cli");
+        let keypairs_path = nobody_config_path.join("keypairs.json");
+        keypairs_str
+            .write(keypairs_path.clone())
+            .map_err(|e| Error::Custom(e.to_string()))?;
+        Ok(())
+    }
+}
+
+#[derive(Debug, StructOpt)]
+pub struct Multi {
     /// generator wallet numbers
     #[structopt(short, long)]
     pub wallet_num: usize,
     /// keypair file name
     #[structopt(short, long)]
     pub file_name: String,
-    // chain id
-    // #[structopt(short, long)]
-    // pub chain_id: u64,
 }
 
-impl Generator {
+impl Multi {
     pub fn run(&self) -> Result<(), Error> {
+        // write multi wallet
         let keypairs = KeyPairs::from_keypairs(
             (0..self.wallet_num)
-                .map(|_i| {
-                    // LocalWallet::new(&mut thread_rng()).with_chain_id(self.chain_id)
-                    LocalWallet::new(&mut thread_rng())
-                })
+                .map(|_i| LocalWallet::new(&mut thread_rng()))
                 .collect::<Vec<LocalWallet>>(),
         );
         log::info!(
