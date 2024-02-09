@@ -25,7 +25,7 @@ impl Bank {
         let keypairs =
             get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
 
-        for keypair in keypairs.keypairs {
+        for keypair in &keypairs.keypairs {
             let client = SignerMiddleware::new(
                 provider.clone(),
                 keypair.clone().with_chain_id(self.chain_id),
@@ -36,11 +36,24 @@ impl Bank {
                 .map_err(|e| Error::Custom(e.to_string()))?;
 
             println!(
-                "{} has {:#?}",
+                "{} has All Balance {:#?}",
                 format!("{:?}", keypair.address()).blue(),
                 all_balance
             );
         }
+
+        // assert!(!keypairs.keypairs.is_empty());
+        // let client = SignerMiddleware::new(
+        //     provider.clone(),
+        //     keypairs.keypairs[0].clone().with_chain_id(self.chain_id),
+        // );
+
+        // let all_supply = bank::get_all_supply(&client)
+        //     .await
+        //     .map_err(|e| Error::Custom(e.to_string()))?;
+
+        // println!("All Supply {:?}", all_supply);
+
         Ok(())
     }
 }
