@@ -58,7 +58,6 @@ impl Single {
     pub fn run(&self) -> Result<(), Error> {
         match self {
             Single::Generator => {
-                // write single wallet
                 let keypairs = KeyPairs::from_keypairs(
                     (0..1)
                         .map(|_i| LocalWallet::new(&mut thread_rng()))
