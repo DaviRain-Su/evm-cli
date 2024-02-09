@@ -2,6 +2,7 @@ use crate::errors::Error;
 use structopt::StructOpt;
 
 pub mod auto;
+pub mod balance;
 pub mod generator;
 use crate::command::auto::Auto;
 use crate::command::generator::Generator;
@@ -14,6 +15,9 @@ pub enum Command {
     /// generate new keypair
     #[structopt(name = "generator")]
     Generator(Generator),
+    /// get balance
+    #[structopt(name = "balance")]
+    Balance(balance::Balance),
 }
 
 impl Command {
@@ -21,6 +25,7 @@ impl Command {
         match &self {
             Command::Auto(auto) => auto.run(),
             Command::Generator(generator) => generator.run(),
+            Command::Balance(balance) => balance.run().await,
         }
     }
 }
