@@ -1,4 +1,3 @@
-// 1. Add to imports
 use super::Client;
 use crate::command::generator::{KeyPairs, KeyPairsString};
 use crate::config::Config;
