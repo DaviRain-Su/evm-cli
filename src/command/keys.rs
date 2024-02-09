@@ -1,6 +1,8 @@
 use crate::errors::Error;
-use ethers_core::rand::thread_rng;
-use ethers_signers::{LocalWallet, Signer};
+use ethers::core::k256::ecdsa::SigningKey;
+use ethers::core::rand::thread_rng;
+use ethers_signers::LocalWallet;
+use ethers_signers::Signer;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use structopt::StructOpt;
@@ -200,6 +202,10 @@ impl From<KeyPairsString> for KeyPairs {
                 let raw_keypairs =
                     serde_json::from_str::<Vec<u8>>(&k.secret).expect("serde keypairs error");
                 LocalWallet::from_bytes(&raw_keypairs).expect("keypairs from bytes error")
+                // let signing_key =
+                // SigningKey::from_bytes(&raw_keypairs).expect("SigningKey from bytes error");
+                // let address = signing_key
+                // LocalWallet::new_with_signer()
             })
             .collect::<Vec<_>>();
         Self { keypairs }

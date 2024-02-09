@@ -19,6 +19,9 @@ pub enum Command {
     /// get balance
     #[structopt(name = "balance")]
     Balance(balance::Balance),
+    /// transfer
+    #[structopt(name = "transfer")]
+    Transfer(transfer::Transfer),
 }
 
 impl Command {
@@ -27,6 +30,7 @@ impl Command {
             Command::Auto(auto) => auto.run(),
             Command::Generator(generator) => generator.run(),
             Command::Balance(balance) => balance.run().await,
+            Command::Transfer(trnasfer) => trnasfer.run().await,
         }
     }
 }

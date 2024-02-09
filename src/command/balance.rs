@@ -5,7 +5,7 @@ use ethers::prelude::SignerMiddleware;
 use ethers::prelude::Wallet;
 use ethers::prelude::*;
 use ethers::providers::{Http, Provider};
-use ethers_signers::Signer;
+use ethers::signers::Signer;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]

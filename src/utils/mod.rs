@@ -65,16 +65,17 @@ pub async fn send_transaction(
     client: &Client,
     address_from: Address,
     address_to: Address,
+    amount: f64,
 ) -> Result<(), Box<dyn std::error::Error>> {
     println!(
-        "Beginning transfer of 1 native currency from {} to {}.",
-        address_from, address_to
+        "Beginning transfer of {} native currency from {} to {}.",
+        address_from, address_to, amount
     );
 
     // 2. Create a TransactionRequest object
     let tx = TransactionRequest::new()
         .to(address_to)
-        .value(U256::from(ethers_utils::parse_ether(1)?))
+        .value(U256::from(ethers_utils::parse_ether(amount)?))
         .from(address_from);
 
     // 3. Send the transaction with the client
