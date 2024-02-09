@@ -10,7 +10,7 @@ impl Auto {
     pub fn run(&self) -> Result<(), Error> {
         // open  config file path is  ~/.config/pomm/config.toml
         let home_path = dirs::home_dir().ok_or(Error::Custom("can't open home dir".into()))?;
-        let nobody_config_path = home_path.join(".config").join("nobody");
+        let nobody_config_path = home_path.join(".config").join("evm-cli");
 
         if std::fs::read_to_string(nobody_config_path.join("config.toml")).is_ok()
             && std::fs::read_to_string(nobody_config_path.join("keypairs.json")).is_ok()

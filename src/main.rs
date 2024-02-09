@@ -14,6 +14,7 @@ use std::str::FromStr;
 use crate::bear::deploy_contracts::honey;
 use crate::bear::precompile_contracts::bank;
 use crate::bear::precompile_contracts::governance;
+use structopt::StructOpt;
 
 const BEAR_CHAIN_DECIMAL: u64 = 1_000_000_000_000_000_000;
 
@@ -29,21 +30,26 @@ pub mod utils;
 // 2. Add client type
 type Client = SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::SigningKey>>;
 
+use crate::command::Command;
 // 3. Add annotation
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    env_logger::init();
+
+    let opt = Command::from_args();
+    opt.run().await?;
     // 4. Use try_from with RPC endpoint
-    let provider = Provider::<Http>::try_from("https://artio.rpc.berachain.com/")?;
+    // let provider = Provider::<Http>::try_from("https://artio.rpc.berachain.com/")?;
     // 5. Use a private key to create a wallet
     // Do not include the private key in plain text in any production code
     // This is just for demonstration purposes
     // Do not include '0x' at the start of the private key
-    let wallet: LocalWallet = "eca31d121880412e02e16295069348dcd18db64ea0f179b24a9e7ecfeb66983d"
-        .parse::<LocalWallet>()?
-        .with_chain_id(80085u64);
+    // let wallet: LocalWallet = "eca31d121880412e02e16295069348dcd18db64ea0f179b24a9e7ecfeb66983d"
+    //     .parse::<LocalWallet>()?
+    //     .with_chain_id(80085u64);
 
     // 6. Wrap the provider and wallet together to create a signer client
-    let client = SignerMiddleware::new(provider.clone(), wallet.clone());
+    // let client = SignerMiddleware::new(provider.clone(), wallet.clone());
     // println!("client: {:?}", client);
 
     // 2. Add from and to address
@@ -74,32 +80,32 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // // 7. Call read_number function in main
     // read_number(&client, &addrs).await?;
 
-    let honey_addrs = H160::from_str("0x7EeCA4205fF31f947EdBd49195a7A88E6A91161B")?;
-    println!("honey addrs {:?}", honey_addrs);
+    // let honey_addrs = H160::from_str("0x7EeCA4205fF31f947EdBd49195a7A88E6A91161B")?;
+    // println!("honey addrs {:?}", honey_addrs);
 
-    let name = honey::name(&client, &honey_addrs).await?;
+    // let name = honey::name(&client, &honey_addrs).await?;
 
-    println!("honey name is {}", name);
+    // println!("honey name is {}", name);
 
-    let symbol = honey::symbol(&client, &honey_addrs).await?;
+    // let symbol = honey::symbol(&client, &honey_addrs).await?;
 
-    println!("honey symbol is {}", symbol);
+    // println!("honey symbol is {}", symbol);
 
-    let decimals = honey::decimals(&client, &honey_addrs).await?;
+    // let decimals = honey::decimals(&client, &honey_addrs).await?;
 
-    println!("honey decimals is {}", decimals);
+    // println!("honey decimals is {}", decimals);
 
-    let total_supply = honey::total_supply(&client, &honey_addrs).await?;
+    // let total_supply = honey::total_supply(&client, &honey_addrs).await?;
 
-    println!("honey total_supply is {}", total_supply);
+    // println!("honey total_supply is {}", total_supply);
 
-    let address = "0xfFD34F45115CB1BB97A49b6f37E557E15d0cAD3A".parse::<Address>()?;
-    let balance = honey::balance_of(&client, &honey_addrs, address).await?;
-    println!("address({}) have honey balance is {}", address, balance);
+    // let address = "0xfFD34F45115CB1BB97A49b6f37E557E15d0cAD3A".parse::<Address>()?;
+    // let balance = honey::balance_of(&client, &honey_addrs, address).await?;
+    // println!("address({}) have honey balance is {}", address, balance);
 
-    let dex_addr = H160::from_str("0x9D0FBF9349F646F1435072F2B0212084752EF460")?;
+    // let dex_addr = H160::from_str("0x9D0FBF9349F646F1435072F2B0212084752EF460")?;
 
-    let pool_addr = "0x0d5862FDbdd12490f9b4De54c236cff63B038074".to_uppercase();
+    // let pool_addr = "0x0d5862FDbdd12490f9b4De54c236cff63B038074".to_uppercase();
     // let base_addr = "WBERA".to_string();
     // let quote_addr = "HONEY".to_string();
     // let exchange_rate =
@@ -117,8 +123,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // let all_supply = bank::get_all_supply(&client, &bank_addr).await?;
     // println!("all supply: {:#?}", all_supply);
     //
-    let governance_addr = H160::from_str("0x7b5Fe22B5446f7C62Ea27B8BD71CeF94e03f3dF2")?;
-    let result = governance::get_constitution(&client, &governance_addr).await?;
-    println!("consitution: {:?}", result);
+    // let governance_addr = H160::from_str("0x7b5Fe22B5446f7C62Ea27B8BD71CeF94e03f3dF2")?;
+    // let result = governance::get_constitution(&client, &governance_addr).await?;
+    // println!("consitution: {:?}", result);
     Ok(())
 }
