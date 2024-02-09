@@ -1,6 +1,6 @@
 use crate::bear::precompile_contracts::erc20_dex;
 use crate::errors::Error;
-use crate::utils::{get_all_keypairs, get_config};
+use crate::utils::{get_all_keypairs, get_config, get_single_keypairs};
 use ethers::prelude::SignerMiddleware;
 use ethers::providers::{Http, Middleware, Provider};
 use ethers::types::U256;
@@ -25,8 +25,9 @@ impl Dex {
         let provider = Provider::<Http>::try_from(config.rpc_endpoint)
             .map_err(|e| Error::Custom(e.to_string()))?;
 
-        let keypairs =
-            get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
+        // let keypairs =
+        // get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
+        let keypairs = get_single_keypairs().map_err(|e| Error::Custom(e.to_string()))?;
 
         for keypair in keypairs.keypairs.iter() {
             let client = SignerMiddleware::new(
@@ -76,36 +77,36 @@ impl Dex {
             .map_err(|e| Error::Custom(e.to_string()))?;
             println!("preview swap: {:?}", preview_swap);
 
-            let time = OffsetDateTime::now_utc().unix_timestamp() + 100;
+            // let time = OffsetDateTime::now_utc().unix_timestamp() + 100;
 
             // todo(davirain)
             // ERROR(Error: Custom("Contract call reverted with data: 0x"))
-            let deadline = U256::from(time as u64);
-            let result_swap = erc20_dex::swap(
-                &client,
-                kind,
-                pool_id,
-                base_asset,
-                base_asset_amount,
-                quote_asset,
-                preview_swap.1,
-                deadline,
-            )
-            .await
-            .map_err(|e| Error::Custom(e.to_string()))?;
-            println!("swap: {:?}", result_swap);
+            // let deadline = U256::from(time as u64);
+            // let result_swap = erc20_dex::swap(
+            //     &client,
+            //     kind,
+            //     pool_id,
+            //     base_asset,
+            //     base_asset_amount,
+            //     quote_asset,
+            //     preview_swap.1,
+            //     deadline,
+            // )
+            // .await
+            // .map_err(|e| Error::Custom(e.to_string()))?;
+            // println!("swap: {:?}", result_swap);
 
             // let total_shares = erc20_dex::get_total_shares(&client, pool_id.clone())
             //     .await
             //     .map_err(|e| Error::Custom(e.to_string()))?;
             // println!("total shares: {:?}", total_shares);
 
-            // let exchange_rate =
-            //     erc20_dex::get_exchange_rate(&client, pool_id.clone(), base_asset, quote_asset)
-            //         .await
-            //         .map_err(|e| Error::Custom(e.to_string()))?;
+            let exchange_rate =
+                erc20_dex::get_exchange_rate(&client, pool_id.clone(), base_asset, quote_asset)
+                    .await
+                    .map_err(|e| Error::Custom(e.to_string()))?;
 
-            // println!("the exchange rate is {:?}", exchange_rate);
+            println!("the exchange rate is {:?}", exchange_rate);
 
             // let options = erc20_dex::get_pool_options(&client, pool_id.clone())
             //     .await

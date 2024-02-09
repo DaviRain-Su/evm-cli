@@ -1,7 +1,7 @@
 use crate::bear::nft::lunar_new_year;
 use crate::errors::Error;
 use crate::utils::{get_all_keypairs, get_config, get_single_keypairs};
-use colored::*;
+// use colored::*;
 use ethers::prelude::SignerMiddleware;
 use ethers::providers::{Http, Provider};
 use ethers_signers::Signer;
