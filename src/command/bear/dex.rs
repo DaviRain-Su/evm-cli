@@ -1,6 +1,6 @@
 use crate::bear::precompile_contracts::erc20_dex;
 use crate::errors::Error;
-use crate::utils::{get_all_keypairs, get_config, get_single_keypairs};
+use crate::utils::{get_all_keypairs, get_config};
 use ethers::prelude::SignerMiddleware;
 use ethers::providers::{Http, Middleware, Provider};
 use ethers_core::types::Address;
