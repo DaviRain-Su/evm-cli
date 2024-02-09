@@ -1,7 +1,12 @@
 use crate::Client;
 use ethers::core::types::Address;
 use ethers::prelude::*;
+use std::str::FromStr;
 use std::sync::Arc;
+
+fn wbtc_addr() -> H160 {
+    H160::from_str("0x9DAD8A1F64692adeB74ACa26129e0F16897fF4BB").unwrap()
+}
 
 // 1. Generate a type-safe interface for the Incrementer smart contract
 abigen!(
@@ -11,41 +16,29 @@ abigen!(
 );
 
 /// name 是一个公共视图方法，用于读取此 erc20 的 sdk.Coin 名称。
-pub async fn name(
-    client: &Client,
-    contract_addr: &H160,
-) -> Result<String, Box<dyn std::error::Error>> {
-    let contract = WBTC::new(contract_addr.clone(), Arc::new(client.clone()));
+pub async fn name(client: &Client) -> Result<String, Box<dyn std::error::Error>> {
+    let contract = WBTC::new(wbtc_addr(), Arc::new(client.clone()));
     let value = contract.name().call().await?;
     Ok(value)
 }
 
 /// symbol 是一个公共视图方法，用于读取此 erc20 的 sdk.Coin 符号。
-pub async fn symbol(
-    client: &Client,
-    contract_addr: &H160,
-) -> Result<String, Box<dyn std::error::Error>> {
-    let contract = WBTC::new(contract_addr.clone(), Arc::new(client.clone()));
+pub async fn symbol(client: &Client) -> Result<String, Box<dyn std::error::Error>> {
+    let contract = WBTC::new(wbtc_addr(), Arc::new(client.clone()));
     let value = contract.symbol().call().await?;
     Ok(value)
 }
 
 /// decimals 是一个公共视图方法，用于读取此 erc20 的 sdk.Coin 小数。
-pub async fn decimals(
-    client: &Client,
-    contract_addr: &H160,
-) -> Result<u8, Box<dyn std::error::Error>> {
-    let contract = WBTC::new(contract_addr.clone(), Arc::new(client.clone()));
+pub async fn decimals(client: &Client) -> Result<u8, Box<dyn std::error::Error>> {
+    let contract = WBTC::new(wbtc_addr(), Arc::new(client.clone()));
     let value = contract.decimals().call().await?;
     Ok(value)
 }
 
 /// TotalSupply 是一个公共视图方法，用于读取此 erc20 的 sdk.Coin 总供应量。
-pub async fn total_supply(
-    client: &Client,
-    contract_addr: &H160,
-) -> Result<U256, Box<dyn std::error::Error>> {
-    let contract = WBTC::new(contract_addr.clone(), Arc::new(client.clone()));
+pub async fn total_supply(client: &Client) -> Result<U256, Box<dyn std::error::Error>> {
+    let contract = WBTC::new(wbtc_addr(), Arc::new(client.clone()));
     let value = contract.total_supply().call().await?;
     Ok(value)
 }
@@ -53,10 +46,9 @@ pub async fn total_supply(
 /// BalanceOf 是一个公共视图方法，用于读取此 erc20 给定地址的 sdk.Coin 余额。
 pub async fn balance_of(
     client: &Client,
-    contract_addr: &H160,
     address: Address,
 ) -> Result<U256, Box<dyn std::error::Error>> {
-    let contract = WBTC::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = WBTC::new(wbtc_addr(), Arc::new(client.clone()));
     let value = contract.balance_of(address).await?;
     Ok(value)
 }
@@ -64,11 +56,10 @@ pub async fn balance_of(
 /// 批准是一种公共方法，用于批准给定地址花费给定数量的代币。
 pub async fn approve(
     client: &Client,
-    contract_addr: &H160,
     address: Address,
     amount: U256,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    let contract = WBTC::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = WBTC::new(wbtc_addr(), Arc::new(client.clone()));
     let value = contract.approve(address, amount).await?;
     Ok(value)
 }
@@ -76,11 +67,10 @@ pub async fn approve(
 /// Transfer 是一种将代币转移到给定地址的公共方法。
 pub async fn transfer(
     client: &Client,
-    contract_addr: &H160,
     address: Address,
     amount: U256,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    let contract = WBTC::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = WBTC::new(wbtc_addr(), Arc::new(client.clone()));
     let value = contract.transfer(address, amount).await?;
     Ok(value)
 }
@@ -88,12 +78,11 @@ pub async fn transfer(
 /// TransferFrom 是一种将代币从一个地址转移到另一个地址的公共方法。
 pub async fn transfer_from(
     client: &Client,
-    contract_addr: &H160,
     from: Address,
     to: Address,
     amount: U256,
 ) -> Result<bool, Box<dyn std::error::Error>> {
-    let contract = WBTC::new(contract_addr.clone(), Arc::new(client.clone()));
+    let contract = WBTC::new(wbtc_addr(), Arc::new(client.clone()));
     let value = contract.transfer_from(from, to, amount).await?;
     Ok(value)
 }
