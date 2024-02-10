@@ -99,12 +99,11 @@ pub async fn transfer_from(
 }
 
 /// deposit
-pub async fn deposit(client: &Client, amount: f64) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn deposit(client: &Client, amount: U256) -> Result<(), Box<dyn std::error::Error>> {
     let contract = WBERA::new(wbera_addr(), Arc::new(client.clone()));
-    let eth_max_spend = parse_units(amount, 18)?;
     let tx = contract
         .deposit()
-        .value(eth_max_spend)
+        .value(amount)
         .from(client.address())
         .gas(U256::from(50_000)) // this is crucial otherwise tx will get reverted without a reason
         .send()
