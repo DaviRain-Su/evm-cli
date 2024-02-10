@@ -8,7 +8,6 @@ use ethers::prelude::*;
 use ethers::providers::{Http, Provider};
 use structopt::StructOpt;
 
-pub mod airdrop;
 pub mod bear;
 pub mod command;
 pub mod config;
