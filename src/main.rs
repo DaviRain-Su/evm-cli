@@ -1,18 +1,12 @@
-// #![allow(unused_imports)]
-// #![allow(unused_variables)]
-// #![allow(dead_code)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
+#![allow(dead_code)]
 
 use ethers::prelude::SignerMiddleware;
 use ethers::prelude::Wallet;
 use ethers::prelude::*;
 use ethers::providers::{Http, Provider};
-
-// use crate::bear::deploy_contracts::honey;
-// use crate::bear::precompile_contracts::bank;
-// use crate::bear::precompile_contracts::governance;
 use structopt::StructOpt;
-
-// const BEAR_CHAIN_DECIMAL: u64 = 1_000_000_000_000_000_000;
 
 pub mod airdrop;
 pub mod bear;
@@ -23,11 +17,10 @@ pub mod errors;
 pub mod incrementer;
 pub mod utils;
 
-// 2. Add client type
 type Client = SignerMiddleware<Provider<Http>, Wallet<k256::ecdsa::SigningKey>>;
 
 use crate::command::Command;
-// 3. Add annotation
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::init();
@@ -35,51 +28,5 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let opt = Command::from_args();
     opt.run().await?;
 
-    // let honey_addrs = H160::from_str("0x7EeCA4205fF31f947EdBd49195a7A88E6A91161B")?;
-    // println!("honey addrs {:?}", honey_addrs);
-
-    // let name = honey::name(&client, &honey_addrs).await?;
-
-    // println!("honey name is {}", name);
-
-    // let symbol = honey::symbol(&client, &honey_addrs).await?;
-
-    // println!("honey symbol is {}", symbol);
-
-    // let decimals = honey::decimals(&client, &honey_addrs).await?;
-
-    // println!("honey decimals is {}", decimals);
-
-    // let total_supply = honey::total_supply(&client, &honey_addrs).await?;
-
-    // println!("honey total_supply is {}", total_supply);
-
-    // let address = "0xfFD34F45115CB1BB97A49b6f37E557E15d0cAD3A".parse::<Address>()?;
-    // let balance = honey::balance_of(&client, &honey_addrs, address).await?;
-    // println!("address({}) have honey balance is {}", address, balance);
-
-    // let dex_addr = H160::from_str("0x9D0FBF9349F646F1435072F2B0212084752EF460")?;
-
-    // let pool_addr = "0x0d5862FDbdd12490f9b4De54c236cff63B038074".to_uppercase();
-    // let base_addr = "WBERA".to_string();
-    // let quote_addr = "HONEY".to_string();
-    // let exchange_rate =
-    //     dex::get_exchange_rate(&client, &dex_addr, pool_addr, base_addr, quote_addr).await?;
-
-    // println!("exchange rate: {:?}", exchange_rate);
-
-    // let liquidity = dex::get_liquidity(&client, &dex_addr, pool_addr.clone()).await?;
-    // println!("Pool {} liquidity {:?}", pool_addr, liquidity);
-
-    // let address = dex::get_pool_address(&client, &dex_addr, pool_addr).await?;
-    // println!("address: {:?}", address);
-
-    // let bank_addr = H160::from_str("0x4381dC2aB14285160c808659aEe005D51255adD7")?;
-    // let all_supply = bank::get_all_supply(&client, &bank_addr).await?;
-    // println!("all supply: {:#?}", all_supply);
-    //
-    // let governance_addr = H160::from_str("0x7b5Fe22B5446f7C62Ea27B8BD71CeF94e03f3dF2")?;
-    // let result = governance::get_constitution(&client, &governance_addr).await?;
-    // println!("consitution: {:?}", result);
     Ok(())
 }
