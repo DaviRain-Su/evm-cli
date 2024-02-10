@@ -10,7 +10,9 @@ use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 pub enum WBera {
+    /// withdraw wbera to bera
     Withdraw(Withdraw),
+    /// deposit bera to wbera
     Deposit(Deposit),
 }
 
@@ -25,8 +27,10 @@ impl WBera {
 
 #[derive(Debug, StructOpt)]
 pub struct Deposit {
+    /// chain id
     #[structopt(long)]
     pub chain_id: u64,
+    /// wallet file name
     #[structopt(long)]
     pub file_name: String,
 }
@@ -84,8 +88,10 @@ impl Deposit {
 
 #[derive(Debug, StructOpt)]
 pub struct Withdraw {
+    /// chain id
     #[structopt(long)]
     pub chain_id: u64,
+    /// wallet file name
     #[structopt(long)]
     pub file_name: String,
 }

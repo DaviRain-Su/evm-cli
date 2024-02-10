@@ -10,7 +10,9 @@ use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 pub enum Balance {
+    /// Display single wallet balance
     Single { chain_id: u64 },
+    /// Display multi wallet balance
     Multi(Multi),
 }
 

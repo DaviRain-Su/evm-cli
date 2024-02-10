@@ -9,6 +9,7 @@ use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 pub struct Transfer {
+    /// chain id
     #[structopt(long)]
     pub chain_id: u64,
     /// keypair file name

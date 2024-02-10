@@ -8,7 +8,9 @@ use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 pub enum Generator {
+    /// Single wallet generate or load
     Single(Single),
+    /// multi wallet generate
     Multi(Multi),
 }
 

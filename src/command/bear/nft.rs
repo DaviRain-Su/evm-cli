@@ -11,7 +11,9 @@ use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 pub enum NFT {
+    /// buy nft
     NftBuy(NftBuy),
+    /// check nft have
     NftCheck(NftCheck),
 }
 
@@ -26,8 +28,10 @@ impl NFT {
 
 #[derive(Debug, StructOpt)]
 pub struct NftCheck {
+    /// chain id
     #[structopt(long)]
     pub chain_id: u64,
+    /// wallet file name
     #[structopt(long)]
     pub file_name: String,
 }
@@ -65,8 +69,10 @@ impl NftCheck {
 
 #[derive(Debug, StructOpt)]
 pub struct NftBuy {
+    /// chain id
     #[structopt(long)]
     pub chain_id: u64,
+    /// wallet file name
     #[structopt(long)]
     pub file_name: String,
 }
@@ -98,7 +104,7 @@ impl NftBuy {
             let total_supply = lunar_new_year::total_supply(&client)
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
-            println!("Total supply {:#?}", total_supply);
+            println!("Total supply {}", total_supply);
 
             let lunar_new_year_balance = lunar_new_year::balance_of(&client, keypair.address())
                 .await
@@ -109,8 +115,8 @@ impl NftBuy {
                 && honey_balance == U256::from(2_000_000_000_000_000_000u64)
             {
                 log::info!(
-                    "Address({:?}) have {} Lunar New Year NFT num",
-                    keypair.address(),
+                    "Address({}) have {} Lunar New Year NFT num",
+                    keypair.address().to_string().blue(),
                     lunar_new_year_balance
                 );
                 let honey_balance = honey::balance_of(&client, keypair.address())
@@ -118,8 +124,8 @@ impl NftBuy {
                     .map_err(|e| Error::Custom(e.to_string()))?;
 
                 println!(
-                    "Address({:?}) have {} honey num",
-                    keypair.address(),
+                    "Address({}) have {} honey num",
+                    keypair.address().to_string().blue(),
                     honey_balance
                 );
 
@@ -145,8 +151,8 @@ impl NftBuy {
                     .map_err(|e| Error::Custom(e.to_string()))?;
 
                 println!(
-                    "Address({:?}) have {}  num Lunar New Year NFT",
-                    keypair.address(),
+                    "Address({}) have {}  num Lunar New Year NFT",
+                    keypair.address().to_string().blue(),
                     balance
                 );
 
@@ -155,24 +161,24 @@ impl NftBuy {
                     .map_err(|e| Error::Custom(e.to_string()))?;
 
                 println!(
-                    "Address({:?}) have {} honey num",
-                    keypair.address(),
+                    "Address({}) have {} honey num",
+                    keypair.address().to_string().red(),
                     balance
                 );
             } else {
-                log::warn!(
-                    "Address({:?}) have {} Lunar New Year NFT num",
-                    keypair.address(),
+                println!(
+                    "Address({}) have {} Lunar New Year NFT",
+                    keypair.address().to_string().red(),
                     lunar_new_year_balance
                 );
-                log::warn!(
-                    "Address({:?}) have {} native token num",
-                    keypair.address(),
+                println!(
+                    "Address({}) have {} Bera",
+                    keypair.address().to_string().red(),
                     native_token_balance
                 );
-                log::warn!(
-                    "Address({:?}) have {} Honey num",
-                    keypair.address(),
+                println!(
+                    "Address({}) have {} Honey",
+                    keypair.address().to_string().red(),
                     honey_balance
                 );
             }

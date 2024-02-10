@@ -25,7 +25,9 @@ pub mod swap;
 // notice must use erc20 dex
 #[derive(Debug, StructOpt)]
 pub enum Dex {
+    /// swap token
     Swap(swap::Swap),
+    /// liquidity
     Liquidity(liquidity::Liquidity),
 }
 

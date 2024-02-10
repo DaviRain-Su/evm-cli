@@ -6,8 +6,10 @@ use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 pub struct DeploySc {
+    /// chain id
     #[structopt(long)]
     pub chain_id: u64,
+    /// wallet file name
     #[structopt(long)]
     pub file_name: String,
 }

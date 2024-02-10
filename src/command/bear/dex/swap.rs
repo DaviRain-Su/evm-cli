@@ -22,8 +22,10 @@ use time::OffsetDateTime;
 // notice must use erc20 dex
 #[derive(Debug, StructOpt)]
 pub struct Swap {
+    /// chain id
     #[structopt(long)]
     pub chain_id: u64,
+    /// wallet file name
     #[structopt(long)]
     pub file_name: String,
 }

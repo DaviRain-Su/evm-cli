@@ -8,6 +8,7 @@ use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 pub struct Epoch {
+    /// chain id
     #[structopt(long)]
     pub chain_id: u64,
 }

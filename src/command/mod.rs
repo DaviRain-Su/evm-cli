@@ -15,21 +15,21 @@ pub enum Command {
     /// auto generate config.toml file to ~/.config/evm-cli/config.toml
     #[structopt(name = "auto")]
     Auto(Auto),
-    /// generate new keypair
+    /// generate new keypair, support single or multi keypair generate and load single keypair
     #[structopt(name = "generator")]
     Generator(Generator),
-    /// get balance
+    /// Display single or multi Wallet Balance
     #[structopt(name = "balance")]
     Balance(balance::Balance),
-    /// transfer
+    /// Support batch transfer
     #[structopt(name = "transfer")]
     Transfer(transfer::Transfer),
-    /// deploy incrementer
+    /// Now support deploy incrementer smart contract
     #[structopt(name = "deploy-sc")]
     Deploy(deploy_sc::DeploySc),
     /// bera module
     #[structopt(name = "bear")]
-    Bera(bear::Bear),
+    Bera(bear::Bera),
 }
 
 impl Command {
