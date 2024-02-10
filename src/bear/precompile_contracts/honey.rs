@@ -4,7 +4,7 @@ use ethers::prelude::*;
 use std::str::FromStr;
 use std::sync::Arc;
 
-fn honey_addr() -> H160 {
+pub fn honey_addr() -> H160 {
     H160::from_str("0xA55E2E3846A51F6AD0ABFDFBDEA2BA0E5E0C76B5").unwrap()
 }
 

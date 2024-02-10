@@ -4,7 +4,7 @@ use ethers::prelude::*;
 use std::str::FromStr;
 use std::sync::Arc;
 
-fn governance_addr() -> H160 {
+pub fn governance_addr() -> H160 {
     H160::from_str("0x7b5Fe22B5446f7C62Ea27B8BD71CeF94e03f3dF2").unwrap()
 }
 

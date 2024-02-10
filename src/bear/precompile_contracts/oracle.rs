@@ -3,7 +3,7 @@ use ethers::prelude::*;
 use std::str::FromStr;
 use std::sync::Arc;
 
-fn oracle_addr() -> H160 {
+pub fn oracle_addr() -> H160 {
     H160::from_str("0x9202Af6Ce925b26AE6B25aDfff0B2705147e195F").unwrap()
 }
 

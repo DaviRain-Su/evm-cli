@@ -4,7 +4,7 @@ use ethers::prelude::*;
 use std::str::FromStr;
 use std::sync::Arc;
 
-fn bank_addr() -> H160 {
+pub fn bank_addr() -> H160 {
     H160::from_str("0x4381dC2aB14285160c808659aEe005D51255adD7").unwrap()
 }
 

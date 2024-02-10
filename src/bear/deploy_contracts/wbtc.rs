@@ -4,7 +4,7 @@ use ethers::prelude::*;
 use std::str::FromStr;
 use std::sync::Arc;
 
-fn wbtc_addr() -> H160 {
+pub fn wbtc_addr() -> H160 {
     H160::from_str("0x9DAD8A1F64692adeB74ACa26129e0F16897fF4BB").unwrap()
 }
 

@@ -3,7 +3,7 @@ use ethers::prelude::*;
 use std::str::FromStr;
 use std::sync::Arc;
 
-fn erc20_dex_addr() -> H160 {
+pub fn erc20_dex_addr() -> H160 {
     H160::from_str("0x0D5862FDBDD12490F9B4DE54C236CFF63B038074").unwrap()
 }
 

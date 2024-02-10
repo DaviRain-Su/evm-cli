@@ -4,7 +4,7 @@ use ethers::prelude::*;
 use std::str::FromStr;
 use std::sync::Arc;
 
-fn wbera_addr() -> H160 {
+pub fn wbera_addr() -> H160 {
     H160::from_str("0x5806E416dA447b267cEA759358cF22Cc41FAE80F").unwrap()
 }
 
@@ -84,5 +84,19 @@ pub async fn transfer_from(
 ) -> Result<bool, Box<dyn std::error::Error>> {
     let contract = WBERA::new(wbera_addr(), Arc::new(client.clone()));
     let value = contract.transfer_from(from, to, amount).await?;
+    Ok(value)
+}
+
+/// deposit
+pub async fn deposit(client: &Client) -> Result<(), Box<dyn std::error::Error>> {
+    let contract = WBERA::new(wbera_addr(), Arc::new(client.clone()));
+    let value = contract.deposit().await?;
+    Ok(value)
+}
+
+/// withdraw
+pub async fn withdraw(client: &Client, amount: U256) -> Result<(), Box<dyn std::error::Error>> {
+    let contract = WBERA::new(wbera_addr(), Arc::new(client.clone()));
+    let value = contract.withdraw(amount).await?;
     Ok(value)
 }

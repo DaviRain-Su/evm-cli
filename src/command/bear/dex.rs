@@ -1,15 +1,19 @@
-use crate::bear::precompile_contracts::erc20_dex;
+use crate::bear::deploy_contracts::{multicall3_addr, wbera};
+use crate::bear::precompile_contracts::dex;
+
+use crate::bear::precompile_contracts::{
+    erc20_bank::{self, erc20_bank_addr},
+    erc20_dex::{self, erc20_dex_addr},
+};
 use crate::errors::Error;
 use crate::utils::{get_all_keypairs, get_config, get_single_keypairs};
 use ethers::prelude::SignerMiddleware;
 use ethers::providers::{Http, Middleware, Provider};
-// use ethers::types::BlockId;
-// use ethers::types::BlockNumber;
-// use ethers::types::U256;
+use ethers::types::U256;
 use ethers_core::types::Address;
 use ethers_signers::Signer;
 use structopt::StructOpt;
-// use time::OffsetDateTime;
+use time::OffsetDateTime;
 
 // notice must use erc20 dex
 #[derive(Debug, StructOpt)]
@@ -45,7 +49,7 @@ impl Dex {
 
             println!("Address({:?}) have {}", keypair.address(), balance);
 
-            let pool_id: Address = "0x7e74490EfE13284C63D2A969AEA898Df56E69472"
+            let pool_id: Address = "0xa88572F08f79D28b8f864350f122c1CC0AbB0d96"
                 .parse()
                 .unwrap();
             let pool_name = erc20_dex::get_pool_name(&client, pool_id.clone())
@@ -54,18 +58,27 @@ impl Dex {
 
             println!("this address {:?} pool name is {}", pool_id, pool_name);
 
-            // let liquidity = erc20_dex::get_liquidity(&client, pool_id.clone())
-            //     .await
-            //     .map_err(|e| Error::Custom(e.to_string()))?;
+            let liquidity = erc20_dex::get_liquidity(&client, pool_id.clone())
+                .await
+                .map_err(|e| Error::Custom(e.to_string()))?;
 
-            // println!("this address {:?} liquidity {:?}", pool_id, liquidity);
+            println!("this address {:?} liquidity {:?}", pool_id, liquidity);
 
             let kind = 0;
-            let base_asset: Address = "0x7eeca4205ff31f947edbd49195a7a88e6a91161b"
+            let base_asset: Address = "0x5806e416da447b267cea759358cf22cc41fae80f"
                 .parse()
                 .unwrap();
-            let base_asset_amount = balance / 4;
-            let quote_asset: Address = "0x5806e416da447b267cea759358cf22cc41fae80f"
+            let base_asset_amount = wbera::balance_of(&client, keypair.address())
+                .await
+                .map_err(|e| Error::Custom(e.to_string()))?;
+            println!("base asset balance: {}", base_asset_amount);
+
+            let result = wbera::approve(&client, erc20_bank_addr(), base_asset_amount)
+                .await
+                .map_err(|e| Error::Custom(e.to_string()))?;
+            println!("approve result {}", result);
+
+            let quote_asset: Address = "0x7eeca4205ff31f947edbd49195a7a88e6a91161b"
                 .parse()
                 .unwrap();
             let preview_swap = erc20_dex::get_preview_swap_exact(
@@ -73,43 +86,43 @@ impl Dex {
                 kind,
                 pool_id,
                 base_asset,
-                base_asset_amount,
+                base_asset_amount / 100,
                 quote_asset,
             )
             .await
             .map_err(|e| Error::Custom(e.to_string()))?;
             println!("preview swap: {:?}", preview_swap);
 
-            // let time = OffsetDateTime::now_utc().unix_timestamp() + 100;
+            let time = OffsetDateTime::now_utc().unix_timestamp() + 1000000;
 
             // todo(davirain)
             // ERROR(Error: Custom("Contract call reverted with data: 0x"))
-            // let deadline = U256::from(time as u64);
-            // let result_swap = erc20_dex::swap(
-            //     &client,
-            //     kind,
-            //     pool_id,
-            //     base_asset,
-            //     base_asset_amount,
-            //     quote_asset,
-            //     preview_swap.1,
-            //     deadline,
-            // )
-            // .await
-            // .map_err(|e| Error::Custom(e.to_string()))?;
-            // println!("swap: {:?}", result_swap);
+            let deadline = U256::from(time as u64);
+            let result_swap = erc20_dex::swap(
+                &client,
+                kind,
+                pool_id,
+                base_asset,
+                base_asset_amount / 100,
+                preview_swap.0,
+                preview_swap.1,
+                deadline,
+            )
+            .await
+            .map_err(|e| Error::Custom(e.to_string()))?;
+            println!("swap: {:?}", result_swap);
 
             // let total_shares = erc20_dex::get_total_shares(&client, pool_id.clone())
             //     .await
             //     .map_err(|e| Error::Custom(e.to_string()))?;
             // println!("total shares: {:?}", total_shares);
 
-            let exchange_rate =
-                erc20_dex::get_exchange_rate(&client, pool_id.clone(), base_asset, quote_asset)
-                    .await
-                    .map_err(|e| Error::Custom(e.to_string()))?;
+            // let exchange_rate =
+            //     erc20_dex::get_exchange_rate(&client, pool_id.clone(), base_asset, quote_asset)
+            //         .await
+            //         .map_err(|e| Error::Custom(e.to_string()))?;
 
-            println!("the exchange rate is {:?}", exchange_rate);
+            // println!("the exchange rate is {:?}", exchange_rate);
 
             // let options = erc20_dex::get_pool_options(&client, pool_id.clone())
             //     .await

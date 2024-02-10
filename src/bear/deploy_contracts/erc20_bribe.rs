@@ -4,7 +4,7 @@ use ethers::prelude::*;
 use std::str::FromStr;
 use std::sync::Arc;
 
-fn erc20_bribe_addr() -> H160 {
+pub fn erc20_bribe_addr() -> H160 {
     H160::from_str("0x1BbACf6bA66A20CD8ad98c70EAC4ea7AaD45c3E9").unwrap()
 }
 

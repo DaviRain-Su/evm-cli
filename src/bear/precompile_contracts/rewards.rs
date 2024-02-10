@@ -4,7 +4,7 @@ use ethers::prelude::*;
 use std::str::FromStr;
 use std::sync::Arc;
 
-fn rewards_addr() -> H160 {
+pub fn rewards_addr() -> H160 {
     H160::from_str("0x55684E2CA2BACE0ADC512C1AFF880B15B8EA7214").unwrap()
 }
 

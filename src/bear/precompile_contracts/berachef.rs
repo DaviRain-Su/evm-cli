@@ -4,7 +4,7 @@ use ethers::prelude::*;
 use std::str::FromStr;
 use std::sync::Arc;
 
-fn berachef_addr() -> H160 {
+pub fn berachef_addr() -> H160 {
     H160::from_str("0x888AF53B67D1698E04B2B9A9406AF0FFEB2EF05E").unwrap()
 }
 

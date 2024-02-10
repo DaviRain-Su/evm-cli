@@ -6,6 +6,7 @@ pub mod dex;
 pub mod epoch;
 pub mod honey;
 pub mod nft;
+pub mod wbera;
 
 #[derive(Debug, StructOpt)]
 pub enum Bear {
@@ -14,6 +15,7 @@ pub enum Bear {
     Dex(dex::Dex),
     NFT(nft::NFT),
     Honey(honey::Honey),
+    WBera(wbera::WBera),
 }
 
 impl Bear {
@@ -24,6 +26,7 @@ impl Bear {
             Bear::Dex(dex) => dex.run().await,
             Bear::NFT(nft) => nft.run().await,
             Bear::Honey(honey) => honey.run().await,
+            Bear::WBera(wbera) => wbera.run().await,
         }
     }
 }

@@ -3,7 +3,7 @@ use ethers::prelude::*;
 use std::str::FromStr;
 use std::sync::Arc;
 
-fn epochs_addr() -> H160 {
+pub fn epochs_addr() -> H160 {
     H160::from_str("0x612Dd8a861161819A4AD8F6f3E2A0567602877c0").unwrap()
 }
 

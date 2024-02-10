@@ -4,7 +4,7 @@ use ethers::prelude::*;
 use std::str::FromStr;
 use std::sync::Arc;
 
-fn dex_addr() -> H160 {
+pub fn dex_addr() -> H160 {
     H160::from_str("0x9D0FBF9349F646F1435072F2B0212084752EF460").unwrap()
 }
 
