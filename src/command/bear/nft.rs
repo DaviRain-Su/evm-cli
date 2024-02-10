@@ -4,7 +4,7 @@ use crate::errors::Error;
 use crate::utils::{get_all_keypairs, get_config, get_single_keypairs};
 use colored::*;
 use ethers::prelude::SignerMiddleware;
-use ethers::providers::{Http, Provider};
+use ethers::providers::{Http, Middleware, Provider};
 use ethers::types::U256;
 use ethers_signers::Signer;
 use structopt::StructOpt;
@@ -87,6 +87,14 @@ impl NftBuy {
                 keypair.clone().with_chain_id(self.chain_id),
             );
 
+            let native_token_balance = provider
+                .get_balance(keypair.address(), None)
+                .await
+                .map_err(|e| Error::Custom(e.to_string()))?;
+
+            let honey_balance = honey::balance_of(&client, keypair.address())
+                .await
+                .map_err(|e| Error::Custom(e.to_string()))?;
             let total_supply = lunar_new_year::total_supply(&client)
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
@@ -96,7 +104,10 @@ impl NftBuy {
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
 
-            if lunar_new_year_balance < U256::from(2u64) {
+            if lunar_new_year_balance < U256::from(2u64)
+                && native_token_balance > U256::zero()
+                && honey_balance == U256::from(2_000_000_000_000_000_000u64)
+            {
                 log::info!(
                     "Address({:?}) have {} Lunar New Year NFT num",
                     keypair.address(),
@@ -153,6 +164,16 @@ impl NftBuy {
                     "Address({:?}) have {} Lunar New Year NFT num",
                     keypair.address(),
                     lunar_new_year_balance
+                );
+                log::warn!(
+                    "Address({:?}) have {} native token num",
+                    keypair.address(),
+                    native_token_balance
+                );
+                log::warn!(
+                    "Address({:?}) have {} Honey num",
+                    keypair.address(),
+                    honey_balance
                 );
             }
         }

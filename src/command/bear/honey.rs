@@ -49,20 +49,29 @@ impl Honey {
             get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
 
         for keypair in &keypairs.keypairs {
-            let amount = U256::from(2_000_000_000_000_000_000u64);
-            let transfer_result = honey::transfer(&client, keypair.address(), amount)
-                .await
-                .map_err(|e| Error::Custom(e.to_string()))?;
-            println!("transfer result : {:?}", transfer_result);
-
             let balance = honey::balance_of(&client, keypair.address())
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
-            println!(
-                "{} has Honey {} num",
-                format!("{:?}", keypair.address()).blue(),
-                balance
-            );
+            let amount = U256::from(2_000_000_000_000_000_000u64);
+            if balance != amount {
+                let transfer_result = loop {
+                    if let Ok(result) = honey::transfer(&client, keypair.address(), amount).await {
+                        break result;
+                    } else {
+                        continue;
+                    }
+                };
+                println!("transfer result : {:?}", transfer_result);
+
+                let balance = honey::balance_of(&client, keypair.address())
+                    .await
+                    .map_err(|e| Error::Custom(e.to_string()))?;
+                println!(
+                    "{} has Honey {} num",
+                    format!("{:?}", keypair.address()).blue(),
+                    balance
+                );
+            }
         }
 
         Ok(())
