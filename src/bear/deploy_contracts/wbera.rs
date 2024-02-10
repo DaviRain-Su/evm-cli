@@ -110,7 +110,7 @@ pub async fn deposit(client: &Client) -> Result<(), Box<dyn std::error::Error>> 
 /// withdraw
 pub async fn withdraw(client: &Client, amount: U256) -> Result<(), Box<dyn std::error::Error>> {
     let contract = WBERA::new(wbera_addr(), Arc::new(client.clone()));
-    let eth_max_spend = parse_units(1, 18)?;
+    let eth_max_spend = parse_units(0, 18)?;
     let tx = contract
         .withdraw(amount)
         .value(eth_max_spend)

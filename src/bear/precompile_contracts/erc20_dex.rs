@@ -340,7 +340,7 @@ pub async fn swap(
     deadline: U256,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
-    let eth_max_spend = parse_units(1, 18)?;
+    let eth_max_spend = parse_units(0, 18)?;
     let tx = contract
         .swap(
             kind, pool_id, asset_in, amount_in, asset_out, amount_out, deadline,
