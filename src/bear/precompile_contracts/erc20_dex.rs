@@ -66,11 +66,13 @@ pub async fn create_pool(
     options: erc20_dex_module::PoolOptions,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
-    let value = contract
+    let tx = contract
         .create_pool(name, assets_in, amounts_in, pool_type, options)
         .send()
         .await?
         .await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
     Ok(())
 }
 

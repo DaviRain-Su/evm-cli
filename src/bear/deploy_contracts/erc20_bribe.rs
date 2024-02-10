@@ -19,7 +19,7 @@ abigen!(
 pub async fn bribe_module(client: &Client) -> Result<Address, Box<dyn std::error::Error>> {
     log::info!("Erc20 bribe module: Function(birbe_module)");
     let contract = ERC20BribeModule::new(erc20_bribe_addr(), Arc::new(client.clone()));
-    let value = contract.bribe_module().await?;
+    let value = contract.bribe_module().call().await?;
     Ok(value)
 }
 
@@ -37,6 +37,7 @@ pub async fn get_bribes_for_validator(
     let contract = ERC20BribeModule::new(erc20_bribe_addr(), Arc::new(client.clone()));
     let value = contract
         .get_bribes_for_validator(operator, start_epoch)
+        .call()
         .await?;
     Ok(value)
 }
@@ -51,7 +52,7 @@ pub async fn get_all_validator_bribes(
         operator
     );
     let contract = ERC20BribeModule::new(erc20_bribe_addr(), Arc::new(client.clone()));
-    let value = contract.get_all_validator_bribes(operator).await?;
+    let value = contract.get_all_validator_bribes(operator).call().await?;
     Ok(value)
 }
 
@@ -65,7 +66,10 @@ pub async fn get_active_validator_bribes(
         operator
     );
     let contract = ERC20BribeModule::new(erc20_bribe_addr(), Arc::new(client.clone()));
-    let value = contract.get_active_validator_bribes(operator).await?;
+    let value = contract
+        .get_active_validator_bribes(operator)
+        .call()
+        .await?;
     Ok(value)
 }
 
@@ -79,7 +83,10 @@ pub async fn preview_claim_validator_bribes(
         delegator
     );
     let contract = ERC20BribeModule::new(erc20_bribe_addr(), Arc::new(client.clone()));
-    let value = contract.preview_claim_validator_bribes(delegator).await?;
+    let value = contract
+        .preview_claim_validator_bribes(delegator)
+        .call()
+        .await?;
     Ok(value)
 }
 
@@ -93,7 +100,7 @@ pub async fn preview_claim_all_bribes(
         delegator
     );
     let contract = ERC20BribeModule::new(erc20_bribe_addr(), Arc::new(client.clone()));
-    let value = contract.preview_claim_all_bribes(delegator).await?;
+    let value = contract.preview_claim_all_bribes(delegator).call().await?;
     Ok(value)
 }
 
@@ -105,7 +112,7 @@ pub async fn create_bribe(
     num_block_proposals: u64,
     tokens: Vec<Address>,
     amounts: Vec<U256>,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     log::info!(
         "Erc20 bribe module: Function(create_bribe(Delegator({:?}),
         StartEpoch({}), NumBlockProposals({}))), Tokens({:?}), Amounts({:?})",
@@ -116,10 +123,14 @@ pub async fn create_bribe(
         amounts
     );
     let contract = ERC20BribeModule::new(erc20_bribe_addr(), Arc::new(client.clone()));
-    let value = contract
+    let tx = contract
         .create_bribe(delegator, start_epoch, num_block_proposals, tokens, amounts)
+        .send()
+        .await?
         .await?;
-    Ok(value)
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 // TODO(abi json no this api)
@@ -144,38 +155,44 @@ pub async fn claim_validator_bribes(
     client: &Client,
     delegator: Address,
     validator: Address,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     log::info!(
         "Erc20 bribe module: Function(claim_validator_bribes(Delegator({:?}), Validator({:?})))",
         delegator,
         validator
     );
     let contract = ERC20BribeModule::new(erc20_bribe_addr(), Arc::new(client.clone()));
-    let value = contract
+    let tx = contract
         .claim_validator_bribes(delegator, validator)
+        .send()
+        .await?
         .await?;
-    Ok(value)
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 /// 提取所有验证人累积给委托人的贿赂奖励。注意：委托人还必须从所有委托中提取 BGT 奖励。
 pub async fn claim_all_bribes(
     client: &Client,
     delegator: Address,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     log::info!(
         "Erc20 bribe module: Function(claim_all_bribes(Delegator({:?})))",
         delegator
     );
     let contract = ERC20BribeModule::new(erc20_bribe_addr(), Arc::new(client.clone()));
-    let value = contract.claim_all_bribes(delegator).await?;
-    Ok(value)
+    let tx = contract.claim_all_bribes(delegator).send().await?.await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 ///
 pub async fn distribution_module(client: &Client) -> Result<Address, Box<dyn std::error::Error>> {
     log::info!("Erc20 bribe module: Function(distribution_module)");
     let contract = ERC20BribeModule::new(erc20_bribe_addr(), Arc::new(client.clone()));
-    let value = contract.distribution_module().await?;
+    let value = contract.distribution_module().call().await?;
     Ok(value)
 }
 
@@ -183,6 +200,6 @@ pub async fn distribution_module(client: &Client) -> Result<Address, Box<dyn std
 pub async fn erc_20_module(client: &Client) -> Result<Address, Box<dyn std::error::Error>> {
     log::info!("Erc20 bribe module: Function(erc_20_module)");
     let contract = ERC20BribeModule::new(erc20_bribe_addr(), Arc::new(client.clone()));
-    let value = contract.erc_20_module().await?;
+    let value = contract.erc_20_module().call().await?;
     Ok(value)
 }

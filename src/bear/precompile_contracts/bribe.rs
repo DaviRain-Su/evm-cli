@@ -88,7 +88,7 @@ pub async fn update_params(
     fee: Vec<bribe_module::Coin>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let contract = BribeModule::new(bribe_addr(), Arc::new(client.clone()));
-    let tx = contract.update_params(fee).await?;
+    let tx = contract.update_params(fee).send().await?.await?;
     println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
 
     Ok(())

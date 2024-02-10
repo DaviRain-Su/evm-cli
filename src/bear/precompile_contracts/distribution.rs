@@ -21,7 +21,10 @@ pub async fn get_all_delegator_rewards(
     account_address: Address,
 ) -> Result<Vec<distribute_module::ValidatorReward>, Box<dyn std::error::Error>> {
     let contract = DistributeModule::new(distribution_addr(), Arc::new(client.clone()));
-    let value = contract.get_all_delegator_rewards(account_address).await?;
+    let value = contract
+        .get_all_delegator_rewards(account_address)
+        .call()
+        .await?;
     Ok(value)
 }
 
@@ -34,6 +37,7 @@ pub async fn get_delegator_validator_reward(
     let contract = DistributeModule::new(distribution_addr(), Arc::new(client.clone()));
     let value = contract
         .get_delegator_validator_reward(delegator, validator)
+        .call()
         .await?;
     Ok(value)
 }
@@ -44,7 +48,10 @@ pub async fn get_total_delegator_reward(
     delegator: Address,
 ) -> Result<Vec<distribute_module::Coin>, Box<dyn std::error::Error>> {
     let contract = DistributeModule::new(distribution_addr(), Arc::new(client.clone()));
-    let value = contract.get_total_delegator_reward(delegator).await?;
+    let value = contract
+        .get_total_delegator_reward(delegator)
+        .call()
+        .await?;
     Ok(value)
 }
 
@@ -54,14 +61,14 @@ pub async fn get_withdraw_address(
     delegator: Address,
 ) -> Result<Address, Box<dyn std::error::Error>> {
     let contract = DistributeModule::new(distribution_addr(), Arc::new(client.clone()));
-    let value = contract.get_withdraw_address(delegator).await?;
+    let value = contract.get_withdraw_address(delegator).call().await?;
     Ok(value)
 }
 
 ///getWithdrawEnabled
 pub async fn get_withdraw_enabled(client: &Client) -> Result<bool, Box<dyn std::error::Error>> {
     let contract = DistributeModule::new(distribution_addr(), Arc::new(client.clone()));
-    let value = contract.get_withdraw_enabled().await?;
+    let value = contract.get_withdraw_enabled().call().await?;
     Ok(value)
 }
 
@@ -69,10 +76,16 @@ pub async fn get_withdraw_enabled(client: &Client) -> Result<bool, Box<dyn std::
 pub async fn set_withdraw_address(
     client: &Client,
     withdraw_address: Address,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = DistributeModule::new(distribution_addr(), Arc::new(client.clone()));
-    let value = contract.set_withdraw_address(withdraw_address).await?;
-    Ok(value)
+    let tx = contract
+        .set_withdraw_address(withdraw_address)
+        .send()
+        .await?
+        .await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 // withdrawDelegatorReward
@@ -80,10 +93,14 @@ pub async fn withdraw_delegator_reward(
     client: &Client,
     delegator: Address,
     validator: Address,
-) -> Result<Vec<distribute_module::Coin>, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = DistributeModule::new(distribution_addr(), Arc::new(client.clone()));
-    let value = contract
+    let tx = contract
         .withdraw_delegator_reward(delegator, validator)
+        .send()
+        .await?
         .await?;
-    Ok(value)
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }

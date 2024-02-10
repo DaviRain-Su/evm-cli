@@ -22,7 +22,10 @@ pub async fn get_amo_current_limt(
     amo_addr: Address,
 ) -> Result<U256, Box<dyn std::error::Error>> {
     let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
-    let value = contract.get_amo_current_limit(amo_type, amo_addr).await?;
+    let value = contract
+        .get_amo_current_limit(amo_type, amo_addr)
+        .call()
+        .await?;
     Ok(value)
 }
 
@@ -31,7 +34,7 @@ pub async fn get_params(
     client: &Client,
 ) -> Result<Vec<honey_module::Exchangeable>, Box<dyn std::error::Error>> {
     let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
-    let value = contract.get_params().await?;
+    let value = contract.get_params().call().await?;
     Ok(value)
 }
 
@@ -40,14 +43,14 @@ pub async fn get_total_collateral(
     client: &Client,
 ) -> Result<Vec<honey_module::Coin>, Box<dyn std::error::Error>> {
     let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
-    let value = contract.get_total_collateral().await?;
+    let value = contract.get_total_collateral().call().await?;
     Ok(value)
 }
 
 // getTotalSupply
 pub async fn get_total_supply(client: &Client) -> Result<U256, Box<dyn std::error::Error>> {
     let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
-    let value = contract.get_total_supply().await?;
+    let value = contract.get_total_supply().call().await?;
     Ok(value)
 }
 
@@ -56,10 +59,12 @@ pub async fn mint(
     client: &Client,
     to: Address,
     collateral: honey_module::Coin,
-) -> Result<honey_module::Coin, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
-    let value = contract.mint(to, collateral).await?;
-    Ok(value)
+    let tx = contract.mint(to, collateral).send().await?.await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 // previewExactOutCollateral
@@ -70,6 +75,7 @@ pub async fn preview_exact_out_collateral(
     let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
     let value = contract
         .preview_exact_out_collateral(collateral_out)
+        .call()
         .await?;
     Ok(value)
 }
@@ -81,7 +87,7 @@ pub async fn preview_mint(
     coin: honey_module::Coin,
 ) -> Result<U256, Box<dyn std::error::Error>> {
     let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
-    let value = contract.preview_mint(coin).await?;
+    let value = contract.preview_mint(coin).call().await?;
     Ok(value)
 }
 
@@ -93,7 +99,7 @@ pub async fn preview_redeem(
     denom_out: String,
 ) -> Result<U256, Box<dyn std::error::Error>> {
     let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
-    let value = contract.preview_redeem(amount, denom_out).await?;
+    let value = contract.preview_redeem(amount, denom_out).call().await?;
     Ok(value)
 }
 
@@ -107,6 +113,7 @@ pub async fn preview_required_collateral(
     let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
     let value = contract
         .preview_required_collateral(honey_out, denom_in)
+        .call()
         .await?;
     Ok(value)
 }
@@ -117,10 +124,16 @@ pub async fn redeem(
     from: Address,
     amount: U256,
     denom_out: String,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
-    let value = contract.redeem(from, amount, denom_out).await?;
-    Ok(value)
+    let tx = contract
+        .redeem(from, amount, denom_out)
+        .send()
+        .await?
+        .await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 // requestHoney
@@ -129,18 +142,26 @@ pub async fn request_honey(
     to: Address,
     amount: U256,
     amo_type: String,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
-    let value = contract.request_honey(to, amount, amo_type).await?;
-    Ok(value)
+    let tx = contract
+        .request_honey(to, amount, amo_type)
+        .send()
+        .await?
+        .await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 // updateParams
 pub async fn update_params(
     client: &Client,
     params: Vec<honey_module::Exchangeable>,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
-    let value = contract.update_params(params).await?;
-    Ok(value)
+    let tx = contract.update_params(params).send().await?.await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }

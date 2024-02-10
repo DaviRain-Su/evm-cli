@@ -21,14 +21,14 @@ pub async fn get_all_balances(
     proposal_id: u64,
 ) -> Result<(u64, u64), Box<dyn std::error::Error>> {
     let contract = GovernanceModule::new(governance_addr(), Arc::new(client.clone()));
-    let value = contract.cancel_proposal(proposal_id).await?;
+    let value = contract.cancel_proposal(proposal_id).call().await?;
     Ok(value)
 }
 
 // getConstitution
 pub async fn get_constitution(client: &Client) -> Result<String, Box<dyn std::error::Error>> {
     let contract = GovernanceModule::new(governance_addr(), Arc::new(client.clone()));
-    let value = contract.get_constitution().await?;
+    let value = contract.get_constitution().call().await?;
     Ok(value)
 }
 
@@ -37,7 +37,7 @@ pub async fn get_deposit_params(
     client: &Client,
 ) -> Result<governance_module::DepositParams, Box<dyn std::error::Error>> {
     let contract = GovernanceModule::new(governance_addr(), Arc::new(client.clone()));
-    let value = contract.get_deposit_params().await?;
+    let value = contract.get_deposit_params().call().await?;
     Ok(value)
 }
 
@@ -46,7 +46,7 @@ pub async fn get_params(
     client: &Client,
 ) -> Result<governance_module::Params, Box<dyn std::error::Error>> {
     let contract = GovernanceModule::new(governance_addr(), Arc::new(client.clone()));
-    let value = contract.get_params().await?;
+    let value = contract.get_params().call().await?;
     Ok(value)
 }
 
@@ -56,7 +56,7 @@ pub async fn get_proposal(
     proposal_id: u64,
 ) -> Result<governance_module::Proposal, Box<dyn std::error::Error>> {
     let contract = GovernanceModule::new(governance_addr(), Arc::new(client.clone()));
-    let value = contract.get_proposal(proposal_id).await?;
+    let value = contract.get_proposal(proposal_id).call().await?;
     Ok(value)
 }
 
@@ -66,7 +66,7 @@ pub async fn get_proposal_deposits(
     proposal_id: u64,
 ) -> Result<Vec<governance_module::Coin>, Box<dyn std::error::Error>> {
     let contract = GovernanceModule::new(governance_addr(), Arc::new(client.clone()));
-    let value = contract.get_proposal_deposits(proposal_id).await?;
+    let value = contract.get_proposal_deposits(proposal_id).call().await?;
     Ok(value)
 }
 
@@ -80,6 +80,7 @@ pub async fn get_proposal_deposits_by_depositor(
     let contract = GovernanceModule::new(governance_addr(), Arc::new(client.clone()));
     let value = contract
         .get_proposal_deposits_by_depositor(proposal_id, depositor)
+        .call()
         .await?;
     Ok(value)
 }
@@ -90,7 +91,10 @@ pub async fn get_proposal_tally_result(
     proposal_id: u64,
 ) -> Result<governance_module::TallyResult, Box<dyn std::error::Error>> {
     let contract = GovernanceModule::new(governance_addr(), Arc::new(client.clone()));
-    let value = contract.get_proposal_tally_result(proposal_id).await?;
+    let value = contract
+        .get_proposal_tally_result(proposal_id)
+        .call()
+        .await?;
     Ok(value)
 }
 
@@ -107,7 +111,10 @@ pub async fn get_proposal_votes(
     Box<dyn std::error::Error>,
 > {
     let contract = GovernanceModule::new(governance_addr(), Arc::new(client.clone()));
-    let value = contract.get_proposal_votes(proposal_id, pagination).await?;
+    let value = contract
+        .get_proposal_votes(proposal_id, pagination)
+        .call()
+        .await?;
     Ok(value)
 }
 
@@ -120,6 +127,7 @@ pub async fn get_proposal_votes_by_voter(
     let contract = GovernanceModule::new(governance_addr(), Arc::new(client.clone()));
     let value = contract
         .get_proposal_votes_by_voter(proposal_id, voter)
+        .call()
         .await?;
     Ok(value)
 }
@@ -139,7 +147,10 @@ pub async fn get_proposals(
     Box<dyn std::error::Error>,
 > {
     let contract = GovernanceModule::new(governance_addr(), Arc::new(client.clone()));
-    let value = contract.get_proposals(proposal_status, pagination).await?;
+    let value = contract
+        .get_proposals(proposal_status, pagination)
+        .call()
+        .await?;
     Ok(value)
 }
 
@@ -149,7 +160,7 @@ pub async fn get_tally_params(
     client: &Client,
 ) -> Result<governance_module::TallyParams, Box<dyn std::error::Error>> {
     let contract = GovernanceModule::new(governance_addr(), Arc::new(client.clone()));
-    let value = contract.get_tally_params().await?;
+    let value = contract.get_tally_params().call().await?;
     Ok(value)
 }
 
@@ -157,10 +168,12 @@ pub async fn get_tally_params(
 pub async fn submit_proposal(
     client: &Client,
     proposal: governance_module::MsgSubmitProposal,
-) -> Result<u64, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = GovernanceModule::new(governance_addr(), Arc::new(client.clone()));
-    let value = contract.submit_proposal(proposal).await?;
-    Ok(value)
+    let tx = contract.submit_proposal(proposal).send().await?.await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 // vote
@@ -170,10 +183,16 @@ pub async fn vote(
     proposal_id: u64,
     option: i32,
     metadata: String,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = GovernanceModule::new(governance_addr(), Arc::new(client.clone()));
-    let value = contract.vote(proposal_id, option, metadata).await?;
-    Ok(value)
+    let tx = contract
+        .vote(proposal_id, option, metadata)
+        .send()
+        .await?
+        .await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 // voteWeighted
@@ -183,10 +202,14 @@ pub async fn vote_weighted(
     proposal_id: u64,
     option: Vec<governance_module::WeightedVoteOption>,
     metadata: String,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = GovernanceModule::new(governance_addr(), Arc::new(client.clone()));
-    let value = contract
+    let tx = contract
         .vote_weighted(proposal_id, option, metadata)
+        .send()
+        .await?
         .await?;
-    Ok(value)
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }

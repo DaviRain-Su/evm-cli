@@ -22,7 +22,10 @@ pub async fn get_current_rewards(
     receiver: Address,
 ) -> Result<Vec<rewards_module::Coin>, Box<dyn std::error::Error>> {
     let contract = RewardsModule::new(rewards_addr(), Arc::new(client.clone()));
-    let value = contract.get_current_rewards(depositor, receiver).await?;
+    let value = contract
+        .get_current_rewards(depositor, receiver)
+        .call()
+        .await?;
     Ok(value)
 }
 
@@ -32,7 +35,10 @@ pub async fn get_depositor_withdraw_address(
     depositor: Address,
 ) -> Result<Address, Box<dyn std::error::Error>> {
     let contract = RewardsModule::new(rewards_addr(), Arc::new(client.clone()));
-    let value = contract.get_depositor_withdraw_address(depositor).await?;
+    let value = contract
+        .get_depositor_withdraw_address(depositor)
+        .call()
+        .await?;
     Ok(value)
 }
 
@@ -42,7 +48,7 @@ pub async fn get_outstanding_rewards(
     depositor: Address,
 ) -> Result<Vec<rewards_module::Coin>, Box<dyn std::error::Error>> {
     let contract = RewardsModule::new(rewards_addr(), Arc::new(client.clone()));
-    let value = contract.get_outstanding_rewards(depositor).await?;
+    let value = contract.get_outstanding_rewards(depositor).call().await?;
     Ok(value)
 }
 
@@ -50,22 +56,32 @@ pub async fn get_outstanding_rewards(
 pub async fn set_depositor_withdraw_address(
     client: &Client,
     withdraw_address: Address,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = RewardsModule::new(rewards_addr(), Arc::new(client.clone()));
-    let value = contract
+    let tx = contract
         .set_depositor_withdraw_address(withdraw_address)
+        .send()
+        .await?
         .await?;
-    Ok(value)
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 // withdrawAllDepositorRewards
 pub async fn withdraw_all_depositor_rewards(
     client: &Client,
     receiver: Address,
-) -> Result<Vec<rewards_module::Coin>, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = RewardsModule::new(rewards_addr(), Arc::new(client.clone()));
-    let value = contract.withdraw_all_depositor_rewards(receiver).await?;
-    Ok(value)
+    let tx = contract
+        .withdraw_all_depositor_rewards(receiver)
+        .send()
+        .await?
+        .await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 // withdrawDepositorRewards
@@ -73,12 +89,16 @@ pub async fn withdraw_depositor_rewards(
     client: &Client,
     receiver: Address,
     amount: U256,
-) -> Result<Vec<rewards_module::Coin>, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = RewardsModule::new(rewards_addr(), Arc::new(client.clone()));
-    let value = contract
+    let tx = contract
         .withdraw_depositor_rewards(receiver, amount)
+        .send()
+        .await?
         .await?;
-    Ok(value)
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 // withdrawDepositorRewardsTo
@@ -87,10 +107,14 @@ pub async fn withdraw_depositor_rewards_to(
     receiver: Address,
     recipient: Address,
     amount: U256,
-) -> Result<Vec<rewards_module::Coin>, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = RewardsModule::new(rewards_addr(), Arc::new(client.clone()));
-    let value = contract
+    let tx = contract
         .withdraw_depositor_rewards_to(receiver, recipient, amount)
+        .send()
+        .await?
         .await?;
-    Ok(value)
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }

@@ -18,10 +18,12 @@ abigen!(
 pub async fn get_all_balances(
     client: &Client,
     pairs: Vec<String>,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = OracleModule::new(oracle_addr(), Arc::new(client.clone()));
-    let value = contract.add_currency_pairs(pairs).await?;
-    Ok(value)
+    let tx = contract.add_currency_pairs(pairs).await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 // getAllCurrencyPairs
@@ -29,13 +31,13 @@ pub async fn get_all_currency_pairs(
     client: &Client,
 ) -> Result<Vec<String>, Box<dyn std::error::Error>> {
     let contract = OracleModule::new(oracle_addr(), Arc::new(client.clone()));
-    let value = contract.get_all_currency_pairs().await?;
+    let value = contract.get_all_currency_pairs().call().await?;
     Ok(value)
 }
 // getDecimals
 pub async fn get_decimals(client: &Client, pair: String) -> Result<u8, Box<dyn std::error::Error>> {
     let contract = OracleModule::new(oracle_addr(), Arc::new(client.clone()));
-    let value = contract.get_decimals(pair).await?;
+    let value = contract.get_decimals(pair).call().await?;
     Ok(value)
 }
 
@@ -45,7 +47,7 @@ pub async fn get_price(
     pair: String,
 ) -> Result<(I256, U256, u64), Box<dyn std::error::Error>> {
     let contract = OracleModule::new(oracle_addr(), Arc::new(client.clone()));
-    let value = contract.get_price(pair).await?;
+    let value = contract.get_price(pair).call().await?;
     Ok(value)
 }
 
@@ -55,7 +57,7 @@ pub async fn has_currency_pair(
     pair: String,
 ) -> Result<bool, Box<dyn std::error::Error>> {
     let contract = OracleModule::new(oracle_addr(), Arc::new(client.clone()));
-    let value = contract.has_currency_pair(pair).await?;
+    let value = contract.has_currency_pair(pair).call().await?;
     Ok(value)
 }
 
@@ -63,8 +65,10 @@ pub async fn has_currency_pair(
 pub async fn remove_currency_pairs(
     client: &Client,
     pairs: Vec<String>,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = OracleModule::new(oracle_addr(), Arc::new(client.clone()));
-    let value = contract.remove_currency_pairs(pairs).await?;
-    Ok(value)
+    let tx = contract.remove_currency_pairs(pairs).send().await?.await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }

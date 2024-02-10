@@ -34,6 +34,6 @@ pub async fn get_current_epoch(
     identifier: String,
 ) -> Result<(i64, i64, i64), Box<dyn std::error::Error>> {
     let contract = EpochsModule::new(epochs_addr(), Arc::new(client.clone()));
-    let value = contract.get_current_epoch(identifier).await?;
+    let value = contract.get_current_epoch(identifier).call().await?;
     Ok(value)
 }
