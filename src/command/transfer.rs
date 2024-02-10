@@ -55,6 +55,7 @@ impl Transfer {
         let keypairs = get_all_keypairs(&self.file_name)?;
         if self.is_one_to_more {
             for keypair in keypairs.keypairs {
+                // let block_number = BlockId::from(BlockNumber::Finalized);
                 let balance = provider
                     .get_balance(keypair.address(), None)
                     .await
@@ -83,6 +84,7 @@ impl Transfer {
                         }
                     }
 
+                    // let block_number = BlockId::from(BlockNumber::Finalized);
                     let balance = provider
                         .get_balance(keypair.address(), None)
                         .await
@@ -97,6 +99,7 @@ impl Transfer {
             }
         } else {
             for keypair in keypairs.keypairs {
+                // let block_number = BlockId::from(BlockNumber::Finalized);
                 let balance = provider
                     .get_balance(keypair.address(), None)
                     .await
@@ -128,6 +131,7 @@ impl Transfer {
                     }
                 }
 
+                // let block_number = BlockId::from(BlockNumber::Finalized);
                 let balance = provider
                     .get_balance(keypair.address(), None)
                     .await

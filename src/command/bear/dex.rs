@@ -3,6 +3,8 @@ use crate::errors::Error;
 use crate::utils::{get_all_keypairs, get_config, get_single_keypairs};
 use ethers::prelude::SignerMiddleware;
 use ethers::providers::{Http, Middleware, Provider};
+use ethers::types::BlockId;
+use ethers::types::BlockNumber;
 use ethers::types::U256;
 use ethers_core::types::Address;
 use ethers_signers::Signer;
@@ -35,6 +37,7 @@ impl Dex {
                 keypair.clone().with_chain_id(self.chain_id),
             );
 
+            // let block_number = BlockId::from(BlockNumber::Finalized);
             let balance = provider
                 .get_balance(keypair.address(), None)
                 .await

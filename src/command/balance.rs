@@ -25,6 +25,7 @@ impl Balance {
                     get_single_keypairs().map_err(|e| Error::Custom(e.to_string()))?;
 
                 for keypair in single_keypair.keypairs {
+                    // let block_number = BlockId::from(BlockNumber::Finalized);
                     let balance = provider
                         .get_balance(keypair.address(), None)
                         .await
@@ -61,16 +62,29 @@ impl Multi {
             get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
 
         for keypair in keypairs.keypairs {
-            let balance = provider
-                .get_balance(keypair.address(), None)
-                .await
-                .map_err(|e| Error::Custom(e.to_string()))?;
-
-            println!(
-                "{} has {}",
-                format!("{:?}", keypair.address()).blue(),
-                balance.to_string().red()
-            );
+            let mut count = 0;
+            loop {
+                let balance = provider
+                    .get_balance(keypair.address(), None)
+                    .await
+                    .map_err(|e| Error::Custom(e.to_string()))?;
+                if balance == U256::zero() && count <= 3 {
+                    log::warn!(
+                        "WARN: Address({:?}) balance is Zero({})",
+                        keypair.address(),
+                        balance
+                    );
+                    count += 1;
+                    continue;
+                } else {
+                    println!(
+                        "{} has {}",
+                        format!("{:?}", keypair.address()).blue(),
+                        balance.to_string().red()
+                    );
+                    break;
+                }
+            }
         }
         Ok(())
     }
