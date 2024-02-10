@@ -25,7 +25,6 @@ impl Balance {
                     get_single_keypairs().map_err(|e| Error::Custom(e.to_string()))?;
 
                 for keypair in single_keypair.keypairs {
-                    // let block_number = BlockId::from(BlockNumber::Finalized);
                     let balance = provider
                         .get_balance(keypair.address(), None)
                         .await

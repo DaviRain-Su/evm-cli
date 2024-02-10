@@ -48,16 +48,9 @@ pub async fn read_number(
     client: &Client,
     contract_addr: &H160,
 ) -> Result<U256, Box<dyn std::error::Error>> {
-    // 3. Create contract instance
     let contract = Incrementer::new(contract_addr.clone(), Arc::new(client.clone()));
-
-    // 4. Call contract's number function
     let value = contract.number().call().await?;
-
-    // 5. Print out number
     println!("Incrementer's number is {}", value);
-
-    // 6. Return the number
     Ok(value)
 }
 
@@ -67,11 +60,7 @@ pub async fn increment_number(
     contract_addr: &H160,
 ) -> Result<(), Box<dyn std::error::Error>> {
     println!("Incrementing number...");
-
-    // 3. Create contract instance
     let contract = Incrementer::new(contract_addr.clone(), Arc::new(client.clone()));
-
-    // 4. Send contract transaction
     let tx = contract.increment(U256::from(5)).send().await?.await?;
     println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
 
@@ -84,11 +73,7 @@ pub async fn reset(
     contract_addr: &H160,
 ) -> Result<(), Box<dyn std::error::Error>> {
     println!("Resetting number...");
-
-    // 3. Create contract instance
     let contract = Incrementer::new(contract_addr.clone(), Arc::new(client.clone()));
-
-    // 4. Send contract transaction
     let tx = contract.reset().send().await?.await?;
     println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
 

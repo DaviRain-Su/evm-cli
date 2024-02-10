@@ -4,7 +4,6 @@ use crate::utils::{get_all_keypairs, get_config, get_single_keypairs};
 use colored::*;
 use ethers::prelude::SignerMiddleware;
 use ethers::providers::{Http, Provider};
-// use ethers::types::U256;
 use ethers_signers::Signer;
 use structopt::StructOpt;
 
