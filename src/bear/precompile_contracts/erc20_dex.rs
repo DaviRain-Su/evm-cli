@@ -1,5 +1,6 @@
 use crate::Client;
 use ethers::prelude::*;
+use ethers::utils::{format_units, parse_units};
 use std::str::FromStr;
 use std::sync::Arc;
 
@@ -22,12 +23,16 @@ pub async fn add_liquidity(
     receiver: Address,
     assets_in: Vec<Address>,
     amounts_in: Vec<U256>,
-) -> Result<(Vec<Address>, Vec<U256>, Vec<Address>, Vec<U256>), Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
-    let value = contract
+    let tx = contract
         .add_liquidity(pool, receiver, assets_in, amounts_in)
+        .send()
+        .await?
         .await?;
-    Ok(value)
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 /// batchSwap
@@ -38,10 +43,16 @@ pub async fn batch_swap(
     kind: u8,
     swaps: Vec<erc20_dex_module::BatchSwapStep>,
     deadline: U256,
-) -> Result<(Vec<Address>, Vec<U256>), Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
-    let value = contract.batch_swap(kind, swaps, deadline).await?;
-    Ok(value)
+    let tx = contract
+        .batch_swap(kind, swaps, deadline)
+        .send()
+        .await?
+        .await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 /// createPool
@@ -53,12 +64,14 @@ pub async fn create_pool(
     amounts_in: Vec<U256>,
     pool_type: String,
     options: erc20_dex_module::PoolOptions,
-) -> Result<Address, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
     let value = contract
         .create_pool(name, assets_in, amounts_in, pool_type, options)
+        .send()
+        .await?
         .await?;
-    Ok(value)
+    Ok(())
 }
 
 /// getExchangeRate
@@ -72,6 +85,7 @@ pub async fn get_exchange_rate(
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
     let value = contract
         .get_exchange_rate(pool, base_asset, quote_asset)
+        .call()
         .await?;
     Ok(value)
 }
@@ -83,7 +97,7 @@ pub async fn get_liquidity(
     pool: Address,
 ) -> Result<(Vec<Address>, Vec<U256>), Box<dyn std::error::Error>> {
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
-    let value = contract.get_liquidity(pool).await?;
+    let value = contract.get_liquidity(pool).call().await?;
     Ok(value)
 }
 
@@ -94,7 +108,7 @@ pub async fn get_pool_name(
     pool: Address,
 ) -> Result<String, Box<dyn std::error::Error>> {
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
-    let value = contract.get_pool_name(pool).await?;
+    let value = contract.get_pool_name(pool).call().await?;
     Ok(value)
 }
 
@@ -105,7 +119,7 @@ pub async fn get_pool_options(
     pool: Address,
 ) -> Result<erc20_dex_module::PoolOptions, Box<dyn std::error::Error>> {
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
-    let value = contract.get_pool_options(pool).await?;
+    let value = contract.get_pool_options(pool).call().await?;
     Ok(value)
 }
 
@@ -120,6 +134,7 @@ pub async fn get_preview_add_liquidity_no_swap(
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
     let value = contract
         .get_preview_add_liquidity_no_swap(pool, assets, amounts)
+        .call()
         .await?;
     Ok(value)
 }
@@ -135,6 +150,7 @@ pub async fn get_preview_add_liquidity_static_price(
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
     let value = contract
         .get_preview_add_liquidity_static_price(pool, liquidity, amounts)
+        .call()
         .await?;
     Ok(value)
 }
@@ -147,7 +163,8 @@ pub async fn get_preview_batch_swap(
     swaps: Vec<erc20_dex_module::BatchSwapStep>,
 ) -> Result<(Address, U256), Box<dyn std::error::Error>> {
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
-    let value = contract.get_preview_batch_swap(kind, swaps).await?;
+    let value = contract.get_preview_batch_swap(kind, swaps).call().await?;
+
     Ok(value)
 }
 
@@ -162,6 +179,7 @@ pub async fn get_preview_burn_shares(
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
     let value = contract
         .get_preview_burn_shares(pool, asset, amount)
+        .call()
         .await?;
     Ok(value)
 }
@@ -177,6 +195,7 @@ pub async fn get_preview_shares_for_liquidity(
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
     let value = contract
         .get_preview_shares_for_liquidity(pool, assets, amounts)
+        .call()
         .await?;
     Ok(value)
 }
@@ -192,6 +211,7 @@ pub async fn get_preview_shares_for_single_sided_liquidity_request(
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
     let value = contract
         .get_preview_shares_for_single_sided_liquidity_request(pool, asset, amount)
+        .call()
         .await?;
     Ok(value)
 }
@@ -209,6 +229,7 @@ pub async fn get_preview_swap_exact(
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
     let value = contract
         .get_preview_swap_exact(kind, pool, base_asset, base_asset_amount, quote_asset)
+        .call()
         .await?;
     Ok(value)
 }
@@ -224,6 +245,7 @@ pub async fn get_remove_liquidity_exact_amount_out(
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
     let value = contract
         .get_remove_liquidity_exact_amount_out(pool, asset_in, asset_amount)
+        .call()
         .await?;
     Ok(value)
 }
@@ -239,6 +261,7 @@ pub async fn get_remove_liquidity_one_side_out(
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
     let value = contract
         .get_remove_liquidity_one_side_out(pool, asset_out, shares_in)
+        .call()
         .await?;
     Ok(value)
 }
@@ -250,7 +273,7 @@ pub async fn get_total_shares(
     pool: Address,
 ) -> Result<(Vec<Address>, Vec<U256>), Box<dyn std::error::Error>> {
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
-    let value = contract.get_total_shares(pool).await?;
+    let value = contract.get_total_shares(pool).call().await?;
     Ok(value)
 }
 
@@ -262,12 +285,16 @@ pub async fn remove_liquidity_burning_shares(
     withdraw_address: Address,
     asset_in: Address,
     amount_in: U256,
-) -> Result<(Vec<Address>, Vec<U256>), Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
-    let value = contract
+    let tx = contract
         .remove_liquidity_burning_shares(pool, withdraw_address, asset_in, amount_in)
+        .send()
+        .await?
         .await?;
-    Ok(value)
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 /// removeLiquidityExactAmount
@@ -280,9 +307,9 @@ pub async fn remove_liquidity_exact_amount(
     amount_out: U256,
     shares_in: Address,
     max_shares_in: U256,
-) -> Result<(Vec<Address>, Vec<U256>, Vec<Address>, Vec<U256>), Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
-    let value = contract
+    let tx = contract
         .remove_liquidity_exact_amount(
             pool,
             withdraw_address,
@@ -291,8 +318,12 @@ pub async fn remove_liquidity_exact_amount(
             shares_in,
             max_shares_in,
         )
+        .send()
+        .await?
         .await?;
-    Ok(value)
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 /// swap
@@ -307,12 +338,20 @@ pub async fn swap(
     asset_out: Address,
     amount_out: U256,
     deadline: U256,
-) -> Result<(Vec<Address>, Vec<U256>), Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
-    let value = contract
+    let eth_max_spend = parse_units(1, 18)?;
+    let tx = contract
         .swap(
             kind, pool_id, asset_in, amount_in, asset_out, amount_out, deadline,
         )
+        .value(eth_max_spend)
+        .from(client.address())
+        .gas(U256::from(50_000)) // this is crucial otherwise tx will get reverted without a reason
+        .send()
+        .await?
         .await?;
-    Ok(value)
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }

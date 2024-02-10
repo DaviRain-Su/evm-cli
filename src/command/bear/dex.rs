@@ -1,4 +1,7 @@
-use crate::bear::deploy_contracts::{multicall3_addr, wbera};
+use crate::bear::deploy_contracts::{
+    multicall3_addr,
+    wbera::{self, wbera_addr},
+};
 use crate::bear::precompile_contracts::dex;
 
 use crate::bear::precompile_contracts::{
@@ -12,6 +15,7 @@ use ethers::providers::{Http, Middleware, Provider};
 use ethers::types::U256;
 use ethers_core::types::Address;
 use ethers_signers::Signer;
+use std::time::{SystemTime, UNIX_EPOCH};
 use structopt::StructOpt;
 use time::OffsetDateTime;
 
@@ -73,10 +77,10 @@ impl Dex {
                 .map_err(|e| Error::Custom(e.to_string()))?;
             println!("base asset balance: {}", base_asset_amount);
 
-            let result = wbera::approve(&client, erc20_bank_addr(), base_asset_amount)
+            let result = wbera::approve(&client, wbera_addr(), base_asset_amount)
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
-            println!("approve result {}", result);
+            println!("approve result {:?}", result);
 
             let quote_asset: Address = "0x7eeca4205ff31f947edbd49195a7a88e6a91161b"
                 .parse()
@@ -93,11 +97,11 @@ impl Dex {
             .map_err(|e| Error::Custom(e.to_string()))?;
             println!("preview swap: {:?}", preview_swap);
 
-            let time = OffsetDateTime::now_utc().unix_timestamp() + 1000000;
+            let deadline = U256::from(get_epoch_milliseconds()) + U256::from(60 * 1000);
 
             // todo(davirain)
             // ERROR(Error: Custom("Contract call reverted with data: 0x"))
-            let deadline = U256::from(time as u64);
+
             let result_swap = erc20_dex::swap(
                 &client,
                 kind,
@@ -132,4 +136,11 @@ impl Dex {
         }
         Ok(())
     }
+}
+
+fn get_epoch_milliseconds() -> u128 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_millis()
 }

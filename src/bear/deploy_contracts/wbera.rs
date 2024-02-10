@@ -1,6 +1,7 @@
 use crate::Client;
 use ethers::core::types::Address;
 use ethers::prelude::*;
+use ethers::utils::{format_units, parse_units};
 use std::str::FromStr;
 use std::sync::Arc;
 
@@ -49,7 +50,7 @@ pub async fn balance_of(
     address: Address,
 ) -> Result<U256, Box<dyn std::error::Error>> {
     let contract = WBERA::new(wbera_addr(), Arc::new(client.clone()));
-    let value = contract.balance_of(address).await?;
+    let value = contract.balance_of(address).call().await?;
     Ok(value)
 }
 
@@ -58,10 +59,12 @@ pub async fn approve(
     client: &Client,
     address: Address,
     amount: U256,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = WBERA::new(wbera_addr(), Arc::new(client.clone()));
-    let value = contract.approve(address, amount).await?;
-    Ok(value)
+    let tx = contract.approve(address, amount).send().await?.await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 /// Transfer 是一种将代币转移到给定地址的公共方法。
@@ -69,10 +72,12 @@ pub async fn transfer(
     client: &Client,
     address: Address,
     amount: U256,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = WBERA::new(wbera_addr(), Arc::new(client.clone()));
-    let value = contract.transfer(address, amount).await?;
-    Ok(value)
+    let tx = contract.transfer(address, amount).send().await?.await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 /// TransferFrom 是一种将代币从一个地址转移到另一个地址的公共方法。
@@ -81,22 +86,40 @@ pub async fn transfer_from(
     from: Address,
     to: Address,
     amount: U256,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = WBERA::new(wbera_addr(), Arc::new(client.clone()));
-    let value = contract.transfer_from(from, to, amount).await?;
-    Ok(value)
+    let tx = contract
+        .transfer_from(from, to, amount)
+        .send()
+        .await?
+        .await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 /// deposit
 pub async fn deposit(client: &Client) -> Result<(), Box<dyn std::error::Error>> {
     let contract = WBERA::new(wbera_addr(), Arc::new(client.clone()));
-    let value = contract.deposit().await?;
-    Ok(value)
+    let tx = contract.deposit().send().await?.await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 /// withdraw
 pub async fn withdraw(client: &Client, amount: U256) -> Result<(), Box<dyn std::error::Error>> {
     let contract = WBERA::new(wbera_addr(), Arc::new(client.clone()));
-    let value = contract.withdraw(amount).await?;
-    Ok(value)
+    let eth_max_spend = parse_units(1, 18)?;
+    let tx = contract
+        .withdraw(amount)
+        .value(eth_max_spend)
+        .from(client.address())
+        .gas(U256::from(50_000)) // this is crucial otherwise tx will get reverted without a reason
+        .send()
+        .await?
+        .await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }

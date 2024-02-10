@@ -1164,6 +1164,7 @@ dependencies = [
  "ethers-core",
  "ethers-signers",
  "ethers-solc",
+ "hex",
  "k256",
  "log",
  "reqwest",

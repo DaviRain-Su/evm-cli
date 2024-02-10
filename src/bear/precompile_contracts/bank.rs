@@ -22,7 +22,7 @@ pub async fn get_all_balances(
     account_address: Address,
 ) -> Result<Vec<bank_module::Coin>, Box<dyn std::error::Error>> {
     let contract = BankModule::new(bank_addr(), Arc::new(client.clone()));
-    let value = contract.get_all_balances(account_address).await?;
+    let value = contract.get_all_balances(account_address).call().await?;
     Ok(value)
 }
 
@@ -34,7 +34,10 @@ pub async fn get_all_spendable_balances(
     account_address: Address,
 ) -> Result<Vec<bank_module::Coin>, Box<dyn std::error::Error>> {
     let contract = BankModule::new(bank_addr(), Arc::new(client.clone()));
-    let value = contract.get_all_spendable_balances(account_address).await?;
+    let value = contract
+        .get_all_spendable_balances(account_address)
+        .call()
+        .await?;
     Ok(value)
 }
 
@@ -44,7 +47,7 @@ pub async fn get_all_supply(
     client: &Client,
 ) -> Result<Vec<bank_module::Coin>, Box<dyn std::error::Error>> {
     let contract = BankModule::new(bank_addr(), Arc::new(client.clone()));
-    let value = contract.get_all_supply().await?;
+    let value = contract.get_all_supply().call().await?;
     Ok(value)
 }
 
@@ -57,7 +60,7 @@ pub async fn get_balance(
     denom: String,
 ) -> Result<U256, Box<dyn std::error::Error>> {
     let contract = BankModule::new(bank_addr(), Arc::new(client.clone()));
-    let value = contract.get_balance(account_address, denom).await?;
+    let value = contract.get_balance(account_address, denom).call().await?;
     Ok(value)
 }
 
@@ -72,6 +75,7 @@ pub async fn get_spendable_balance(
     let contract = BankModule::new(bank_addr(), Arc::new(client.clone()));
     let value = contract
         .get_spendable_balance(account_address, denom)
+        .call()
         .await?;
     Ok(value)
 }
@@ -83,7 +87,7 @@ pub async fn get_supply(
     denom: String,
 ) -> Result<U256, Box<dyn std::error::Error>> {
     let contract = BankModule::new(bank_addr(), Arc::new(client.clone()));
-    let value = contract.get_supply(denom).await?;
+    let value = contract.get_supply(denom).call().await?;
     Ok(value)
 }
 
@@ -94,8 +98,10 @@ pub async fn send(
     client: &Client,
     to_address: Address,
     amount: Vec<bank_module::Coin>,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = BankModule::new(bank_addr(), Arc::new(client.clone()));
-    let value = contract.send(to_address, amount).await?;
-    Ok(value)
+    let tx = contract.send(to_address, amount).send().await?.await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }

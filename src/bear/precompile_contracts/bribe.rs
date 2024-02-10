@@ -22,17 +22,21 @@ pub async fn create_bribe(
     start_epoch: u64,
     num_block_proposals: u64,
     bribe_per_proposal: Vec<bribe_module::Coin>,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = BribeModule::new(bribe_addr(), Arc::new(client.clone()));
-    let value = contract
+    let tx = contract
         .create_bribe(
             operator,
             start_epoch,
             num_block_proposals,
             bribe_per_proposal,
         )
+        .send()
+        .await?
         .await?;
-    Ok(value)
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 //getActiveValidatorBribes
@@ -41,7 +45,10 @@ pub async fn get_active_validator_bribes(
     operator: Address,
 ) -> Result<Vec<bribe_module::Bribe>, Box<dyn std::error::Error>> {
     let contract = BribeModule::new(bribe_addr(), Arc::new(client.clone()));
-    let value = contract.get_active_validator_bribes(operator).await?;
+    let value = contract
+        .get_active_validator_bribes(operator)
+        .call()
+        .await?;
     Ok(value)
 }
 
@@ -51,7 +58,7 @@ pub async fn get_all_validator_bribes(
     operator: Address,
 ) -> Result<Vec<bribe_module::Bribe>, Box<dyn std::error::Error>> {
     let contract = BribeModule::new(bribe_addr(), Arc::new(client.clone()));
-    let value = contract.get_all_validator_bribes(operator).await?;
+    let value = contract.get_all_validator_bribes(operator).call().await?;
     Ok(value)
 }
 
@@ -60,7 +67,7 @@ pub async fn get_bribe_fees(
     client: &Client,
 ) -> Result<Vec<bribe_module::Coin>, Box<dyn std::error::Error>> {
     let contract = BribeModule::new(bribe_addr(), Arc::new(client.clone()));
-    let value = contract.get_bribe_fees().await?;
+    let value = contract.get_bribe_fees().call().await?;
     Ok(value)
 }
 
@@ -71,7 +78,7 @@ pub async fn get_bribes(
     start_epoch: u64,
 ) -> Result<Vec<bribe_module::Bribe>, Box<dyn std::error::Error>> {
     let contract = BribeModule::new(bribe_addr(), Arc::new(client.clone()));
-    let value = contract.get_bribes(operator, start_epoch).await?;
+    let value = contract.get_bribes(operator, start_epoch).call().await?;
     Ok(value)
 }
 
@@ -79,8 +86,10 @@ pub async fn get_bribes(
 pub async fn update_params(
     client: &Client,
     fee: Vec<bribe_module::Coin>,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = BribeModule::new(bribe_addr(), Arc::new(client.clone()));
-    let value = contract.update_params(fee).await?;
-    Ok(value)
+    let tx = contract.update_params(fee).await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }

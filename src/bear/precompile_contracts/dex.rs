@@ -27,6 +27,7 @@ pub async fn get_preview_swap_exact(
     let contract = DexModule::new(dex_addr(), Arc::new(client.clone()));
     let value = contract
         .get_preview_swap_exact(kind, pool, base_asset, quote_asset)
+        .call()
         .await?;
     Ok(value)
 }
@@ -40,7 +41,10 @@ pub async fn get_preview_batch_swap(
     coins: Vec<dex_module::Coin>,
 ) -> Result<dex_module::Coin, Box<dyn std::error::Error>> {
     let contract = DexModule::new(dex_addr(), Arc::new(client.clone()));
-    let value = contract.get_preview_batch_swap(kind, swaps, coins).await?;
+    let value = contract
+        .get_preview_batch_swap(kind, swaps, coins)
+        .call()
+        .await?;
     Ok(value)
 }
 
@@ -51,7 +55,7 @@ pub async fn get_liquidity(
     pool: String,
 ) -> Result<Vec<dex_module::Coin>, Box<dyn std::error::Error>> {
     let contract = DexModule::new(dex_addr(), Arc::new(client.clone()));
-    let value = contract.get_liquidity(pool).await?;
+    let value = contract.get_liquidity(pool).call().await?;
     Ok(value)
 }
 
@@ -62,7 +66,7 @@ pub async fn get_total_shares(
     pool: String,
 ) -> Result<Vec<dex_module::Coin>, Box<dyn std::error::Error>> {
     let contract = DexModule::new(dex_addr(), Arc::new(client.clone()));
-    let value = contract.get_total_shares(pool).await?;
+    let value = contract.get_total_shares(pool).call().await?;
     Ok(value)
 }
 
@@ -77,6 +81,7 @@ pub async fn get_exchange_rate(
     let contract = DexModule::new(dex_addr(), Arc::new(client.clone()));
     let value = contract
         .get_exchange_rate(pool, base_asset, quote_asset)
+        .call()
         .await?;
     Ok(value)
 }
@@ -92,6 +97,7 @@ pub async fn get_preview_shares_for_liquidity(
 
     let value = contract
         .get_preview_shares_for_liquidity(pool, coins)
+        .call()
         .await?;
     Ok(value)
 }
@@ -107,6 +113,7 @@ pub async fn get_preview_add_liquidity_static_price(
 
     let value = contract
         .get_preview_add_liquidity_static_price(pool, liquidity)
+        .call()
         .await?;
     Ok(value)
 }
@@ -121,6 +128,7 @@ pub async fn get_preview_shares_for_single_sided_liquidity_request(
     let contract = DexModule::new(dex_addr(), Arc::new(client.clone()));
     let value = contract
         .get_preview_shares_for_single_sided_liquidity_request(pool, coin)
+        .call()
         .await?;
 
     Ok(value)
@@ -136,6 +144,7 @@ pub async fn get_preview_add_liquidity_no_swap(
     let contract = DexModule::new(dex_addr(), Arc::new(client.clone()));
     let value = contract
         .get_preview_add_liquidity_no_swap(pool, liquidity)
+        .call()
         .await?;
     Ok(value)
 }
@@ -148,7 +157,10 @@ pub async fn get_preview_burn_shares(
     shares: dex_module::Coin,
 ) -> Result<Vec<dex_module::Coin>, Box<dyn std::error::Error>> {
     let contract = DexModule::new(dex_addr(), Arc::new(client.clone()));
-    let value = contract.get_preview_burn_shares(pool, shares).await?;
+    let value = contract
+        .get_preview_burn_shares(pool, shares)
+        .call()
+        .await?;
     Ok(value)
 }
 
@@ -162,6 +174,7 @@ pub async fn get_remove_liquidity_exact_amount_out(
     let contract = DexModule::new(dex_addr(), Arc::new(client.clone()));
     let value = contract
         .get_remove_liquidity_exact_amount_out(pool, asset)
+        .call()
         .await?;
     Ok(value)
 }
@@ -177,6 +190,7 @@ pub async fn get_remove_liquidity_one_side_out(
     let contract = DexModule::new(dex_addr(), Arc::new(client.clone()));
     let value = contract
         .get_remove_liquidity_one_side_out(pool, denom, shares_in)
+        .call()
         .await?;
     Ok(value)
 }
@@ -188,7 +202,7 @@ pub async fn get_pool_name(
     pool: String,
 ) -> Result<String, Box<dyn std::error::Error>> {
     let contract = DexModule::new(dex_addr(), Arc::new(client.clone()));
-    let value = contract.get_pool_name(pool).await?;
+    let value = contract.get_pool_name(pool).call().await?;
     Ok(value)
 }
 
@@ -199,7 +213,7 @@ pub async fn get_pool_options(
     pool: String,
 ) -> Result<dex_module::PoolOptions, Box<dyn std::error::Error>> {
     let contract = DexModule::new(dex_addr(), Arc::new(client.clone()));
-    let value = contract.get_pool_options(pool).await?;
+    let value = contract.get_pool_options(pool).call().await?;
     Ok(value)
 }
 
@@ -210,7 +224,7 @@ pub async fn get_pool_address(
     pool: String,
 ) -> Result<Address, Box<dyn std::error::Error>> {
     let contract = DexModule::new(dex_addr(), Arc::new(client.clone()));
-    let value = contract.get_pool_address(pool).await?;
+    let value = contract.get_pool_address(pool).call().await?;
     Ok(value)
 }
 
@@ -222,10 +236,16 @@ pub async fn swap(
     single_swap: dex_module::SingleSwap,
     limit: U256,
     deadline: U256,
-) -> Result<Vec<dex_module::Coin>, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = DexModule::new(dex_addr(), Arc::new(client.clone()));
-    let value = contract.swap(single_swap, limit, deadline).await?;
-    Ok(value)
+    let tx = contract
+        .swap(single_swap, limit, deadline)
+        .send()
+        .await?
+        .await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 /// batchSwap
@@ -238,10 +258,16 @@ pub async fn batch_swap(
     swaps: Vec<dex_module::BatchSwapStep>,
     coins: Vec<dex_module::Coin>,
     deadline: U256,
-) -> Result<Vec<dex_module::Coin>, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = DexModule::new(dex_addr(), Arc::new(client.clone()));
-    let value = contract.batch_swap(kind, swaps, coins, deadline).await?;
-    Ok(value)
+    let tx = contract
+        .batch_swap(kind, swaps, coins, deadline)
+        .send()
+        .await?
+        .await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 /// createPool
@@ -253,12 +279,16 @@ pub async fn create_pool(
     pool_type: String,
     options: Bytes,
     creator: Address,
-) -> Result<String, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = DexModule::new(dex_addr(), Arc::new(client.clone()));
-    let value = contract
+    let tx = contract
         .create_pool(name, coins, pool_type, options, creator)
+        .send()
+        .await?
         .await?;
-    Ok(value)
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 /// addLiquidity
@@ -269,14 +299,17 @@ pub async fn add_liquidity(
     account: Address,
     receiver: Address,
     coin: Vec<dex_module::Coin>,
-) -> Result<(Vec<dex_module::Coin>, Vec<dex_module::Coin>), Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = DexModule::new(dex_addr(), Arc::new(client.clone()));
 
-    let value = contract
+    let tx = contract
         .add_liquidity(pool, account, receiver, coin)
+        .send()
+        .await?
         .await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
 
-    Ok(value)
+    Ok(())
 }
 
 /// removeLiquidityBurningShares
@@ -287,12 +320,16 @@ pub async fn remove_liquidity_burning_shares(
     account: Address,
     receiver: Address,
     coin: dex_module::Coin,
-) -> Result<Vec<dex_module::Coin>, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = DexModule::new(dex_addr(), Arc::new(client.clone()));
-    let value = contract
+    let tx = contract
         .remove_liquidity_burning_shares(pool, account, receiver, coin)
+        .send()
+        .await?
         .await?;
-    Ok(value)
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 /// removeLiquidityExactAmount
@@ -304,10 +341,14 @@ pub async fn remove_liquidity_exact_amount(
     receiver: Address,
     coin: dex_module::Coin,
     max_shares: dex_module::Coin,
-) -> Result<(Vec<dex_module::Coin>, Vec<dex_module::Coin>), Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = DexModule::new(dex_addr(), Arc::new(client.clone()));
-    let value = contract
+    let tx = contract
         .remove_liquidity_exact_amount(pool, account, receiver, coin, max_shares)
+        .send()
+        .await?
         .await?;
-    Ok(value)
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }

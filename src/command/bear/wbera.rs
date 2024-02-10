@@ -35,15 +35,18 @@ impl WBera {
         let balance = wbera::balance_of(&client, single_keypair.address())
             .await
             .map_err(|e| Error::Custom(e.to_string()))?;
+
         println!(
             "{} has Wbera {} num",
             format!("{:?}", single_keypair.address()).blue(),
             balance
         );
 
-        let withdra_result = wbera::withdraw(&client, U256::from(1_000_000_000_000_000_000u64))
+        let withdra_result = wbera::withdraw(&client, U256::from(1_000_000_000_000_000_00u64))
             .await
             .map_err(|e| Error::Custom(e.to_string()))?;
+
+        println!("withdra_result: {:?}", withdra_result);
 
         let balance = wbera::balance_of(&client, single_keypair.address())
             .await

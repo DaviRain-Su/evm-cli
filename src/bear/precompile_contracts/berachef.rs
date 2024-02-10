@@ -21,7 +21,10 @@ pub async fn get_active_cutting_board(
     operator_addr: Address,
 ) -> Result<berachef_module::CuttingBoard, Box<dyn std::error::Error>> {
     let contract = BerachefModule::new(berachef_addr(), Arc::new(client.clone()));
-    let value = contract.get_active_cutting_board(operator_addr).await?;
+    let value = contract
+        .get_active_cutting_board(operator_addr)
+        .call()
+        .await?;
     Ok(value)
 }
 
@@ -31,7 +34,7 @@ pub async fn get_delegation(
     operator_addr: Address,
 ) -> Result<Address, Box<dyn std::error::Error>> {
     let contract = BerachefModule::new(berachef_addr(), Arc::new(client.clone()));
-    let value = contract.get_delegation(operator_addr).await?;
+    let value = contract.get_delegation(operator_addr).call().await?;
     Ok(value)
 }
 
@@ -41,7 +44,10 @@ pub async fn get_queued_cutting_board(
     operator_addr: Address,
 ) -> Result<berachef_module::CuttingBoard, Box<dyn std::error::Error>> {
     let contract = BerachefModule::new(berachef_addr(), Arc::new(client.clone()));
-    let value = contract.get_queued_cutting_board(operator_addr).await?;
+    let value = contract
+        .get_queued_cutting_board(operator_addr)
+        .call()
+        .await?;
     Ok(value)
 }
 
@@ -51,22 +57,30 @@ pub async fn queue_new_cutting_board(
     operator_addr: Address,
     weights: Vec<berachef_module::Weight>,
     start_epoch: i64,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = BerachefModule::new(berachef_addr(), Arc::new(client.clone()));
-    let value = contract
+    let tx = contract
         .queue_new_cutting_board(operator_addr, weights, start_epoch)
         .await?;
-    Ok(value)
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 // setDelegation
 pub async fn set_delegation(
     client: &Client,
     delegation_address: Address,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = BerachefModule::new(berachef_addr(), Arc::new(client.clone()));
-    let value = contract.set_delegation(delegation_address).await?;
-    Ok(value)
+    let tx = contract
+        .set_delegation(delegation_address)
+        .send()
+        .await?
+        .await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
 
 // updateFriendsOfTheChef
@@ -74,10 +88,12 @@ pub async fn update_friends_of_the_chef(
     client: &Client,
     receiver_address: Address,
     friend_of_the_chef: bool,
-) -> Result<bool, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = BerachefModule::new(berachef_addr(), Arc::new(client.clone()));
-    let value = contract
+    let tx = contract
         .update_friends_of_the_chef(receiver_address, friend_of_the_chef)
         .await?;
-    Ok(value)
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }

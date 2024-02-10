@@ -20,8 +20,10 @@ pub async fn redeem(
     client: &Client,
     receiver: Address,
     amount: U256,
-) -> Result<U256, Box<dyn std::error::Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     let contract = BGTModule::new(bgt_addr(), Arc::new(client.clone()));
-    let value = contract.redeem(receiver, amount).await?;
-    Ok(value)
+    let tx = contract.redeem(receiver, amount).send().await?.await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
 }
