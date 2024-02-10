@@ -46,8 +46,11 @@ impl Load {
         let keyparis_str = KeyPairsString::from(keypairs);
 
         let home_path = dirs::home_dir().ok_or(Error::Custom("can't open home dir".into()))?;
-        let nobody_config_path = home_path.join(".config").join("evm-cli");
-        let keypairs_path = nobody_config_path.join("keypairs.json");
+        let keypairs_path = home_path
+            .join(".config")
+            .join("evm-cli")
+            .join("keypairs.json");
+
         keyparis_str
             .write(keypairs_path.clone())
             .map_err(|e| Error::Custom(e.to_string()))?;
@@ -77,8 +80,11 @@ impl Single {
 
                 let home_path =
                     dirs::home_dir().ok_or(Error::Custom("can't open home dir".into()))?;
-                let nobody_config_path = home_path.join(".config").join("evm-cli");
-                let keypairs_path = nobody_config_path.join("keypairs.json");
+                let keypairs_path = home_path
+                    .join(".config")
+                    .join("evm-cli")
+                    .join("keypairs.json");
+
                 keypairs_str
                     .write(keypairs_path.clone())
                     .map_err(|e| Error::Custom(e.to_string()))?;
@@ -119,8 +125,11 @@ impl Multi {
         let keypairs_str = KeyPairsString::from(keypairs);
 
         let home_path = dirs::home_dir().ok_or(Error::Custom("can't open home dir".into()))?;
-        let nobody_config_path = home_path.join(".config").join("evm-cli");
-        let keypairs_path = nobody_config_path.join(format!("{}_keypairs.json", self.file_name));
+        let keypairs_path = home_path
+            .join(".config")
+            .join("evm-cli")
+            .join(format!("{}_keypairs.json", self.file_name));
+
         keypairs_str
             .write(keypairs_path.clone())
             .map_err(|e| Error::Custom(e.to_string()))?;
@@ -201,10 +210,6 @@ impl From<KeyPairsString> for KeyPairs {
                 let raw_keypairs =
                     serde_json::from_str::<Vec<u8>>(&k.secret).expect("serde keypairs error");
                 LocalWallet::from_bytes(&raw_keypairs).expect("keypairs from bytes error")
-                // let signing_key =
-                // SigningKey::from_bytes(&raw_keypairs).expect("SigningKey from bytes error");
-                // let address = signing_key
-                // LocalWallet::new_with_signer()
             })
             .collect::<Vec<_>>();
         Self { keypairs }

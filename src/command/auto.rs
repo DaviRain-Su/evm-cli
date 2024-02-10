@@ -10,22 +10,22 @@ impl Auto {
     pub fn run(&self) -> Result<(), Error> {
         // open  config file path is  ~/.config/pomm/config.toml
         let home_path = dirs::home_dir().ok_or(Error::Custom("can't open home dir".into()))?;
-        let nobody_config_path = home_path.join(".config").join("evm-cli");
+        let evm_cli_config_path = home_path.join(".config").join("evm-cli");
 
-        if std::fs::read_to_string(nobody_config_path.join("config.toml")).is_ok()
-            && std::fs::read_to_string(nobody_config_path.join("keypairs.json")).is_ok()
+        if std::fs::read_to_string(evm_cli_config_path.join("config.toml")).is_ok()
+            && std::fs::read_to_string(evm_cli_config_path.join("keypairs.json")).is_ok()
         {
             Ok(())
         } else {
             // create nobody_config_path
-            std::fs::create_dir_all(nobody_config_path.clone()).map_err(|e| {
+            std::fs::create_dir_all(evm_cli_config_path.clone()).map_err(|e| {
                 Error::from(format!(
                     "failed create config path: Error({})",
                     e.to_string()
                 ))
             })?;
 
-            let config_path = nobody_config_path.join("config.toml");
+            let config_path = evm_cli_config_path.join("config.toml");
             log::info!("config_path: {:?}", config_path);
             std::fs::write(config_path.clone(), DEFAULT_CONFIG_FILE).map_err(|e| {
                 Error::from(format!(
@@ -33,7 +33,7 @@ impl Auto {
                     e.to_string()
                 ))
             })?;
-            let keypairs_path = nobody_config_path.join("keypairs.json");
+            let keypairs_path = evm_cli_config_path.join("keypairs.json");
             std::fs::write(keypairs_path.clone(), "").map_err(|e| {
                 Error::from(format!(
                     "failed write keypairs_path: Error({})",
