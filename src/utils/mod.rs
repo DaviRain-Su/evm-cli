@@ -6,22 +6,35 @@ use ethers::{prelude::*, utils as ethers_utils};
 
 pub fn get_config() -> Result<Config, Error> {
     let home_path = dirs::home_dir().ok_or(Error::Custom("can't open home dir".to_string()))?;
-    let pomm_config_path = home_path.join(".config").join("evm-cli");
-    let config_path = pomm_config_path.join("config.toml");
+    let config_path = home_path
+        .join(".config")
+        .join("evm-cli")
+        .join("config.toml");
+
+    log::info!("config.toml Path({})", config_path.display());
 
     let config_str = std::fs::read_to_string(config_path)
         .map_err(|e| Error::Custom(format!("read file content failed: Error({})", e)))?;
-    let phoneix_config: Config = toml::from_str(&config_str)
+    let config: Config = toml::from_str(&config_str)
         .map_err(|e| Error::Custom(format!("parse toml failed: Error({})", e)))?;
 
-    Ok(phoneix_config)
+    Ok(config)
 }
 
 pub fn get_all_keypairs(file_name: &str) -> Result<KeyPairs, Error> {
     let home_path = dirs::home_dir().ok_or(Error::Custom("can't open home dir".to_string()))?;
-    let pomm_config_path = home_path.join(".config").join("evm-cli");
-    let config_path = pomm_config_path.join(format!("{}_keypairs.json", file_name));
-    log::info!("keypairs path: {:?}", config_path);
+    let config_path = home_path
+        .join(".config")
+        .join("evm-cli")
+        .join(format!("{}_keypairs.json", file_name));
+    log::info!(
+        "{}",
+        format!(
+            "{}_keypairs.json Path({})",
+            file_name,
+            config_path.display()
+        )
+    );
     let keypairs_str = KeyPairsString::read(config_path).map_err(|e| {
         let location = std::panic::Location::caller();
         Error::from(format!("Error({}): {})", location, e.to_string()))
@@ -32,9 +45,11 @@ pub fn get_all_keypairs(file_name: &str) -> Result<KeyPairs, Error> {
 
 pub fn get_single_keypairs() -> Result<KeyPairs, Error> {
     let home_path = dirs::home_dir().ok_or(Error::Custom("can't open home dir".to_string()))?;
-    let pomm_config_path = home_path.join(".config").join("evm-cli");
-    let config_path = pomm_config_path.join("keypairs.json");
-    log::info!("keypairs path: {:?}", config_path);
+    let config_path = home_path
+        .join(".config")
+        .join("evm-cli")
+        .join("keypairs.json");
+    log::info!("keypairs.json Path({})", config_path.display());
     let keypairs_str = KeyPairsString::read(config_path).map_err(|e| {
         let location = std::panic::Location::caller();
         Error::from(format!("Error({}): {})", location, e.to_string()))
