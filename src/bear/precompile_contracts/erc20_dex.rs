@@ -343,13 +343,15 @@ pub async fn swap(
 ) -> Result<(), Box<dyn std::error::Error>> {
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
     let eth_max_spend = parse_units(0, 18)?;
+    // let current_gas_price = client.get_gas_price().await?;
+    // println!("Current gas price: {:?}", current_gas_price);
     let tx = contract
         .swap(
             kind, pool_id, asset_in, amount_in, asset_out, amount_out, deadline,
         )
         .value(eth_max_spend)
         .from(client.address())
-        .gas(U256::from(50_000)) // this is crucial otherwise tx will get reverted without a reason
+        .gas(U256::from(40_000_000)) // this is crucial otherwise tx will get reverted without a reason
         .send()
         .await?
         .await?;

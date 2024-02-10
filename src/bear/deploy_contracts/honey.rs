@@ -1,6 +1,7 @@
 use crate::Client;
 use ethers::core::types::Address;
 use ethers::prelude::*;
+use ethers::utils::{format_units, parse_units};
 use std::str::FromStr;
 use std::sync::Arc;
 
@@ -69,8 +70,16 @@ pub async fn approve(
         address,
         amount
     );
+    let eth_max_spend = parse_units(0, 18)?;
     let contract = Honey::new(honey_token_addr(), Arc::new(client.clone()));
-    let tx = contract.approve(address, amount).send().await?.await?;
+    let tx = contract
+        .approve(address, amount)
+        .value(eth_max_spend)
+        .from(client.address())
+        .gas(U256::from(50_000)) // this is crucial otherwise tx will get reverted without a reason
+        .send()
+        .await?
+        .await?;
     println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
 
     Ok(())

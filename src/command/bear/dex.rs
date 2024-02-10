@@ -85,15 +85,6 @@ impl Dex {
                 .map_err(|e| Error::Custom(e.to_string()))?;
             println!("approve wbera_addr result {:?}", wbera_addr_result);
 
-            let erc20_bank_addr_result =
-                wbera::approve(&client, erc20_bank_addr(), base_asset_amount)
-                    .await
-                    .map_err(|e| Error::Custom(e.to_string()))?;
-            println!(
-                "approve erc20_bank_addr result {:?}",
-                erc20_bank_addr_result
-            );
-
             let quote_asset: Address = "0x7eeca4205ff31f947edbd49195a7a88e6a91161b"
                 .parse()
                 .unwrap();

@@ -42,7 +42,7 @@ impl WBera {
             balance
         );
 
-        let withdra_result = wbera::withdraw(&client, U256::from(3_000_000_000_000_000_000u64))
+        let withdra_result = wbera::withdraw(&client, U256::from(1_000_000_000_000_000_000u64))
             .await
             .map_err(|e| Error::Custom(e.to_string()))?;
 
