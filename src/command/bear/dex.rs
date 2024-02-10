@@ -19,18 +19,21 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use structopt::StructOpt;
 use time::OffsetDateTime;
 
+pub mod liquidity;
 pub mod swap;
 
 // notice must use erc20 dex
 #[derive(Debug, StructOpt)]
 pub enum Dex {
     Swap(swap::Swap),
+    Liquidity(liquidity::Liquidity),
 }
 
 impl Dex {
     pub async fn run(&self) -> Result<(), Error> {
         match self {
             Dex::Swap(swap) => swap.run().await,
+            Dex::Liquidity(liq) => liq.run().await,
         }
     }
 }

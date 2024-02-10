@@ -1,3 +1,5 @@
+use crate::bear::deploy_contracts::honey::{self, honey_token_addr};
+use crate::bear::nft::lunar_new_year;
 use crate::errors::Error;
 use crate::utils::{get_all_keypairs, get_config, get_single_keypairs};
 use colored::*;
@@ -8,14 +10,14 @@ use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 pub enum Balance {
-    Single,
+    Single { chain_id: u64 },
     Multi(Multi),
 }
 
 impl Balance {
     pub async fn run(&self) -> Result<(), Error> {
         match self {
-            Balance::Single => {
+            Balance::Single { chain_id } => {
                 let config = get_config().map_err(|e| Error::from(e.to_string()))?;
 
                 let provider = Provider::<Http>::try_from(config.rpc_endpoint)
@@ -25,15 +27,30 @@ impl Balance {
                     get_single_keypairs().map_err(|e| Error::Custom(e.to_string()))?;
 
                 for keypair in single_keypair.keypairs {
-                    let balance = provider
+                    let client = SignerMiddleware::new(
+                        provider.clone(),
+                        keypair.clone().with_chain_id(*chain_id),
+                    );
+
+                    let native_balance = provider
                         .get_balance(keypair.address(), None)
                         .await
                         .map_err(|e| Error::Custom(e.to_string()))?;
 
+                    let honey_balance = honey::balance_of(&client, keypair.address())
+                        .await
+                        .map_err(|e| Error::Custom(e.to_string()))?;
+
+                    let lunar_new_year_balance =
+                        lunar_new_year::balance_of(&client, keypair.address())
+                            .await
+                            .map_err(|e| Error::Custom(e.to_string()))?;
                     println!(
-                        "{} has {}",
-                        format!("{:?}", keypair.address()).blue(),
-                        balance.to_string().red()
+                        "{} has ({}) Bera and ({}) Honey And ({}) Lunar New Year NFT",
+                        format!("{}", keypair.address()).blue(),
+                        native_balance.to_string().red(),
+                        honey_balance.to_string().blink(),
+                        lunar_new_year_balance.to_string().bold()
                     );
                 }
                 Ok(())
@@ -45,6 +62,8 @@ impl Balance {
 
 #[derive(Debug, StructOpt)]
 pub struct Multi {
+    #[structopt(long)]
+    pub chain_id: u64,
     /// keypair file name
     #[structopt(short, long)]
     pub file_name: String,
@@ -61,29 +80,31 @@ impl Multi {
             get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
 
         for keypair in keypairs.keypairs {
-            let mut count = 0;
-            loop {
-                let balance = provider
-                    .get_balance(keypair.address(), None)
-                    .await
-                    .map_err(|e| Error::Custom(e.to_string()))?;
-                if balance == U256::zero() && count <= 3 {
-                    log::warn!(
-                        "WARN: Address({:?}) balance is Zero({})",
-                        keypair.address(),
-                        balance
-                    );
-                    count += 1;
-                    continue;
-                } else {
-                    println!(
-                        "{} has {}",
-                        format!("{:?}", keypair.address()).blue(),
-                        balance.to_string().red()
-                    );
-                    break;
-                }
-            }
+            let client = SignerMiddleware::new(
+                provider.clone(),
+                keypair.clone().with_chain_id(self.chain_id),
+            );
+
+            let native_balance = provider
+                .get_balance(keypair.address(), None)
+                .await
+                .map_err(|e| Error::Custom(e.to_string()))?;
+
+            let honey_balance = honey::balance_of(&client, keypair.address())
+                .await
+                .map_err(|e| Error::Custom(e.to_string()))?;
+
+            let lunar_new_year_balance = lunar_new_year::balance_of(&client, keypair.address())
+                .await
+                .map_err(|e| Error::Custom(e.to_string()))?;
+
+            println!(
+                "{} has ({}) Bera and ({}) Honey And ({}) Lunar New Year NFT",
+                format!("{}", keypair.address()).blue(),
+                native_balance.to_string().red(),
+                honey_balance.to_string().blink(),
+                lunar_new_year_balance.to_string().bold()
+            );
         }
         Ok(())
     }

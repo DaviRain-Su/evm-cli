@@ -21,22 +21,23 @@ use time::OffsetDateTime;
 
 // notice must use erc20 dex
 #[derive(Debug, StructOpt)]
-pub struct Swap {
+pub struct Liquidity {
     #[structopt(long)]
     pub chain_id: u64,
     #[structopt(long)]
     pub file_name: String,
 }
 
-impl Swap {
+impl Liquidity {
     pub async fn run(&self) -> Result<(), Error> {
         let config = get_config().map_err(|e| Error::from(e.to_string()))?;
 
         let provider = Provider::<Http>::try_from(config.rpc_endpoint)
             .map_err(|e| Error::Custom(e.to_string()))?;
 
-        let keypairs =
-            get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
+        // let keypairs =
+        // get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
+        let keypairs = get_single_keypairs().map_err(|e| Error::Custom(e.to_string()))?;
 
         for keypair in keypairs.keypairs.iter() {
             let client = SignerMiddleware::new(
@@ -44,6 +45,7 @@ impl Swap {
                 keypair.clone().with_chain_id(self.chain_id),
             );
 
+            // let block_number = BlockId::from(BlockNumber::Finalized);
             let balance = provider
                 .get_balance(keypair.address(), None)
                 .await
