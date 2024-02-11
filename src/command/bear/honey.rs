@@ -34,15 +34,25 @@ impl Honey {
             single_keypair.clone().with_chain_id(self.chain_id),
         );
 
-        let balance = honey::balance_of(&client, single_keypair.address())
+        let honey_balance = honey::balance_of(&client, single_keypair.address())
             .await
             .map_err(|e| Error::Custom(e.to_string()))?;
+
+        let honey_decimal = honey::decimals(&client)
+            .await
+            .map_err(|e| Error::Custom(e.to_string()))?;
+
+        let exponent: u32 = honey_decimal as u32; // 自定义指数值
+        let divisor: u128 = 10u128.pow(exponent); // 计算除数
+        let honey_balance_f64 = honey_balance.as_u128() as f64 / divisor as f64;
+
         println!(
-            "{} has Honey {} num",
+            "{} have {} Honey",
             format!("{}", single_keypair.address()).blue(),
-            balance
+            honey_balance_f64
         );
-        let approve_result = honey::approve(&client, honey_token_addr(), balance)
+
+        let approve_result = honey::approve(&client, honey_token_addr(), honey_balance)
             .await
             .map_err(|e| Error::Custom(e.to_string()))?;
         println!("approve result : {:?}", approve_result);
@@ -65,13 +75,15 @@ impl Honey {
                 };
                 println!("transfer result: {:?}", transfer_result);
 
-                let balance = honey::balance_of(&client, keypair.address())
+                let honey_balance = honey::balance_of(&client, keypair.address())
                     .await
                     .map_err(|e| Error::Custom(e.to_string()))?;
+                let honey_balance_f64 = honey_balance.as_u128() as f64 / divisor as f64;
+
                 println!(
-                    "{} has Honey {} num",
+                    "{} have {} Honey",
                     format!("{}", keypair.address()).blue(),
-                    balance
+                    honey_balance_f64
                 );
             }
         }

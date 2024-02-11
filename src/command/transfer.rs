@@ -1,3 +1,4 @@
+use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
 use crate::utils::{get_all_keypairs, get_config, get_single_keypairs, send_transaction};
 use colored::*;
@@ -47,10 +48,12 @@ impl Transfer {
             .await
             .map_err(|e| Error::Custom(e.to_string()))?;
 
+        let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
+
         println!(
-            "{} has {}",
-            format!("{:?}", single_keypair.address()).blue(),
-            balance.to_string().red()
+            "{} have {} Bera",
+            format!("{}", single_keypair.address()).blue(),
+            native_balance_f64.to_string().red()
         );
 
         let keypairs = get_all_keypairs(&self.file_name)?;
@@ -62,10 +65,12 @@ impl Transfer {
                     .await
                     .map_err(|e| Error::Custom(e.to_string()))?;
 
+                let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
+
                 println!(
-                    "{} has {}",
-                    format!("{:?}", keypair.address()).blue(),
-                    balance.to_string().red()
+                    "{} have {} Bera",
+                    format!("{}", keypair.address()).blue(),
+                    native_balance_f64.to_string().red()
                 );
 
                 if balance < U256::from(100000000000000000u64) {
@@ -91,10 +96,12 @@ impl Transfer {
                         .await
                         .map_err(|e| Error::Custom(e.to_string()))?;
 
+                    let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
+
                     println!(
-                        "{} has {}",
-                        format!("{:?}", keypair.address()).blue(),
-                        balance.to_string().red()
+                        "{} have {} Bera",
+                        format!("{}", keypair.address()).blue(),
+                        native_balance_f64.to_string().red()
                     );
                 }
             }
@@ -106,10 +113,12 @@ impl Transfer {
                     .await
                     .map_err(|e| Error::Custom(e.to_string()))?;
 
+                let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
+
                 println!(
-                    "{} has {}",
-                    format!("{:?}", keypair.address()).blue(),
-                    balance.to_string().red()
+                    "{} have {} Bera",
+                    format!("{}", keypair.address()).blue(),
+                    native_balance_f64.to_string().red()
                 );
 
                 let client = SignerMiddleware::new(
@@ -138,10 +147,12 @@ impl Transfer {
                     .await
                     .map_err(|e| Error::Custom(e.to_string()))?;
 
+                let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
+
                 println!(
-                    "{} has {}",
-                    format!("{:?}", keypair.address()).blue(),
-                    balance.to_string().red()
+                    "{} have {} Bera",
+                    format!("{}", keypair.address()).blue(),
+                    native_balance_f64.to_string().red()
                 );
             }
         }
