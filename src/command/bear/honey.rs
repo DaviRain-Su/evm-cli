@@ -39,7 +39,7 @@ impl Honey {
             .map_err(|e| Error::Custom(e.to_string()))?;
         println!(
             "{} has Honey {} num",
-            format!("{:?}", single_keypair.address()).blue(),
+            format!("{}", single_keypair.address()).blue(),
             balance
         );
         let approve_result = honey::approve(&client, honey_token_addr(), balance)
@@ -63,14 +63,14 @@ impl Honey {
                         continue;
                     }
                 };
-                println!("transfer result : {:?}", transfer_result);
+                println!("transfer result: {:?}", transfer_result);
 
                 let balance = honey::balance_of(&client, keypair.address())
                     .await
                     .map_err(|e| Error::Custom(e.to_string()))?;
                 println!(
                     "{} has Honey {} num",
-                    format!("{:?}", keypair.address()).blue(),
+                    format!("{}", keypair.address()).blue(),
                     balance
                 );
             }

@@ -114,8 +114,8 @@ impl NftBuy {
                 && native_token_balance > U256::zero()
                 && honey_balance == U256::from(2_000_000_000_000_000_000u64)
             {
-                log::info!(
-                    "Address({}) have {} Lunar New Year NFT num",
+                println!(
+                    "Address({}) have {} Lunar New Year NFT",
                     keypair.address().to_string().blue(),
                     lunar_new_year_balance
                 );
@@ -151,7 +151,7 @@ impl NftBuy {
                     .map_err(|e| Error::Custom(e.to_string()))?;
 
                 println!(
-                    "Address({}) have {}  num Lunar New Year NFT",
+                    "Address({}) have {} num Lunar New Year NFT",
                     keypair.address().to_string().blue(),
                     balance
                 );
