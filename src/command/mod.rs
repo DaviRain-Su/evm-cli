@@ -27,7 +27,7 @@ pub enum Command {
     #[structopt(name = "deploy-sc")]
     Deploy(deploy_sc::DeploySc),
     /// bera module
-    #[structopt(name = "bear")]
+    #[structopt(name = "bera")]
     Bera(bear::Bera),
     /// dev for test
     #[structopt(name = "dev")]
