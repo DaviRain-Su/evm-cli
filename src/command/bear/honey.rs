@@ -52,9 +52,13 @@ impl Honey {
             honey_balance_f64
         );
 
-        let approve_result = honey::approve(&client, honey_token_addr(), honey_balance)
-            .await
-            .map_err(|e| Error::Custom(e.to_string()))?;
+        let approve_result = loop {
+            if let Ok(result) = honey::approve(&client, honey_token_addr(), honey_balance).await {
+                break result;
+            } else {
+                continue;
+            }
+        };
         println!("approve result : {:?}", approve_result);
 
         let keypairs =
