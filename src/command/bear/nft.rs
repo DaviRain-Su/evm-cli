@@ -1,8 +1,9 @@
-use crate::bear::deploy_contracts::honey::{self, honey_token_addr};
-use crate::bear::nft::booba_on_bera::{self, booba_on_bera_addr};
+use crate::bear::deploy_contracts::honey::{self};
+use crate::bear::nft::booba_on_bera::{self};
 use crate::bear::nft::lunar_new_year::{self, lunar_new_year_addr};
+use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
-use crate::utils::{get_all_keypairs, get_config, get_single_keypairs};
+use crate::utils::{get_all_keypairs, get_config};
 use colored::*;
 use ethers::prelude::SignerMiddleware;
 use ethers::providers::{Http, Middleware, Provider};
@@ -61,6 +62,14 @@ impl BoobaOnBera {
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
 
+            let native_balance_f64 = native_token_balance.as_u128() as f64 / BERA_DECIMAL;
+
+            println!(
+                "{} have {} Bera",
+                format!("{}", keypair.address()).blue(),
+                native_balance_f64.to_string().red()
+            );
+
             let erc20_total_supply = booba_on_bera::erc_20_total_supply(&client)
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
@@ -76,9 +85,7 @@ impl BoobaOnBera {
             let mint_num = U256::from(50 * divisor);
 
             let booba_result = loop {
-                if let Err(e) =
-                    booba_on_bera::booba_mint(&client, keypair.address(), mint_num, true).await
-                {
+                if let Err(e) = booba_on_bera::booba_mint(&client, mint_num, true).await {
                     log::warn!("Warn : {:?}", e.to_string());
                     continue;
                 } else {
@@ -240,7 +247,7 @@ impl NftBuy {
                 println!(
                     "Address({}) have {} honey num",
                     keypair.address().to_string().red(),
-                    balance
+                    honey_balance
                 );
             } else {
                 println!(

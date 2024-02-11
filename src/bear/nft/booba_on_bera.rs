@@ -30,7 +30,6 @@ pub async fn approve(
 /// boobaMint
 pub async fn booba_mint(
     client: &Client,
-    account: Address,
     value: U256,
     mint_nft: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {

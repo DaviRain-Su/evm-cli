@@ -1,4 +1,4 @@
-use crate::bear::deploy_contracts::honey::{self, honey_token_addr};
+use crate::bear::deploy_contracts::honey::{self};
 use crate::bear::nft::lunar_new_year;
 use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;

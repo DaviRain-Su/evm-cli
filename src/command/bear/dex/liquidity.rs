@@ -1,24 +1,13 @@
-use crate::bear::deploy_contracts::{
-    multicall3_addr,
-    wbera::{self, wbera_addr},
-};
-use crate::bear::precompile_contracts::dex;
-
-use crate::bear::precompile_contracts::{
-    erc20_bank::{self, erc20_bank_addr},
-    erc20_dex::{self, erc20_dex_addr},
-};
+use crate::bear::deploy_contracts::wbera::{self, wbera_addr};
+use crate::bear::precompile_contracts::erc20_dex::{self};
 use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
-use crate::utils::{get_all_keypairs, get_config, get_single_keypairs};
+use crate::utils::{get_all_keypairs, get_config};
 use ethers::prelude::SignerMiddleware;
 use ethers::providers::{Http, Middleware, Provider};
-use ethers::types::U256;
 use ethers_core::types::Address;
 use ethers_signers::Signer;
-use std::time::{SystemTime, UNIX_EPOCH};
 use structopt::StructOpt;
-use time::OffsetDateTime;
 
 // notice must use erc20 dex
 #[derive(Debug, StructOpt)]
@@ -38,9 +27,9 @@ impl Liquidity {
         let provider = Provider::<Http>::try_from(config.rpc_endpoint)
             .map_err(|e| Error::Custom(e.to_string()))?;
 
-        // let keypairs =
-        // get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
-        let keypairs = get_single_keypairs().map_err(|e| Error::Custom(e.to_string()))?;
+        let keypairs =
+            get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
+        // let keypairs = get_single_keypairs().map_err(|e| Error::Custom(e.to_string()))?;
 
         for keypair in keypairs.keypairs.iter() {
             let client = SignerMiddleware::new(
@@ -115,11 +104,4 @@ impl Liquidity {
         }
         Ok(())
     }
-}
-
-fn get_epoch_milliseconds() -> u128 {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_millis()
 }

@@ -1,6 +1,6 @@
 use crate::Client;
 use ethers::prelude::*;
-use ethers::utils::{format_units, parse_units};
+use ethers::utils::parse_units;
 use std::str::FromStr;
 use std::sync::Arc;
 
