@@ -59,7 +59,6 @@ impl Transfer {
         let keypairs = get_all_keypairs(&self.file_name)?;
         if self.is_one_to_more {
             for keypair in keypairs.keypairs {
-                // let block_number = BlockId::from(BlockNumber::Finalized);
                 let balance = provider
                     .get_balance(keypair.address(), None)
                     .await
@@ -73,41 +72,37 @@ impl Transfer {
                     native_balance_f64.to_string().red()
                 );
 
-                if balance < U256::from(100000000000000000u64) {
-                    loop {
-                        if let Err(e) = send_transaction(
-                            &client,
-                            single_keypair.address(),
-                            keypair.address(),
-                            self.amount,
-                        )
-                        .await
-                        {
-                            log::warn!("transfer command send_transaction have Err({:?})", e);
-                            continue;
-                        } else {
-                            break;
-                        }
+                loop {
+                    if let Err(e) = send_transaction(
+                        &client,
+                        single_keypair.address(),
+                        keypair.address(),
+                        self.amount,
+                    )
+                    .await
+                    {
+                        log::warn!("transfer command send_transaction have Err({:?})", e);
+                        continue;
+                    } else {
+                        break;
                     }
-
-                    // let block_number = BlockId::from(BlockNumber::Finalized);
-                    let balance = provider
-                        .get_balance(keypair.address(), None)
-                        .await
-                        .map_err(|e| Error::Custom(e.to_string()))?;
-
-                    let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
-
-                    println!(
-                        "{} have {} Bera",
-                        format!("{}", keypair.address()).blue(),
-                        native_balance_f64.to_string().red()
-                    );
                 }
+
+                let balance = provider
+                    .get_balance(keypair.address(), None)
+                    .await
+                    .map_err(|e| Error::Custom(e.to_string()))?;
+
+                let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
+
+                println!(
+                    "{} have {} Bera",
+                    format!("{}", keypair.address()).blue(),
+                    native_balance_f64.to_string().red()
+                );
             }
         } else {
             for keypair in keypairs.keypairs {
-                // let block_number = BlockId::from(BlockNumber::Finalized);
                 let balance = provider
                     .get_balance(keypair.address(), None)
                     .await
@@ -141,7 +136,6 @@ impl Transfer {
                     }
                 }
 
-                // let block_number = BlockId::from(BlockNumber::Finalized);
                 let balance = provider
                     .get_balance(keypair.address(), None)
                     .await
