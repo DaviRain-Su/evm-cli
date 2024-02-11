@@ -1,4 +1,5 @@
 use crate::bear::deploy_contracts::wbera;
+use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
 use crate::utils::{get_all_keypairs, get_config, get_single_keypairs};
 use colored::*;
@@ -55,13 +56,23 @@ impl Deposit {
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
 
+            let native_balance_f64 = native_balance.as_u128() as f64 / BERA_DECIMAL;
+
             println!(
-                "{} has Bera {} num",
-                format!("{:?}", keypair.address()).blue(),
-                native_balance
+                "deposit Before {} has {} Bera",
+                format!("{}", keypair.address()).blue(),
+                native_balance_f64
             );
 
             let deposit_half_native_balance = native_balance / 2000;
+            let deposit_half_native_balance_f64 =
+                deposit_half_native_balance.as_u128() as f64 / BERA_DECIMAL;
+
+            println!(
+                "{} has deposit {} Bera",
+                format!("{}", keypair.address()).blue(),
+                deposit_half_native_balance_f64
+            );
 
             let deposit_result = loop {
                 if let Err(e) = wbera::deposit(&client, deposit_half_native_balance).await {
@@ -76,10 +87,12 @@ impl Deposit {
             let balance = wbera::balance_of(&client, keypair.address())
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
+            let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
+
             println!(
-                "{} has Wbera {} num",
-                format!("{:?}", keypair.address()).blue(),
-                balance
+                "Deposit After {} has {} Bera",
+                format!("{}", keypair.address()).blue(),
+                native_balance_f64
             );
         }
         Ok(())
@@ -116,13 +129,23 @@ impl Withdraw {
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
 
+            let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
+
             println!(
-                "{} has Wbera {} num",
-                format!("{:?}", keypair.address()).blue(),
-                balance
+                "Withdraw before {} has {} Bera",
+                format!("{}", keypair.address()).blue(),
+                native_balance_f64
             );
 
             let withdraw_half_balance = balance / 2;
+
+            let withdraw_half_balance_f64 = withdraw_half_balance.as_u128() as f64 / BERA_DECIMAL;
+
+            println!(
+                "{} has withdraw {} Bera",
+                format!("{}", keypair.address()).blue(),
+                withdraw_half_balance_f64
+            );
 
             let withdra_result = wbera::withdraw(&client, withdraw_half_balance)
                 .await
@@ -133,10 +156,12 @@ impl Withdraw {
             let balance = wbera::balance_of(&client, keypair.address())
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
+            let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
+
             println!(
-                "{} has Wbera {} num",
+                "Withdraw {} has {} Wbera",
                 format!("{:?}", keypair.address()).blue(),
-                balance
+                native_balance_f64
             );
         }
 

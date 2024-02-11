@@ -1,4 +1,5 @@
 use crate::bear::deploy_contracts::honey::{self, honey_token_addr};
+use crate::bear::nft::booba_on_bera::{self, booba_on_bera_addr};
 use crate::bear::nft::lunar_new_year::{self, lunar_new_year_addr};
 use crate::errors::Error;
 use crate::utils::{get_all_keypairs, get_config, get_single_keypairs};
@@ -15,6 +16,8 @@ pub enum NFT {
     NftBuy(NftBuy),
     /// check nft have
     NftCheck(NftCheck),
+    /// booba buy
+    Booba(BoobaOnBera),
 }
 
 impl NFT {
@@ -22,7 +25,81 @@ impl NFT {
         match self {
             NFT::NftBuy(buy) => buy.run().await,
             NFT::NftCheck(check) => check.run().await,
+            NFT::Booba(booba) => booba.run().await,
         }
+    }
+}
+
+#[derive(Debug, StructOpt)]
+pub struct BoobaOnBera {
+    /// chain id
+    #[structopt(long)]
+    pub chain_id: u64,
+    /// wallet file name
+    #[structopt(long)]
+    pub file_name: String,
+}
+
+impl BoobaOnBera {
+    pub async fn run(&self) -> Result<(), Error> {
+        let config = get_config().map_err(|e| Error::from(e.to_string()))?;
+
+        let provider = Provider::<Http>::try_from(config.rpc_endpoint)
+            .map_err(|e| Error::Custom(e.to_string()))?;
+
+        let keypairs =
+            get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
+
+        for keypair in &keypairs.keypairs {
+            let client = SignerMiddleware::new(
+                provider.clone(),
+                keypair.clone().with_chain_id(self.chain_id),
+            );
+
+            let native_token_balance = provider
+                .get_balance(keypair.address(), None)
+                .await
+                .map_err(|e| Error::Custom(e.to_string()))?;
+
+            let erc20_total_supply = booba_on_bera::erc_20_total_supply(&client)
+                .await
+                .map_err(|e| Error::Custom(e.to_string()))?;
+            println!("Erc20 Total supply {}", erc20_total_supply);
+
+            let booba_decimal = booba_on_bera::decimal(&client)
+                .await
+                .map_err(|e| Error::Custom(e.to_string()))?;
+            println!("booba_decimal {}", booba_decimal);
+
+            let exponent: u32 = booba_decimal as u32; // 自定义指数值
+            let divisor: u128 = 10u128.pow(exponent); // 计算除数
+            let mint_num = U256::from(50 * divisor);
+
+            let booba_result = loop {
+                if let Err(e) =
+                    booba_on_bera::booba_mint(&client, keypair.address(), mint_num, true).await
+                {
+                    log::warn!("Warn : {:?}", e.to_string());
+                    continue;
+                } else {
+                    break;
+                }
+            };
+
+            println!("booba_result: {:?}", booba_result);
+
+            let balance = booba_on_bera::erc_721_balance_of(&client, keypair.address())
+                .await
+                .map_err(|e| Error::Custom(e.to_string()))?;
+
+            println!(
+                "Address({}) have {} Booba On Bera NFT",
+                keypair.address().to_string().blue(),
+                balance
+            );
+        }
+
+        Ok(())
     }
 }
 
