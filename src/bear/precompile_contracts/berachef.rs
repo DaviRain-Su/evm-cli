@@ -1,3 +1,6 @@
+//! 该预编译负责配置从验证器到 berachain 中流动性提供者的 BGT 排放。
+//! Berachef模块预编译合约接口
+
 use crate::Client;
 use ethers::core::types::Address;
 use ethers::prelude::*;
@@ -15,7 +18,8 @@ abigen!(
     event_derives(serde::Deserialize, serde::Serialize)
 );
 
-// getActiveCuttingBoard
+/// getActiveCuttingBoard
+/// 返回具有给定operatorAddr的验证器的活动切割板
 pub async fn get_active_cutting_board(
     client: &Client,
     operator_addr: Address,
@@ -28,7 +32,8 @@ pub async fn get_active_cutting_board(
     Ok(value)
 }
 
-//getDelegation
+/// getDelegation
+/// 返回验证者的委托地址。
 pub async fn get_delegation(
     client: &Client,
     operator_addr: Address,
@@ -38,7 +43,8 @@ pub async fn get_delegation(
     Ok(value)
 }
 
-// getQueuedCuttingBoard
+/// getQueuedCuttingBoard
+/// 返回具有给定operatorAddr的验证器的排队切板
 pub async fn get_queued_cutting_board(
     client: &Client,
     operator_addr: Address,
@@ -51,7 +57,9 @@ pub async fn get_queued_cutting_board(
     Ok(value)
 }
 
-// queueNewCuttingBoard
+/// queueNewCuttingBoard
+/// 切板的重量加起来必须为 100。也只能使用列入白名单的池。
+/// 使用给定的operatorAddr将新的切板添加到验证器的队列中。
 pub async fn queue_new_cutting_board(
     client: &Client,
     operator_addr: Address,
@@ -67,7 +75,8 @@ pub async fn queue_new_cutting_board(
     Ok(())
 }
 
-// setDelegation
+/// setDelegation
+/// 设置一个可以代表验证者设置切板的地址。
 pub async fn set_delegation(
     client: &Client,
     delegation_address: Address,
@@ -83,7 +92,9 @@ pub async fn set_delegation(
     Ok(())
 }
 
-// updateFriendsOfTheChef
+/// updateFriendsOfTheChef
+/// 该函数的调用者必须是治理模块账户。
+/// 更新厨师的好友以更新 LP 池是否列入白名单的状态。
 pub async fn update_friends_of_the_chef(
     client: &Client,
     receiver_address: Address,

@@ -1,3 +1,8 @@
+//! 银行预编译为 Cosmos SDK 银行模块提供接口，该模块负责管理代币转账和余额。
+//! 该接口定义了与银行模块交互的各种事件和方法。
+//! Bank 模块发出的所有支持的 Cosmos 事件的接口
+//!
+
 use crate::Client;
 use ethers::core::types::Address;
 use ethers::prelude::*;
@@ -15,6 +20,7 @@ abigen!(
     event_derives(serde::Deserialize, serde::Serialize)
 );
 
+/// getAllBalances
 /// 如果未找到账户地址，则返回空数组。
 /// 按地址返回所有面额的账户余额
 pub async fn get_all_balances(
@@ -94,6 +100,8 @@ pub async fn get_supply(
 /// send
 /// 如果发送者没有足够的余额，则返回 false
 /// 将硬币从 msg.sender 发送到另一个
+/// - to_address: 收件人地址
+/// - amount: 发送的 Cosmos 币数量
 pub async fn send(
     client: &Client,
     to_address: Address,
