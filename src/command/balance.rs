@@ -1,5 +1,6 @@
 use crate::bear::deploy_contracts::honey::{self, honey_token_addr};
 use crate::bear::nft::lunar_new_year;
+use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
 use crate::utils::{get_all_keypairs, get_config, get_single_keypairs};
 use colored::*;
@@ -38,10 +39,19 @@ impl Balance {
                         .get_balance(keypair.address(), None)
                         .await
                         .map_err(|e| Error::Custom(e.to_string()))?;
+                    let native_balance_f64 = native_balance.as_u128() as f64 / BERA_DECIMAL;
+
+                    let honey_decimal = honey::decimals(&client)
+                        .await
+                        .map_err(|e| Error::Custom(e.to_string()))?;
 
                     let honey_balance = honey::balance_of(&client, keypair.address())
                         .await
                         .map_err(|e| Error::Custom(e.to_string()))?;
+
+                    let exponent: u32 = honey_decimal as u32; // 自定义指数值
+                    let divisor: u128 = 10u128.pow(exponent); // 计算除数
+                    let honey_balance_f64 = honey_balance.as_u128() as f64 / divisor as f64;
 
                     let lunar_new_year_balance =
                         lunar_new_year::balance_of(&client, keypair.address())
@@ -50,8 +60,8 @@ impl Balance {
                     println!(
                         "{} has ({}) Bera and ({}) Honey And ({}) Lunar New Year NFT",
                         format!("{}", keypair.address()).blue(),
-                        native_balance.to_string().red(),
-                        honey_balance.to_string().blink(),
+                        native_balance_f64.to_string().red(),
+                        honey_balance_f64.to_string().blink(),
                         lunar_new_year_balance.to_string().bold()
                     );
                 }
@@ -92,9 +102,19 @@ impl Multi {
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
 
+            let native_balance_f64 = native_balance.as_u128() as f64 / BERA_DECIMAL;
+
             let honey_balance = honey::balance_of(&client, keypair.address())
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
+
+            let honey_decimal = honey::decimals(&client)
+                .await
+                .map_err(|e| Error::Custom(e.to_string()))?;
+
+            let exponent: u32 = honey_decimal as u32; // 自定义指数值
+            let divisor: u128 = 10u128.pow(exponent); // 计算除数
+            let honey_balance_f64 = honey_balance.as_u128() as f64 / divisor as f64;
 
             let lunar_new_year_balance = lunar_new_year::balance_of(&client, keypair.address())
                 .await
@@ -103,8 +123,8 @@ impl Multi {
             println!(
                 "{} has ({}) Bera and ({}) Honey And ({}) Lunar New Year NFT",
                 format!("{}", keypair.address()).blue(),
-                native_balance.to_string().red(),
-                honey_balance.to_string().blink(),
+                native_balance_f64.to_string().red(),
+                honey_balance_f64.to_string().blink(),
                 lunar_new_year_balance.to_string().bold()
             );
         }
