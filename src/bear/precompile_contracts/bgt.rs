@@ -1,3 +1,7 @@
+//! 此预编译负责允许用户将其 BGT 兑换为 BERA。
+//! BGT模块预编译合约接口
+//!
+
 use crate::Client;
 use ethers::core::types::Address;
 use ethers::prelude::*;
@@ -15,11 +19,12 @@ abigen!(
     event_derives(serde::Deserialize, serde::Serialize)
 );
 
-// redeem
+/// # redeem
+/// 从 msg.sender 烧毁 BGT 代币，并将 bera 铸造到接收者地址。
 pub async fn redeem(
     client: &Client,
-    receiver: Address,
-    amount: U256,
+    receiver: Address, // 铸造 bera 的地址。
+    amount: U256,      // 要兑换的 BGT 代币数量
 ) -> Result<(), Box<dyn std::error::Error>> {
     let contract = BGTModule::new(bgt_addr(), Arc::new(client.clone()));
     let tx = contract.redeem(receiver, amount).send().await?.await?;

@@ -20,7 +20,7 @@ abigen!(
     event_derives(serde::Deserialize, serde::Serialize)
 );
 
-/// getAllBalances
+/// # getAllBalances
 /// 如果未找到账户地址，则返回空数组。
 /// 按地址返回所有面额的账户余额
 pub async fn get_all_balances(
@@ -32,7 +32,7 @@ pub async fn get_all_balances(
     Ok(value)
 }
 
-/// getAllSpendableBalances
+/// # getAllSpendableBalances
 /// 如果未找到账户地址，则返回空数组
 /// 按地址返回所有硬币面额的账户余额
 pub async fn get_all_spendable_balances(
@@ -47,7 +47,7 @@ pub async fn get_all_spendable_balances(
     Ok(value)
 }
 
-/// getAllSupply
+/// # getAllSupply
 /// 返回所有代币的总供应量
 pub async fn get_all_supply(
     client: &Client,
@@ -57,7 +57,7 @@ pub async fn get_all_supply(
     Ok(value)
 }
 
-/// getBalance
+/// # getBalance
 /// 如果未找到面额，则返回 0
 /// 按地址返回给定硬币面额的帐户余额 amount
 pub async fn get_balance(
@@ -70,7 +70,7 @@ pub async fn get_balance(
     Ok(value)
 }
 
-/// getSpendableBalance
+/// # getSpendableBalance
 /// 如果未找到面额，则返回 0
 /// 按地址返回给定硬币面额的帐户余额 amount
 pub async fn get_spendable_balance(
@@ -86,7 +86,7 @@ pub async fn get_spendable_balance(
     Ok(value)
 }
 
-/// getSupply
+///  # getSupply
 /// 返回单个代币的总供应量
 pub async fn get_supply(
     client: &Client,
@@ -97,15 +97,13 @@ pub async fn get_supply(
     Ok(value)
 }
 
-/// send
+/// # send
 /// 如果发送者没有足够的余额，则返回 false
 /// 将硬币从 msg.sender 发送到另一个
-/// - to_address: 收件人地址
-/// - amount: 发送的 Cosmos 币数量
 pub async fn send(
     client: &Client,
-    to_address: Address,
-    amount: Vec<bank_module::Coin>,
+    to_address: Address,            //  收件人地址
+    amount: Vec<bank_module::Coin>, // 发送的 Cosmos 币数量
 ) -> Result<(), Box<dyn std::error::Error>> {
     let contract = BankModule::new(bank_addr(), Arc::new(client.clone()));
     let tx = contract.send(to_address, amount).send().await?.await?;

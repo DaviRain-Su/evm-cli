@@ -18,11 +18,11 @@ abigen!(
     event_derives(serde::Deserialize, serde::Serialize)
 );
 
-/// getActiveCuttingBoard
+/// # getActiveCuttingBoard
 /// 返回具有给定operatorAddr的验证器的活动切割板
 pub async fn get_active_cutting_board(
     client: &Client,
-    operator_addr: Address,
+    operator_addr: Address, // 验证人的运营商地址。
 ) -> Result<berachef_module::CuttingBoard, Box<dyn std::error::Error>> {
     let contract = BerachefModule::new(berachef_addr(), Arc::new(client.clone()));
     let value = contract
@@ -32,22 +32,22 @@ pub async fn get_active_cutting_board(
     Ok(value)
 }
 
-/// getDelegation
+/// # getDelegation
 /// 返回验证者的委托地址。
 pub async fn get_delegation(
     client: &Client,
-    operator_addr: Address,
+    operator_addr: Address, // delegateAddress 委托地址。
 ) -> Result<Address, Box<dyn std::error::Error>> {
     let contract = BerachefModule::new(berachef_addr(), Arc::new(client.clone()));
     let value = contract.get_delegation(operator_addr).call().await?;
     Ok(value)
 }
 
-/// getQueuedCuttingBoard
+/// # getQueuedCuttingBoard
 /// 返回具有给定operatorAddr的验证器的排队切板
 pub async fn get_queued_cutting_board(
     client: &Client,
-    operator_addr: Address,
+    operator_addr: Address, // 验证人的运营商地址。
 ) -> Result<berachef_module::CuttingBoard, Box<dyn std::error::Error>> {
     let contract = BerachefModule::new(berachef_addr(), Arc::new(client.clone()));
     let value = contract
@@ -62,9 +62,9 @@ pub async fn get_queued_cutting_board(
 /// 使用给定的operatorAddr将新的切板添加到验证器的队列中。
 pub async fn queue_new_cutting_board(
     client: &Client,
-    operator_addr: Address,
-    weights: Vec<berachef_module::Weight>,
-    start_epoch: i64,
+    operator_addr: Address,                // 验证人的运营商地址。
+    weights: Vec<berachef_module::Weight>, // The weights of the cutting board.
+    start_epoch: i64,                      // 切板开始的纪元。
 ) -> Result<(), Box<dyn std::error::Error>> {
     let contract = BerachefModule::new(berachef_addr(), Arc::new(client.clone()));
     let tx = contract
@@ -79,7 +79,7 @@ pub async fn queue_new_cutting_board(
 /// 设置一个可以代表验证者设置切板的地址。
 pub async fn set_delegation(
     client: &Client,
-    delegation_address: Address,
+    delegation_address: Address, // 可以代表验证者设置切板的地址。
 ) -> Result<(), Box<dyn std::error::Error>> {
     let contract = BerachefModule::new(berachef_addr(), Arc::new(client.clone()));
     let tx = contract
@@ -97,8 +97,8 @@ pub async fn set_delegation(
 /// 更新厨师的好友以更新 LP 池是否列入白名单的状态。
 pub async fn update_friends_of_the_chef(
     client: &Client,
-    receiver_address: Address,
-    friend_of_the_chef: bool,
+    receiver_address: Address, // 要删除或添加为厨师好友的地址。
+    friend_of_the_chef: bool,  // 设置白名单状态；如果池被列入白名单，则为 true，否则为 false。
 ) -> Result<(), Box<dyn std::error::Error>> {
     let contract = BerachefModule::new(berachef_addr(), Arc::new(client.clone()));
     let tx = contract
