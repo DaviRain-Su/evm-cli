@@ -59,56 +59,98 @@ impl Transfer {
         let keypairs = get_all_keypairs(&self.file_name)?;
         if self.is_one_to_more {
             for keypair in keypairs.keypairs {
-                let balance = provider
-                    .get_balance(keypair.address(), None)
-                    .await
-                    .map_err(|e| Error::Custom(e.to_string()))?;
-
-                let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
-
-                println!(
-                    "{} have {} Bera",
-                    format!("{}", keypair.address()).blue(),
-                    native_balance_f64.to_string().red()
-                );
-
-                loop {
-                    if let Err(e) = send_transaction(
-                        &client,
-                        single_keypair.address(),
-                        keypair.address(),
-                        self.amount,
-                    )
-                    .await
-                    {
-                        log::warn!("transfer command send_transaction have Err({:?})", e);
-                        continue;
+                let mut counter = 0;
+                let native_balance = loop {
+                    if let Ok(v) = provider.get_balance(keypair.address(), None).await {
+                        if (v != U256::zero()) & (counter < 3) {
+                            break v;
+                        } else if counter == 3 {
+                            break v;
+                        } else {
+                            println!("Try {} time", counter.to_string().red());
+                            counter += 1;
+                            continue;
+                        }
                     } else {
-                        break;
+                        continue;
                     }
-                }
+                };
 
-                let balance = provider
-                    .get_balance(keypair.address(), None)
-                    .await
-                    .map_err(|e| Error::Custom(e.to_string()))?;
-
-                let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
+                let native_balance_f64 = native_balance.as_u128() as f64 / BERA_DECIMAL;
 
                 println!(
                     "{} have {} Bera",
                     format!("{}", keypair.address()).blue(),
                     native_balance_f64.to_string().red()
                 );
+
+                // check wallet is zero
+                if native_balance == U256::zero() {
+                    println!(
+                        "{} have {} Bera",
+                        format!("{:?}", keypair.address()).red(),
+                        native_balance_f64.to_string().red()
+                    );
+                    loop {
+                        if let Err(e) = send_transaction(
+                            &client,
+                            single_keypair.address(),
+                            keypair.address(),
+                            self.amount,
+                        )
+                        .await
+                        {
+                            log::warn!("transfer command send_transaction have Err({:?})", e);
+                            continue;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    let mut counter = 0;
+                    let native_balance = loop {
+                        if let Ok(v) = provider.get_balance(keypair.address(), None).await {
+                            if (v != U256::zero()) & (counter < 3) {
+                                break v;
+                            } else if counter == 3 {
+                                break v;
+                            } else {
+                                println!("Try {} time", counter.to_string().red());
+                                counter += 1;
+                                continue;
+                            }
+                        } else {
+                            continue;
+                        }
+                    };
+                    let native_balance_f64 = native_balance.as_u128() as f64 / BERA_DECIMAL;
+
+                    println!(
+                        "{} have {} Bera",
+                        format!("{}", keypair.address()).blue(),
+                        native_balance_f64.to_string().red()
+                    );
+                }
             }
         } else {
             for keypair in keypairs.keypairs {
-                let balance = provider
-                    .get_balance(keypair.address(), None)
-                    .await
-                    .map_err(|e| Error::Custom(e.to_string()))?;
-
-                let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
+                let mut counter = 0;
+                let native_balance = loop {
+                    if let Ok(v) = provider.get_balance(keypair.address(), None).await {
+                        if (v != U256::zero()) & (counter < 3) {
+                            break v;
+                        } else if counter == 3 {
+                            break v;
+                        } else {
+                            println!("Try {} time", counter.to_string().red());
+                            counter += 1;
+                            continue;
+                        }
+                    } else {
+                        continue;
+                    }
+                };
+                let native_balance_f64 = native_balance.as_u128() as f64 / BERA_DECIMAL;
 
                 println!(
                     "{} have {} Bera",
@@ -136,12 +178,23 @@ impl Transfer {
                     }
                 }
 
-                let balance = provider
-                    .get_balance(keypair.address(), None)
-                    .await
-                    .map_err(|e| Error::Custom(e.to_string()))?;
-
-                let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
+                let mut counter = 0;
+                let native_balance = loop {
+                    if let Ok(v) = provider.get_balance(keypair.address(), None).await {
+                        if (v != U256::zero()) & (counter < 3) {
+                            break v;
+                        } else if counter == 3 {
+                            break v;
+                        } else {
+                            println!("Try {} time", counter.to_string().red());
+                            counter += 1;
+                            continue;
+                        }
+                    } else {
+                        continue;
+                    }
+                };
+                let native_balance_f64 = native_balance.as_u128() as f64 / BERA_DECIMAL;
 
                 println!(
                     "{} have {} Bera",

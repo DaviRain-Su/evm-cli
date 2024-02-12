@@ -97,28 +97,52 @@ impl Multi {
                 keypair.clone().with_chain_id(self.chain_id),
             );
 
-            let native_balance = provider
-                .get_balance(keypair.address(), None)
-                .await
-                .map_err(|e| Error::Custom(e.to_string()))?;
+            let mut counter = 0;
+            let native_balance = loop {
+                if let Ok(v) = provider.get_balance(keypair.address(), None).await {
+                    if (v != U256::zero()) & (counter < 3) {
+                        break v;
+                    } else if counter == 3 {
+                        break v;
+                    } else {
+                        println!("Try {} time", counter.to_string().red());
+                        counter += 1;
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+            };
 
             let native_balance_f64 = native_balance.as_u128() as f64 / BERA_DECIMAL;
 
-            let honey_balance = honey::balance_of(&client, keypair.address())
-                .await
-                .map_err(|e| Error::Custom(e.to_string()))?;
+            let honey_balance = loop {
+                if let Ok(v) = honey::balance_of(&client, keypair.address()).await {
+                    break v;
+                } else {
+                    continue;
+                }
+            };
 
-            let honey_decimal = honey::decimals(&client)
-                .await
-                .map_err(|e| Error::Custom(e.to_string()))?;
+            let honey_decimal = loop {
+                if let Ok(v) = honey::decimals(&client).await {
+                    break v;
+                } else {
+                    continue;
+                }
+            };
 
             let exponent: u32 = honey_decimal as u32; // 自定义指数值
             let divisor: u128 = 10u128.pow(exponent); // 计算除数
             let honey_balance_f64 = honey_balance.as_u128() as f64 / divisor as f64;
 
-            let lunar_new_year_balance = lunar_new_year::balance_of(&client, keypair.address())
-                .await
-                .map_err(|e| Error::Custom(e.to_string()))?;
+            let lunar_new_year_balance = loop {
+                if let Ok(v) = lunar_new_year::balance_of(&client, keypair.address()).await {
+                    break v;
+                } else {
+                    continue;
+                }
+            };
 
             println!(
                 "{:?} has ({}) Bera and ({}) Honey And ({}) Lunar New Year NFT",
