@@ -86,7 +86,7 @@ pub async fn get_spendable_balance(
     Ok(value)
 }
 
-///  # getSupply
+/// # getSupply
 /// 返回单个代币的总供应量
 pub async fn get_supply(
     client: &Client,

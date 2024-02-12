@@ -14,7 +14,7 @@ abigen!(
     event_derives(serde::Deserialize, serde::Serialize)
 );
 
-// addCurrencyPairs
+// # addCurrencyPairs
 pub async fn get_all_balances(
     client: &Client,
     pairs: Vec<String>,
@@ -26,7 +26,7 @@ pub async fn get_all_balances(
     Ok(())
 }
 
-// getAllCurrencyPairs
+// # getAllCurrencyPairs
 pub async fn get_all_currency_pairs(
     client: &Client,
 ) -> Result<Vec<String>, Box<dyn std::error::Error>> {
@@ -34,14 +34,14 @@ pub async fn get_all_currency_pairs(
     let value = contract.get_all_currency_pairs().call().await?;
     Ok(value)
 }
-// getDecimals
+// # getDecimals
 pub async fn get_decimals(client: &Client, pair: String) -> Result<u8, Box<dyn std::error::Error>> {
     let contract = OracleModule::new(oracle_addr(), Arc::new(client.clone()));
     let value = contract.get_decimals(pair).call().await?;
     Ok(value)
 }
 
-// getPrice
+// # getPrice
 pub async fn get_price(
     client: &Client,
     pair: String,
@@ -51,7 +51,7 @@ pub async fn get_price(
     Ok(value)
 }
 
-// hasCurrencyPair
+// # hasCurrencyPair
 pub async fn has_currency_pair(
     client: &Client,
     pair: String,
@@ -61,7 +61,7 @@ pub async fn has_currency_pair(
     Ok(value)
 }
 
-// removeCurrencyPairs
+// # removeCurrencyPairs
 pub async fn remove_currency_pairs(
     client: &Client,
     pairs: Vec<String>,

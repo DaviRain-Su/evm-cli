@@ -57,7 +57,7 @@ pub async fn get_queued_cutting_board(
     Ok(value)
 }
 
-/// queueNewCuttingBoard
+/// # queueNewCuttingBoard
 /// 切板的重量加起来必须为 100。也只能使用列入白名单的池。
 /// 使用给定的operatorAddr将新的切板添加到验证器的队列中。
 pub async fn queue_new_cutting_board(
@@ -75,7 +75,7 @@ pub async fn queue_new_cutting_board(
     Ok(())
 }
 
-/// setDelegation
+/// # setDelegation
 /// 设置一个可以代表验证者设置切板的地址。
 pub async fn set_delegation(
     client: &Client,
@@ -92,7 +92,7 @@ pub async fn set_delegation(
     Ok(())
 }
 
-/// updateFriendsOfTheChef
+/// # updateFriendsOfTheChef
 /// 该函数的调用者必须是治理模块账户。
 /// 更新厨师的好友以更新 LP 池是否列入白名单的状态。
 pub async fn update_friends_of_the_chef(

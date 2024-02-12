@@ -20,7 +20,7 @@ abigen!(
     event_derives(serde::Deserialize, serde::Serialize)
 );
 
-/// getAllDelegatorRewards
+/// # getAllDelegatorRewards
 /// 返回委托人累积的全部奖励。
 pub async fn get_all_delegator_rewards(
     client: &Client,
@@ -49,7 +49,7 @@ pub async fn get_delegator_validator_reward(
     Ok(value)
 }
 
-/// getTotalDelegatorReward
+/// # getTotalDelegatorReward
 /// 返回委托人累积的总奖励。
 pub async fn get_total_delegator_reward(
     client: &Client,
@@ -74,7 +74,7 @@ pub async fn get_withdraw_address(
     Ok(value)
 }
 
-/// getWithdrawEnabled
+/// # getWithdrawEnabled
 /// 返回是否启用提现委托奖励。
 pub async fn get_withdraw_enabled(client: &Client) -> Result<bool, Box<dyn std::error::Error>> {
     let contract = DistributeModule::new(distribution_addr(), Arc::new(client.clone()));
@@ -82,7 +82,7 @@ pub async fn get_withdraw_enabled(client: &Client) -> Result<bool, Box<dyn std::
     Ok(value)
 }
 
-/// setWithdrawAddress
+/// # setWithdrawAddress
 /// 调用者（msg.sender）可以设置接收委托奖励的地址。
 pub async fn set_withdraw_address(
     client: &Client,
@@ -99,7 +99,7 @@ pub async fn set_withdraw_address(
     Ok(())
 }
 
-/// withdrawDelegatorReward
+/// # withdrawDelegatorReward
 /// 撤回调用者（msg.sender）累积的奖励。返回领取的奖励。
 pub async fn withdraw_delegator_reward(
     client: &Client,

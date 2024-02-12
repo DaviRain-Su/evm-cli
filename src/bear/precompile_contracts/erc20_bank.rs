@@ -14,7 +14,7 @@ abigen!(
     event_derives(serde::Deserialize, serde::Serialize)
 );
 
-// coinDenomForERC20Address
+/// # coinDenomForERC20Address
 pub async fn coin_denom_for_erc20_address(
     client: &Client,
     token: Address,
@@ -24,7 +24,7 @@ pub async fn coin_denom_for_erc20_address(
     Ok(value)
 }
 
-/// erc20AddressForCoinDenom
+/// # erc20AddressForCoinDenom
 pub async fn erc_20_address_for_coin_denom(
     client: &Client,
     denom: String,
@@ -34,7 +34,7 @@ pub async fn erc_20_address_for_coin_denom(
     Ok(value)
 }
 
-/// performBankTransfer
+/// # performBankTransfer
 pub async fn perform_bank_transfer(
     client: &Client,
     owner: Address,
@@ -52,7 +52,7 @@ pub async fn perform_bank_transfer(
     Ok(())
 }
 
-// transferCoinToERC20
+/// # transferCoinToERC20
 pub async fn transfer_coin_to_erc20(
     client: &Client,
     denom: String,
@@ -69,7 +69,7 @@ pub async fn transfer_coin_to_erc20(
     Ok(())
 }
 
-// transferCoinToERC20From
+/// # transferCoinToERC20From
 pub async fn transfer_coin_to_erc20_from(
     client: &Client,
     denom: String,
@@ -88,7 +88,7 @@ pub async fn transfer_coin_to_erc20_from(
     Ok(())
 }
 
-/// transferCoinToERC20To
+/// # transferCoinToERC20To
 pub async fn transfer_coin_to_erc20_to(
     client: &Client,
     denom: String,
@@ -106,7 +106,7 @@ pub async fn transfer_coin_to_erc20_to(
     Ok(())
 }
 
-///transferERC20ToCoin
+/// # transferERC20ToCoin
 pub async fn transfer_erc20_to_coin(
     client: &Client,
     token: Address,
@@ -123,7 +123,7 @@ pub async fn transfer_erc20_to_coin(
     Ok(())
 }
 
-/// transferERC20ToCoinFrom
+/// # transferERC20ToCoinFrom
 pub async fn transfer_erc20_to_coin_from(
     client: &Client,
     token: Address,
@@ -142,8 +142,7 @@ pub async fn transfer_erc20_to_coin_from(
     Ok(())
 }
 
-// transferERC20ToCoinTo
-//
+/// # transferERC20ToCoinTo
 pub async fn transfer_erc20_to_coin_to(
     client: &Client,
     token: Address,

@@ -15,7 +15,7 @@ abigen!(
     event_derives(serde::Deserialize, serde::Serialize)
 );
 
-// getAMOCurrentLimit
+/// # getAMOCurrentLimit
 pub async fn get_amo_current_limt(
     client: &Client,
     amo_type: String,
@@ -29,7 +29,7 @@ pub async fn get_amo_current_limt(
     Ok(value)
 }
 
-/// getParams
+/// # getParams
 pub async fn get_params(
     client: &Client,
 ) -> Result<Vec<honey_module::Exchangeable>, Box<dyn std::error::Error>> {
@@ -38,7 +38,7 @@ pub async fn get_params(
     Ok(value)
 }
 
-// getTotalCollateral
+/// # getTotalCollateral
 pub async fn get_total_collateral(
     client: &Client,
 ) -> Result<Vec<honey_module::Coin>, Box<dyn std::error::Error>> {
@@ -47,14 +47,14 @@ pub async fn get_total_collateral(
     Ok(value)
 }
 
-// getTotalSupply
+/// # getTotalSupply
 pub async fn get_total_supply(client: &Client) -> Result<U256, Box<dyn std::error::Error>> {
     let contract = HoneyModule::new(honey_addr(), Arc::new(client.clone()));
     let value = contract.get_total_supply().call().await?;
     Ok(value)
 }
 
-// mint
+/// # mint
 pub async fn mint(
     client: &Client,
     to: Address,
@@ -67,7 +67,7 @@ pub async fn mint(
     Ok(())
 }
 
-// previewExactOutCollateral
+/// # previewExactOutCollateral
 pub async fn preview_exact_out_collateral(
     client: &Client,
     collateral_out: honey_module::Coin,
@@ -80,8 +80,7 @@ pub async fn preview_exact_out_collateral(
     Ok(value)
 }
 
-// previewMint
-//
+/// # previewMint
 pub async fn preview_mint(
     client: &Client,
     coin: honey_module::Coin,
@@ -91,8 +90,7 @@ pub async fn preview_mint(
     Ok(value)
 }
 
-// previewRedeem
-
+/// # previewRedeem
 pub async fn preview_redeem(
     client: &Client,
     amount: U256,
@@ -103,8 +101,7 @@ pub async fn preview_redeem(
     Ok(value)
 }
 
-// previewRequiredCollateral
-
+/// # previewRequiredCollateral
 pub async fn preview_required_collateral(
     client: &Client,
     honey_out: U256,
@@ -118,7 +115,7 @@ pub async fn preview_required_collateral(
     Ok(value)
 }
 
-// redeem
+/// # redeem
 pub async fn redeem(
     client: &Client,
     from: Address,
@@ -136,7 +133,7 @@ pub async fn redeem(
     Ok(())
 }
 
-// requestHoney
+/// # requestHoney
 pub async fn request_honey(
     client: &Client,
     to: Address,
@@ -154,7 +151,7 @@ pub async fn request_honey(
     Ok(())
 }
 
-// updateParams
+/// # updateParams
 pub async fn update_params(
     client: &Client,
     params: Vec<honey_module::Exchangeable>,

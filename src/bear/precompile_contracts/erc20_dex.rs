@@ -15,7 +15,7 @@ abigen!(
     event_derives(serde::Deserialize, serde::Serialize)
 );
 
-/// addLiquidity
+/// #  addLiquidity
 /// 为资金池增加流动性。
 pub async fn add_liquidity(
     client: &Client,
@@ -35,7 +35,7 @@ pub async fn add_liquidity(
     Ok(())
 }
 
-/// batchSwap
+/// # batchSwap
 /// 与单个池执行交换。注意：如果限制设置为 0，则不设置最大滑点。
 /// 注意：交换的类型（GIVEN_IN 与 GIVEN_OUT）决定限制是最大输入还是最小输出。
 pub async fn batch_swap(
@@ -55,7 +55,7 @@ pub async fn batch_swap(
     Ok(())
 }
 
-/// createPool
+/// # createPool
 /// 创建一个新池。
 pub async fn create_pool(
     client: &Client,
@@ -76,7 +76,7 @@ pub async fn create_pool(
     Ok(())
 }
 
-/// getExchangeRate
+/// # getExchangeRate
 /// 预览池中两种资产之间的汇率。注意：返回的 uint 表示为最多 18 位十进制精度的值
 pub async fn get_exchange_rate(
     client: &Client,
@@ -92,7 +92,7 @@ pub async fn get_exchange_rate(
     Ok(value)
 }
 
-/// getLiquidity
+/// # getLiquidity
 /// 预览当前流动性池中的代币余额。
 pub async fn get_liquidity(
     client: &Client,
@@ -103,7 +103,7 @@ pub async fn get_liquidity(
     Ok(value)
 }
 
-/// getPoolName
+/// # getPoolName
 /// 获取给定池地址的池名称。
 pub async fn get_pool_name(
     client: &Client,
@@ -114,8 +114,8 @@ pub async fn get_pool_name(
     Ok(value)
 }
 
-/// getPoolOptions
-///  获取给定池地址的池选项。
+/// # getPoolOptions
+/// 获取给定池地址的池选项。
 pub async fn get_pool_options(
     client: &Client,
     pool: Address,
@@ -125,8 +125,8 @@ pub async fn get_pool_options(
     Ok(value)
 }
 
-/// getPreviewAddLiquidityNoSwap
-///  预览在不交换的情况下通过增加流动性而收到的代币数量。
+/// # getPreviewAddLiquidityNoSwap
+/// 预览在不交换的情况下通过增加流动性而收到的代币数量。
 pub async fn get_preview_add_liquidity_no_swap(
     client: &Client,
     pool: Address,
@@ -141,7 +141,7 @@ pub async fn get_preview_add_liquidity_no_swap(
     Ok(value)
 }
 
-/// getPreviewAddLiquidityStaticPrice
+/// # getPreviewAddLiquidityStaticPrice
 /// 预览可以添加到池中而不影响汇率的代币数量。
 pub async fn get_preview_add_liquidity_static_price(
     client: &Client,
@@ -157,7 +157,7 @@ pub async fn get_preview_add_liquidity_static_price(
     Ok(value)
 }
 
-/// getPreviewBatchSwap
+/// # getPreviewBatchSwap
 /// 预览批量交换。
 pub async fn get_preview_batch_swap(
     client: &Client,
@@ -170,7 +170,7 @@ pub async fn get_preview_batch_swap(
     Ok(value)
 }
 
-/// getPreviewBurnShares
+/// # getPreviewBurnShares
 /// 预览通过燃烧 LP 代币以消除流动性将收到的代币数量。
 pub async fn get_preview_burn_shares(
     client: &Client,
@@ -186,7 +186,7 @@ pub async fn get_preview_burn_shares(
     Ok(value)
 }
 
-/// getPreviewSharesForLiquidity
+/// # getPreviewSharesForLiquidity
 /// 预览为池添加流动性而将收到的 LP 代币数量。
 pub async fn get_preview_shares_for_liquidity(
     client: &Client,
@@ -202,7 +202,7 @@ pub async fn get_preview_shares_for_liquidity(
     Ok(value)
 }
 
-/// getPreviewSharesForSingleSidedLiquidityRequest
+/// # getPreviewSharesForSingleSidedLiquidityRequest
 /// 预览通过向池中添加一侧流动性而收到的股票数量。
 pub async fn get_preview_shares_for_single_sided_liquidity_request(
     client: &Client,
@@ -218,7 +218,7 @@ pub async fn get_preview_shares_for_single_sided_liquidity_request(
     Ok(value)
 }
 
-/// getPreviewSwapExact
+/// # getPreviewSwapExact
 /// 预览单个交换到池中的情况。
 pub async fn get_preview_swap_exact(
     client: &Client,
@@ -236,7 +236,7 @@ pub async fn get_preview_swap_exact(
     Ok(value)
 }
 
-/// getRemoveLiquidityExactAmountOut
+/// # getRemoveLiquidityExactAmountOut
 /// 预览从池中提取特定数量的一项资产所需移除的 LP 代币数量。
 pub async fn get_remove_liquidity_exact_amount_out(
     client: &Client,
@@ -252,7 +252,7 @@ pub async fn get_remove_liquidity_exact_amount_out(
     Ok(value)
 }
 
-/// getRemoveLiquidityOneSideOut
+/// # getRemoveLiquidityOneSideOut
 /// 预览燃烧 LP 代币将收到的一项资产的数量。
 pub async fn get_remove_liquidity_one_side_out(
     client: &Client,
@@ -268,7 +268,7 @@ pub async fn get_remove_liquidity_one_side_out(
     Ok(value)
 }
 
-/// getTotalShares
+/// # getTotalShares
 /// 预览流动性池的份额总数。
 pub async fn get_total_shares(
     client: &Client,
@@ -279,7 +279,7 @@ pub async fn get_total_shares(
     Ok(value)
 }
 
-///removeLiquidityBurningShares
+/// # removeLiquidityBurningShares
 /// 通过销毁股票来消除池中的流动性。
 pub async fn remove_liquidity_burning_shares(
     client: &Client,
@@ -299,7 +299,7 @@ pub async fn remove_liquidity_burning_shares(
     Ok(())
 }
 
-/// removeLiquidityExactAmount
+/// # removeLiquidityExactAmount
 /// 从池中移除特定数量的流动性，并烧毁最大数量的股票。
 pub async fn remove_liquidity_exact_amount(
     client: &Client,
@@ -328,7 +328,7 @@ pub async fn remove_liquidity_exact_amount(
     Ok(())
 }
 
-/// swap
+/// # swap
 /// 与单个池执行交换。注意：如果限制设置为 0，则不设置最大滑点。
 // 注意：交换的类型（GIVEN_IN 与 GIVEN_OUT）决定限制是最大输入还是最小输出。
 pub async fn swap(
@@ -343,8 +343,6 @@ pub async fn swap(
 ) -> Result<(), Box<dyn std::error::Error>> {
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
     let eth_max_spend = parse_units(0, 18)?;
-    // let current_gas_price = client.get_gas_price().await?;
-    // println!("Current gas price: {:?}", current_gas_price);
     let tx = contract
         .swap(
             kind, pool_id, asset_in, amount_in, asset_out, amount_out, deadline,

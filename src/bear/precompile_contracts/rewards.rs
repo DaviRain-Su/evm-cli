@@ -15,7 +15,7 @@ abigen!(
     event_derives(serde::Deserialize, serde::Serialize)
 );
 
-// getCurrentRewards
+// # getCurrentRewards
 pub async fn get_current_rewards(
     client: &Client,
     depositor: Address,
@@ -29,7 +29,7 @@ pub async fn get_current_rewards(
     Ok(value)
 }
 
-// getDepositorWithdrawAddress
+// # getDepositorWithdrawAddress
 pub async fn get_depositor_withdraw_address(
     client: &Client,
     depositor: Address,
@@ -42,7 +42,7 @@ pub async fn get_depositor_withdraw_address(
     Ok(value)
 }
 
-// getOutstandingRewards
+// # getOutstandingRewards
 pub async fn get_outstanding_rewards(
     client: &Client,
     depositor: Address,
@@ -52,7 +52,7 @@ pub async fn get_outstanding_rewards(
     Ok(value)
 }
 
-// setDepositorWithdrawAddress
+// # setDepositorWithdrawAddress
 pub async fn set_depositor_withdraw_address(
     client: &Client,
     withdraw_address: Address,
@@ -68,7 +68,7 @@ pub async fn set_depositor_withdraw_address(
     Ok(())
 }
 
-// withdrawAllDepositorRewards
+// # withdrawAllDepositorRewards
 pub async fn withdraw_all_depositor_rewards(
     client: &Client,
     receiver: Address,
@@ -84,7 +84,7 @@ pub async fn withdraw_all_depositor_rewards(
     Ok(())
 }
 
-// withdrawDepositorRewards
+// # withdrawDepositorRewards
 pub async fn withdraw_depositor_rewards(
     client: &Client,
     receiver: Address,
@@ -101,7 +101,7 @@ pub async fn withdraw_depositor_rewards(
     Ok(())
 }
 
-// withdrawDepositorRewardsTo
+// # withdrawDepositorRewardsTo
 pub async fn withdraw_depositor_rewards_to(
     client: &Client,
     receiver: Address,

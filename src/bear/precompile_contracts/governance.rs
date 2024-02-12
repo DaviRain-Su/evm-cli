@@ -15,7 +15,7 @@ abigen!(
     event_derives(serde::Deserialize, serde::Serialize)
 );
 
-// cancelProposal
+/// cancelProposal
 pub async fn get_all_balances(
     client: &Client,
     proposal_id: u64,
@@ -25,14 +25,14 @@ pub async fn get_all_balances(
     Ok(value)
 }
 
-// getConstitution
+/// getConstitution
 pub async fn get_constitution(client: &Client) -> Result<String, Box<dyn std::error::Error>> {
     let contract = GovernanceModule::new(governance_addr(), Arc::new(client.clone()));
     let value = contract.get_constitution().call().await?;
     Ok(value)
 }
 
-// getDepositParams
+/// getDepositParams
 pub async fn get_deposit_params(
     client: &Client,
 ) -> Result<governance_module::DepositParams, Box<dyn std::error::Error>> {
@@ -41,7 +41,7 @@ pub async fn get_deposit_params(
     Ok(value)
 }
 
-// getParams
+/// # getParams
 pub async fn get_params(
     client: &Client,
 ) -> Result<governance_module::Params, Box<dyn std::error::Error>> {
@@ -50,7 +50,7 @@ pub async fn get_params(
     Ok(value)
 }
 
-// getProposal
+/// # getProposal
 pub async fn get_proposal(
     client: &Client,
     proposal_id: u64,
@@ -60,7 +60,7 @@ pub async fn get_proposal(
     Ok(value)
 }
 
-// getProposalDeposits
+/// # getProposalDeposits
 pub async fn get_proposal_deposits(
     client: &Client,
     proposal_id: u64,
@@ -70,8 +70,7 @@ pub async fn get_proposal_deposits(
     Ok(value)
 }
 
-// getProposalDepositsByDepositor
-//
+/// # getProposalDepositsByDepositor
 pub async fn get_proposal_deposits_by_depositor(
     client: &Client,
     proposal_id: u64,
@@ -85,7 +84,7 @@ pub async fn get_proposal_deposits_by_depositor(
     Ok(value)
 }
 
-// getProposalTallyResult
+/// # getProposalTallyResult
 pub async fn get_proposal_tally_result(
     client: &Client,
     proposal_id: u64,
@@ -98,7 +97,7 @@ pub async fn get_proposal_tally_result(
     Ok(value)
 }
 
-//getProposalVotes
+/// # getProposalVotes
 pub async fn get_proposal_votes(
     client: &Client,
     proposal_id: u64,
@@ -118,7 +117,7 @@ pub async fn get_proposal_votes(
     Ok(value)
 }
 
-// getProposalVotesByVoter
+/// # getProposalVotesByVoter
 pub async fn get_proposal_votes_by_voter(
     client: &Client,
     proposal_id: u64,
@@ -132,9 +131,7 @@ pub async fn get_proposal_votes_by_voter(
     Ok(value)
 }
 
-// getProposals
-//
-//
+/// # getProposals
 pub async fn get_proposals(
     client: &Client,
     proposal_status: i32,
@@ -154,8 +151,7 @@ pub async fn get_proposals(
     Ok(value)
 }
 
-// getTallyParams
-//
+/// # getTallyParams
 pub async fn get_tally_params(
     client: &Client,
 ) -> Result<governance_module::TallyParams, Box<dyn std::error::Error>> {
@@ -164,7 +160,7 @@ pub async fn get_tally_params(
     Ok(value)
 }
 
-// submitProposal
+/// # submitProposal
 pub async fn submit_proposal(
     client: &Client,
     proposal: governance_module::MsgSubmitProposal,
@@ -176,8 +172,7 @@ pub async fn submit_proposal(
     Ok(())
 }
 
-// vote
-//
+/// # vote
 pub async fn vote(
     client: &Client,
     proposal_id: u64,
@@ -195,8 +190,7 @@ pub async fn vote(
     Ok(())
 }
 
-// voteWeighted
-//
+/// # voteWeighted
 pub async fn vote_weighted(
     client: &Client,
     proposal_id: u64,
