@@ -5,6 +5,7 @@ use crate::utils::{get_all_keypairs, get_config, get_single_keypairs};
 use colored::*;
 use ethers::prelude::SignerMiddleware;
 use ethers::providers::{Http, Middleware, Provider};
+use ethers::types::U256;
 use ethers_signers::Signer;
 use structopt::StructOpt;
 
@@ -33,6 +34,9 @@ pub struct Deposit {
     /// wallet file name
     #[structopt(long)]
     pub file_name: String,
+    /// amount
+    #[structopt(long)]
+    pub amount: f64,
 }
 
 impl Deposit {
@@ -42,7 +46,8 @@ impl Deposit {
         let provider = Provider::<Http>::try_from(config.rpc_endpoint)
             .map_err(|e| Error::Custom(e.to_string()))?;
 
-        let keypairs = get_single_keypairs().map_err(|e| Error::Custom(e.to_string()))?;
+        let keypairs =
+            get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
 
         for keypair in keypairs.keypairs {
             let client = SignerMiddleware::new(
@@ -50,31 +55,48 @@ impl Deposit {
                 keypair.clone().with_chain_id(self.chain_id),
             );
 
-            let native_balance = provider
-                .get_balance(keypair.address(), None)
-                .await
-                .map_err(|e| Error::Custom(e.to_string()))?;
+            let mut counter = 0;
+            let native_balance = loop {
+                if let Ok(v) = provider.get_balance(keypair.address(), None).await {
+                    if (v != U256::zero()) & (counter < 3) {
+                        break v;
+                    } else if counter == 3 {
+                        break v;
+                    } else {
+                        println!("Try {} time", counter.to_string().red());
+                        counter += 1;
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+            };
 
             let native_balance_f64 = native_balance.as_u128() as f64 / BERA_DECIMAL;
-
+            if self.amount > native_balance_f64 {
+                panic!(
+                    "You Input amount({}) > {} have balance({})",
+                    self.amount,
+                    keypair.address(),
+                    native_balance_f64
+                );
+            }
             println!(
                 "deposit Before {} has {} Bera",
                 format!("{}", keypair.address()).blue(),
                 native_balance_f64
             );
 
-            let deposit_half_native_balance = native_balance / 2000;
-            let deposit_half_native_balance_f64 =
-                deposit_half_native_balance.as_u128() as f64 / BERA_DECIMAL;
+            let deposit_value = U256::from((self.amount * BERA_DECIMAL) as u128);
 
             println!(
                 "{} has deposit {} Bera",
                 format!("{}", keypair.address()).blue(),
-                deposit_half_native_balance_f64
+                self.amount
             );
 
             let deposit_result = loop {
-                if let Err(e) = wbera::deposit(&client, deposit_half_native_balance).await {
+                if let Err(e) = wbera::deposit(&client, deposit_value).await {
                     log::warn!("Warn: {:?}", e.to_string());
                     continue;
                 } else {
@@ -83,10 +105,23 @@ impl Deposit {
             };
             println!("deposit_result: {:?}", deposit_result);
 
-            let balance = wbera::balance_of(&client, keypair.address())
-                .await
-                .map_err(|e| Error::Custom(e.to_string()))?;
-            let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
+            let mut counter = 0;
+            let native_balance = loop {
+                if let Ok(v) = provider.get_balance(keypair.address(), None).await {
+                    if (v != U256::zero()) & (counter < 3) {
+                        break v;
+                    } else if counter == 3 {
+                        break v;
+                    } else {
+                        println!("Try {} time", counter.to_string().red());
+                        counter += 1;
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+            };
+            let native_balance_f64 = native_balance.as_u128() as f64 / BERA_DECIMAL;
 
             println!(
                 "Deposit After {} has {} Bera",
