@@ -105,7 +105,7 @@ pub async fn deposit(client: &Client, amount: U256) -> Result<(), Box<dyn std::e
         .deposit()
         .value(amount)
         .from(client.address())
-        .gas(U256::from(40_000_000)) // this is crucial otherwise tx will get reverted without a reason
+        .gas(U256::from(100_000)) // this is crucial otherwise tx will get reverted without a reason
         .send()
         .await?
         .await?;

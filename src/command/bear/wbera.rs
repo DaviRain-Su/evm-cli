@@ -102,7 +102,7 @@ impl Deposit {
             println!(
                 "deposit Before {} has {} Bera",
                 format!("{}", keypair.address()).blue(),
-                native_balance_f64
+                native_balance_f64.to_string().green()
             );
 
             // check wbera balance
@@ -146,7 +146,7 @@ impl Deposit {
                 println!(
                     "Deposit After {} has {} Bera",
                     format!("{}", keypair.address()).blue(),
-                    native_balance_f64
+                    native_balance_f64.to_string().green()
                 );
             }
         }
