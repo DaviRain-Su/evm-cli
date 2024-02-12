@@ -1,4 +1,4 @@
-use crate::bear::deploy_contracts::honey::{self};
+use crate::bear::deploy_contracts::{honey, wbera};
 use crate::bear::nft::lunar_new_year;
 use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
@@ -57,12 +57,43 @@ impl Balance {
                         lunar_new_year::balance_of(&client, keypair.address())
                             .await
                             .map_err(|e| Error::Custom(e.to_string()))?;
+
+                    let mut counter = 0;
+                    let wbera_balance = loop {
+                        if let Ok(v) = wbera::balance_of(&client, keypair.address()).await {
+                            if (v != U256::zero()) & (counter < 3) {
+                                break v;
+                            } else if counter == 3 {
+                                break v;
+                            } else {
+                                println!("Try {} time", counter.to_string().red());
+                                counter += 1;
+                                continue;
+                            }
+                        } else {
+                            continue;
+                        }
+                    };
+
+                    let wbera_decimal = loop {
+                        if let Ok(v) = wbera::decimals(&client).await {
+                            break v;
+                        } else {
+                            continue;
+                        }
+                    };
+
+                    let exponent: u32 = wbera_decimal as u32; // 自定义指数值
+                    let divisor: u128 = 10u128.pow(exponent); // 计算除数
+                    let wbera_balance_f64 = wbera_balance.as_u128() as f64 / divisor as f64;
+
                     println!(
-                        "{:?} has ({}) Bera and ({}) Honey And ({}) Lunar New Year NFT",
-                        keypair.address(),
+                        "{} have ({}) Bera  🍤 {} Wbera 🍤 ({}) Honey 🍤 ({}) Lunar New Year NFT",
+                        keypair.address().to_string().blue(),
                         native_balance_f64.to_string().red(),
+                        wbera_balance_f64.to_string().red(),
                         honey_balance_f64.to_string().blink(),
-                        lunar_new_year_balance.to_string().bold()
+                        lunar_new_year_balance.to_string().green()
                     );
                 }
                 Ok(())
@@ -144,12 +175,42 @@ impl Multi {
                 }
             };
 
+            let mut counter = 0;
+            let wbera_balance = loop {
+                if let Ok(v) = wbera::balance_of(&client, keypair.address()).await {
+                    if (v != U256::zero()) & (counter < 3) {
+                        break v;
+                    } else if counter == 3 {
+                        break v;
+                    } else {
+                        println!("Try {} time", counter.to_string().red());
+                        counter += 1;
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+            };
+
+            let wbera_decimal = loop {
+                if let Ok(v) = wbera::decimals(&client).await {
+                    break v;
+                } else {
+                    continue;
+                }
+            };
+
+            let exponent: u32 = wbera_decimal as u32; // 自定义指数值
+            let divisor: u128 = 10u128.pow(exponent); // 计算除数
+            let wbera_balance_f64 = wbera_balance.as_u128() as f64 / divisor as f64;
+
             println!(
-                "{:?} has ({}) Bera and ({}) Honey And ({}) Lunar New Year NFT",
-                keypair.address(),
+                "{} has ({}) Bera 🍤 {} Wbera ({}) 🍤 Honey 🍤 ({}) Lunar New Year NFT ",
+                keypair.address().to_string().blue(),
                 native_balance_f64.to_string().red(),
+                wbera_balance_f64.to_string().red(),
                 honey_balance_f64.to_string().blink(),
-                lunar_new_year_balance.to_string().bold()
+                lunar_new_year_balance.to_string().green()
             );
         }
         Ok(())
