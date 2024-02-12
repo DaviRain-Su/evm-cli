@@ -185,6 +185,15 @@ impl NftBuy {
             let honey_balance = honey::balance_of(&client, keypair.address())
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
+
+            let honey_decimal = honey::decimals(&client)
+                .await
+                .map_err(|e| Error::Custom(e.to_string()))?;
+
+            let exponent: u32 = honey_decimal as u32; // 自定义指数值
+            let divisor: u128 = 10u128.pow(exponent); // 计算除数
+            let honey_balance_f64 = honey_balance.as_u128() as f64 / divisor as f64;
+
             let total_supply = lunar_new_year::total_supply(&client)
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
@@ -207,10 +216,14 @@ impl NftBuy {
                     .await
                     .map_err(|e| Error::Custom(e.to_string()))?;
 
+                let exponent: u32 = honey_decimal as u32; // 自定义指数值
+                let divisor: u128 = 10u128.pow(exponent); // 计算除数
+                let honey_balance_f64 = honey_balance.as_u128() as f64 / divisor as f64;
+
                 println!(
                     "Address({}) have {} honey num",
                     keypair.address().to_string().blue(),
-                    honey_balance
+                    honey_balance_f64
                 );
 
                 let approve_result = honey::approve(&client, lunar_new_year_addr(), honey_balance)
@@ -244,10 +257,18 @@ impl NftBuy {
                     .await
                     .map_err(|e| Error::Custom(e.to_string()))?;
 
+                let honey_decimal = honey::decimals(&client)
+                    .await
+                    .map_err(|e| Error::Custom(e.to_string()))?;
+
+                let exponent: u32 = honey_decimal as u32; // 自定义指数值
+                let divisor: u128 = 10u128.pow(exponent); // 计算除数
+                let honey_balance_f64 = honey_balance.as_u128() as f64 / divisor as f64;
+
                 println!(
                     "Address({}) have {} honey num",
                     keypair.address().to_string().red(),
-                    honey_balance
+                    honey_balance_f64
                 );
             } else {
                 println!(
@@ -263,7 +284,7 @@ impl NftBuy {
                 println!(
                     "Address({}) have {} Honey",
                     keypair.address().to_string().red(),
-                    honey_balance
+                    honey_balance_f64
                 );
             }
         }

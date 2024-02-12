@@ -1,5 +1,6 @@
 use crate::bear::deploy_contracts::wbera::{self, wbera_addr};
 use crate::bear::precompile_contracts::erc20_dex::{self};
+use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
 use crate::utils::{get_all_keypairs, get_config};
 use ethers::prelude::SignerMiddleware;
@@ -42,7 +43,9 @@ impl Swap {
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
 
-            println!("Address({:?}) have {}", keypair.address(), balance);
+            let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
+
+            println!("Address({}) have {}", keypair.address(), native_balance_f64);
 
             let pool_id: Address = "0xa88572F08f79D28b8f864350f122c1CC0AbB0d96"
                 .parse()
@@ -93,9 +96,6 @@ impl Swap {
 
             let deadline = U256::from(get_epoch_milliseconds()) + U256::from(60 * 1000);
 
-            // todo(davirain)
-            // ERROR(Error: Custom("Contract call reverted with data: 0x"))
-
             let result_swap = erc20_dex::swap(
                 &client,
                 kind,
@@ -109,24 +109,6 @@ impl Swap {
             .await
             .map_err(|e| Error::Custom(e.to_string()))?;
             println!("swap: {:?}", result_swap);
-
-            // let total_shares = erc20_dex::get_total_shares(&client, pool_id.clone())
-            //     .await
-            //     .map_err(|e| Error::Custom(e.to_string()))?;
-            // println!("total shares: {:?}", total_shares);
-
-            // let exchange_rate =
-            //     erc20_dex::get_exchange_rate(&client, pool_id.clone(), base_asset, quote_asset)
-            //         .await
-            //         .map_err(|e| Error::Custom(e.to_string()))?;
-
-            // println!("the exchange rate is {:?}", exchange_rate);
-
-            // let options = erc20_dex::get_pool_options(&client, pool_id.clone())
-            //     .await
-            //     .map_err(|e| Error::Custom(e.to_string()))?;
-
-            // println!("pool options: {:?}", options);
         }
         Ok(())
     }

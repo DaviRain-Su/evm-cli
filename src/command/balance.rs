@@ -58,8 +58,8 @@ impl Balance {
                             .await
                             .map_err(|e| Error::Custom(e.to_string()))?;
                     println!(
-                        "{} has ({}) Bera and ({}) Honey And ({}) Lunar New Year NFT",
-                        format!("{}", keypair.address()).blue(),
+                        "{:?} has ({}) Bera and ({}) Honey And ({}) Lunar New Year NFT",
+                        keypair.address(),
                         native_balance_f64.to_string().red(),
                         honey_balance_f64.to_string().blink(),
                         lunar_new_year_balance.to_string().bold()
@@ -121,8 +121,8 @@ impl Multi {
                 .map_err(|e| Error::Custom(e.to_string()))?;
 
             println!(
-                "{} has ({}) Bera and ({}) Honey And ({}) Lunar New Year NFT",
-                format!("{}", keypair.address()).blue(),
+                "{:?} has ({}) Bera and ({}) Honey And ({}) Lunar New Year NFT",
+                keypair.address(),
                 native_balance_f64.to_string().red(),
                 honey_balance_f64.to_string().blink(),
                 lunar_new_year_balance.to_string().bold()

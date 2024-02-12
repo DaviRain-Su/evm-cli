@@ -43,19 +43,6 @@ impl Bank {
                 all_balance
             );
         }
-
-        // assert!(!keypairs.keypairs.is_empty());
-        // let client = SignerMiddleware::new(
-        //     provider.clone(),
-        //     keypairs.keypairs[0].clone().with_chain_id(self.chain_id),
-        // );
-
-        // let all_supply = bank::get_all_supply(&client)
-        //     .await
-        //     .map_err(|e| Error::Custom(e.to_string()))?;
-
-        // println!("All Supply {:?}", all_supply);
-
         Ok(())
     }
 }
