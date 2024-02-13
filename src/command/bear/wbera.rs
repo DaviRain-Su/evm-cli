@@ -7,6 +7,8 @@ use ethers::prelude::SignerMiddleware;
 use ethers::providers::{Http, Middleware, Provider};
 use ethers::types::U256;
 use ethers_signers::Signer;
+use pbr::ProgressBar;
+use std::{thread, time};
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -49,7 +51,11 @@ impl Deposit {
         let keypairs =
             get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
 
+        let mut pb = ProgressBar::new(keypairs.keypairs.len() as u64);
+        let duration = time::Duration::from_millis(20);
+        pb.format("╢▌▌░╟");
         for keypair in keypairs.keypairs {
+            pb.inc();
             let client = SignerMiddleware::new(
                 provider.clone(),
                 keypair.clone().with_chain_id(self.chain_id),
@@ -63,7 +69,7 @@ impl Deposit {
                     } else if counter == 3 {
                         break v;
                     } else {
-                        println!("Try {} time", counter.to_string().red());
+                        log::warn!("Try {} time", counter.to_string().red());
                         counter += 1;
                         continue;
                     }
@@ -82,7 +88,7 @@ impl Deposit {
                     } else if counter == 3 {
                         break v;
                     } else {
-                        println!("Try {} time", counter.to_string().red());
+                        log::warn!("Try {} time", counter.to_string().red());
                         counter += 1;
                         continue;
                     }
@@ -99,7 +105,7 @@ impl Deposit {
                     native_balance_f64
                 );
             }
-            println!(
+            log::info!(
                 "deposit Before {} has {} Bera",
                 format!("{}", keypair.address()).blue(),
                 native_balance_f64.to_string().green()
@@ -109,21 +115,28 @@ impl Deposit {
             if wbera_balance == U256::zero() {
                 let deposit_value = U256::from((self.amount * BERA_DECIMAL) as u128);
 
-                println!(
+                log::info!(
                     "{} has deposit {} Bera",
                     format!("{}", keypair.address()).blue(),
                     self.amount
                 );
 
+                let mut counter = 0;
                 let deposit_result = loop {
                     if let Err(e) = wbera::deposit(&client, deposit_value).await {
                         log::warn!("Warn: {:?}", e.to_string());
-                        continue;
+                        if counter == 3 {
+                            break;
+                        } else {
+                            log::warn!("Try {} time", counter.to_string().red());
+                            counter += 1;
+                            continue;
+                        }
                     } else {
                         break;
                     }
                 };
-                println!("deposit_result: {:?}", deposit_result);
+                log::info!("deposit_result: {:?}", deposit_result);
 
                 let mut counter = 0;
                 let native_balance = loop {
@@ -133,7 +146,7 @@ impl Deposit {
                         } else if counter == 3 {
                             break v;
                         } else {
-                            println!("Try {} time", counter.to_string().red());
+                            log::warn!("Try {} time", counter.to_string().red());
                             counter += 1;
                             continue;
                         }
@@ -143,13 +156,15 @@ impl Deposit {
                 };
                 let native_balance_f64 = native_balance.as_u128() as f64 / BERA_DECIMAL;
 
-                println!(
+                log::info!(
                     "Deposit After {} has {} Bera",
                     format!("{}", keypair.address()).blue(),
                     native_balance_f64.to_string().green()
                 );
+                thread::sleep(duration);
             }
         }
+        pb.finish_print("done");
         Ok(())
     }
 }
@@ -186,7 +201,7 @@ impl Withdraw {
 
             let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
 
-            println!(
+            log::info!(
                 "Withdraw before {} has {} Bera",
                 format!("{}", keypair.address()).blue(),
                 native_balance_f64
@@ -196,7 +211,7 @@ impl Withdraw {
 
             let withdraw_half_balance_f64 = withdraw_half_balance.as_u128() as f64 / BERA_DECIMAL;
 
-            println!(
+            log::info!(
                 "{} has withdraw {} Bera",
                 format!("{}", keypair.address()).blue(),
                 withdraw_half_balance_f64
@@ -206,14 +221,14 @@ impl Withdraw {
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
 
-            println!("withdra_result: {:?}", withdra_result);
+            log::info!("withdra_result: {:?}", withdra_result);
 
             let balance = wbera::balance_of(&client, keypair.address())
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
             let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
 
-            println!(
+            log::info!(
                 "Withdraw {} has {} Wbera",
                 format!("{:?}", keypair.address()).blue(),
                 native_balance_f64
