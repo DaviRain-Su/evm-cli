@@ -39,6 +39,7 @@ impl Balance {
                         .get_balance(keypair.address(), None)
                         .await
                         .map_err(|e| Error::Custom(e.to_string()))?;
+
                     let native_balance_f64 = native_balance.as_u128() as f64 / BERA_DECIMAL;
 
                     let honey_decimal = honey::decimals(&client)
@@ -136,7 +137,7 @@ impl Multi {
                     } else if counter == 3 {
                         break v;
                     } else {
-                        println!("Try {} time", counter.to_string().red());
+                        log::warn!("Try {} time", counter.to_string().red());
                         counter += 1;
                         continue;
                     }
@@ -183,7 +184,7 @@ impl Multi {
                     } else if counter == 3 {
                         break v;
                     } else {
-                        println!("Try {} time", counter.to_string().red());
+                        log::warn!("Try {} time", counter.to_string().red());
                         counter += 1;
                         continue;
                     }
@@ -204,14 +205,34 @@ impl Multi {
             let divisor: u128 = 10u128.pow(exponent); // 计算除数
             let wbera_balance_f64 = wbera_balance.as_u128() as f64 / divisor as f64;
 
-            println!(
-                "{} has ({}) Bera 🍤 {} Wbera ({}) 🍤 Honey 🍤 ({}) Lunar New Year NFT ",
-                keypair.address().to_string().blue(),
-                native_balance_f64.to_string().red(),
-                wbera_balance_f64.to_string().red(),
-                honey_balance_f64.to_string().blink(),
-                lunar_new_year_balance.to_string().green()
-            );
+            if wbera_balance == U256::zero() {
+                println!(
+                    "💨💨💨Warn {:?} Have ({}) Bera 💨💨 ({}) Wbera",
+                    keypair.address().to_string().blue(),
+                    native_balance_f64.to_string().red(),
+                    wbera_balance_f64.to_string().green()
+                );
+            } else {
+                if native_balance == U256::from(5 * BERA_DECIMAL as u128) {
+                    println!(
+                        "{:?} has ({}) Bera 🍤 {} Wbera ({}) 🍤 Honey 🍤 ({}) Lunar New Year NFT ",
+                        keypair.address(),
+                        native_balance_f64.to_string().red(),
+                        wbera_balance_f64.to_string().red(),
+                        honey_balance_f64.to_string().blink(),
+                        lunar_new_year_balance.to_string().green()
+                    );
+                } else {
+                    println!(
+                        "{} has ({}) Bera 🍤 {} Wbera ({}) 🍤 Honey 🍤 ({}) Lunar New Year NFT ",
+                        keypair.address().to_string().blue(),
+                        native_balance_f64.to_string().red(),
+                        wbera_balance_f64.to_string().red(),
+                        honey_balance_f64.to_string().blink(),
+                        lunar_new_year_balance.to_string().green()
+                    );
+                }
+            }
         }
         Ok(())
     }

@@ -6,6 +6,8 @@ use ethers::prelude::SignerMiddleware;
 use ethers::prelude::*;
 use ethers::providers::{Http, Provider};
 use ethers_signers::Signer;
+use pbr::ProgressBar;
+use std::{thread, time};
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -50,14 +52,18 @@ impl Transfer {
 
         let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
 
-        println!(
+        log::info!(
             "{} have {} Bera",
             format!("{}", single_keypair.address()).blue(),
             native_balance_f64.to_string().red()
         );
 
         let keypairs = get_all_keypairs(&self.file_name)?;
+
         if self.is_one_to_more {
+            let mut pb = ProgressBar::new(keypairs.keypairs.len() as u64);
+            let duration = time::Duration::from_millis(20);
+            pb.format("╢▌▌░╟");
             for keypair in keypairs.keypairs {
                 let mut counter = 0;
                 let native_balance = loop {
@@ -67,7 +73,7 @@ impl Transfer {
                         } else if counter == 3 {
                             break v;
                         } else {
-                            println!("Try {} time", counter.to_string().red());
+                            log::warn!("Try {} time", counter.to_string().red());
                             counter += 1;
                             continue;
                         }
@@ -78,7 +84,7 @@ impl Transfer {
 
                 let native_balance_f64 = native_balance.as_u128() as f64 / BERA_DECIMAL;
 
-                println!(
+                log::info!(
                     "{} have {} Bera",
                     format!("{}", keypair.address()).blue(),
                     native_balance_f64.to_string().red()
@@ -86,7 +92,7 @@ impl Transfer {
 
                 // check wallet is zero
                 if native_balance == U256::zero() {
-                    println!(
+                    log::info!(
                         "{} have {} Bera",
                         format!("{:?}", keypair.address()).red(),
                         native_balance_f64.to_string().red()
@@ -115,7 +121,7 @@ impl Transfer {
                             } else if counter == 3 {
                                 break v;
                             } else {
-                                println!("Try {} time", counter.to_string().red());
+                                log::warn!("Try {} time", counter.to_string().red());
                                 counter += 1;
                                 continue;
                             }
@@ -125,14 +131,20 @@ impl Transfer {
                     };
                     let native_balance_f64 = native_balance.as_u128() as f64 / BERA_DECIMAL;
 
-                    println!(
+                    log::info!(
                         "{} have {} Bera",
                         format!("{}", keypair.address()).blue(),
                         native_balance_f64.to_string().red()
                     );
                 }
+                pb.inc();
+                thread::sleep(duration);
             }
+            pb.finish_print("done");
         } else {
+            let mut pb = ProgressBar::new(keypairs.keypairs.len() as u64);
+            let duration = time::Duration::from_millis(20);
+            pb.format("╢▌▌░╟");
             for keypair in keypairs.keypairs {
                 let mut counter = 0;
                 let native_balance = loop {
@@ -142,7 +154,7 @@ impl Transfer {
                         } else if counter == 3 {
                             break v;
                         } else {
-                            println!("Try {} time", counter.to_string().red());
+                            log::warn!("Try {} time", counter.to_string().red());
                             counter += 1;
                             continue;
                         }
@@ -152,7 +164,7 @@ impl Transfer {
                 };
                 let native_balance_f64 = native_balance.as_u128() as f64 / BERA_DECIMAL;
 
-                println!(
+                log::info!(
                     "{} have {} Bera",
                     format!("{}", keypair.address()).blue(),
                     native_balance_f64.to_string().red()
@@ -186,7 +198,7 @@ impl Transfer {
                         } else if counter == 3 {
                             break v;
                         } else {
-                            println!("Try {} time", counter.to_string().red());
+                            log::warn!("Try {} time", counter.to_string().red());
                             counter += 1;
                             continue;
                         }
@@ -196,12 +208,15 @@ impl Transfer {
                 };
                 let native_balance_f64 = native_balance.as_u128() as f64 / BERA_DECIMAL;
 
-                println!(
+                log::info!(
                     "{} have {} Bera",
                     format!("{}", keypair.address()).blue(),
                     native_balance_f64.to_string().red()
                 );
+                pb.inc();
+                thread::sleep(duration);
             }
+            pb.finish_print("done");
         }
 
         Ok(())
