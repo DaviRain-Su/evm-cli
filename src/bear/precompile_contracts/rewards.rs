@@ -15,7 +15,8 @@ abigen!(
     event_derives(serde::Deserialize, serde::Serialize)
 );
 
-// # getCurrentRewards
+/// # getCurrentRewards
+/// 返回给定委托者和接收者的奖励。
 pub async fn get_current_rewards(
     client: &Client,
     depositor: Address,
@@ -29,7 +30,8 @@ pub async fn get_current_rewards(
     Ok(value)
 }
 
-// # getDepositorWithdrawAddress
+/// # getDepositorWithdrawAddress
+/// 返回提现地址。
 pub async fn get_depositor_withdraw_address(
     client: &Client,
     depositor: Address,
@@ -42,7 +44,8 @@ pub async fn get_depositor_withdraw_address(
     Ok(value)
 }
 
-// # getOutstandingRewards
+/// # getOutstandingRewards
+/// 返还欠接收者的未偿奖励。
 pub async fn get_outstanding_rewards(
     client: &Client,
     depositor: Address,
@@ -52,7 +55,8 @@ pub async fn get_outstanding_rewards(
     Ok(value)
 }
 
-// # setDepositorWithdrawAddress
+/// # setDepositorWithdrawAddress
+/// 设置调用者的提现地址。
 pub async fn set_depositor_withdraw_address(
     client: &Client,
     withdraw_address: Address,
@@ -68,7 +72,8 @@ pub async fn set_depositor_withdraw_address(
     Ok(())
 }
 
-// # withdrawAllDepositorRewards
+/// # withdrawAllDepositorRewards
+/// 提取给定委托人和接收人的所有奖励。
 pub async fn withdraw_all_depositor_rewards(
     client: &Client,
     receiver: Address,
@@ -84,7 +89,8 @@ pub async fn withdraw_all_depositor_rewards(
     Ok(())
 }
 
-// # withdrawDepositorRewards
+/// # withdrawDepositorRewards
+/// 提取给定委托人和接收人的奖励。
 pub async fn withdraw_depositor_rewards(
     client: &Client,
     receiver: Address,
@@ -101,7 +107,8 @@ pub async fn withdraw_depositor_rewards(
     Ok(())
 }
 
-// # withdrawDepositorRewardsTo
+/// # withdrawDepositorRewardsTo
+/// 将给定委托人和接收者的奖励提取到给定地址。
 pub async fn withdraw_depositor_rewards_to(
     client: &Client,
     receiver: Address,
