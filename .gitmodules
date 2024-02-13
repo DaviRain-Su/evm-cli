@@ -1,0 +1,3 @@
+[submodule "contract/sample-contract/lib/forge-std"]
+	path = contract/sample-contract/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
