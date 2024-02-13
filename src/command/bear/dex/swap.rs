@@ -81,12 +81,26 @@ impl Swap {
             let base_asset: Address = "0x5806e416da447b267cea759358cf22cc41fae80f"
                 .parse()
                 .unwrap();
+
             let base_asset_amount = wbera::balance_of(&client, keypair.address())
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
+            let wbera_decimal = loop {
+                if let Ok(v) = wbera::decimals(&client).await {
+                    break v;
+                } else {
+                    continue;
+                }
+            };
+
+            let exponent: u32 = wbera_decimal as u32; // 自定义指数值
+            let divisor: u128 = 10u128.pow(exponent); // 计算除数
+            let base_asset_amount_f64 = base_asset_amount.as_u128() as f64 / divisor as f64;
+
             println!(
-                "Base Asset({:?}) balance: {}",
-                base_asset, base_asset_amount
+                "Base Asset({}) balance: {}",
+                base_asset.to_string().red(),
+                base_asset_amount_f64.to_string().green()
             );
 
             let base_swap_amount = base_asset_amount / 2;
@@ -123,7 +137,8 @@ impl Swap {
 
             let deadline = U256::from(get_epoch_milliseconds()) + U256::from(60 * 1000);
 
-            let result_swap = loop {
+            let swap_result = loop {
+                log::info!("Process erc20 dex Swap");
                 if let Err(result) = erc20_dex::swap(
                     &client,
                     kind,
@@ -136,13 +151,13 @@ impl Swap {
                 )
                 .await
                 {
-                    log::warn!("Warn Error({})", result);
+                    println!("Warn Error({})", result.to_string().red());
                     continue;
                 } else {
                     break;
                 }
             };
-            println!("swap: {:?}", result_swap);
+            println!("swap: {:?}", swap_result);
         }
         Ok(())
     }

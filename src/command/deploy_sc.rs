@@ -33,10 +33,14 @@ impl DeploySc {
             println!("Address({:?}) deploy contract", keypair.address());
 
             let addr = loop {
-                if let Ok(addr) = compile_deploy_contract(&client).await {
+                let result = compile_deploy_contract(&client)
+                    .await
+                    .map_err(|e| Error::Custom(e.to_string()));
+                log::info!("compile_deploy_contract Result: {:?}", result);
+                if let Ok(addr) = result {
                     break addr;
                 } else {
-                    log::warn!("deploy contract have error");
+                    log::warn!("deploy contract have error: {:?}", result);
                     continue;
                 }
             };

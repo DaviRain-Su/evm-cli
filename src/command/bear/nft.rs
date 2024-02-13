@@ -84,10 +84,16 @@ impl BoobaOnBera {
             let divisor: u128 = 10u128.pow(exponent); // 计算除数
             let mint_num = U256::from(50 * divisor);
 
+            let mut counter = 0;
             let booba_result = loop {
                 if let Err(e) = booba_on_bera::booba_mint(&client, mint_num, true).await {
-                    log::warn!("Warn : {:?}", e.to_string());
-                    continue;
+                    if counter == 3 {
+                        break;
+                    } else {
+                        counter += 1;
+                        log::warn!("Warn : {:?}", e.to_string());
+                        continue;
+                    }
                 } else {
                     break;
                 }
