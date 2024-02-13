@@ -207,8 +207,8 @@ impl Multi {
 
             if wbera_balance == U256::zero() {
                 println!(
-                    "💨💨💨Warn {:?} Have ({}) Bera 💨💨 ({}) Wbera",
-                    keypair.address().to_string().blue(),
+                    "💨💨💨Warn {} Have ({}) Bera 💨💨 ({}) Wbera",
+                    keypair.address().to_string().green(),
                     native_balance_f64.to_string().red(),
                     wbera_balance_f64.to_string().green()
                 );

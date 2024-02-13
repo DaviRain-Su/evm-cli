@@ -180,7 +180,7 @@ impl Transfer {
                         &client,
                         keypair.address(),
                         single_keypair.address(),
-                        self.amount,
+                        native_balance_f64 * 0.9,
                     )
                     .await
                     {
