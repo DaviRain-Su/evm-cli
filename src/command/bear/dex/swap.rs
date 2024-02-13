@@ -3,6 +3,7 @@ use crate::bear::precompile_contracts::erc20_dex::{self};
 use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
 use crate::utils::{get_all_keypairs, get_config};
+use colored::*;
 use ethers::prelude::SignerMiddleware;
 use ethers::providers::{Http, Middleware, Provider};
 use ethers::types::U256;
@@ -38,10 +39,22 @@ impl Swap {
                 keypair.clone().with_chain_id(self.chain_id),
             );
 
-            let balance = provider
-                .get_balance(keypair.address(), None)
-                .await
-                .map_err(|e| Error::Custom(e.to_string()))?;
+            let mut counter = 0;
+            let balance = loop {
+                if let Ok(v) = provider.get_balance(keypair.address(), None).await {
+                    if (v != U256::zero()) & (counter < 3) {
+                        break v;
+                    } else if counter == 3 {
+                        break v;
+                    } else {
+                        log::warn!("Try {} time", counter.to_string().red());
+                        counter += 1;
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+            };
 
             let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
 
@@ -56,12 +69,6 @@ impl Swap {
 
             println!("this address {:?} pool name is {}", pool_id, pool_name);
 
-            let liquidity = erc20_dex::get_liquidity(&client, pool_id.clone())
-                .await
-                .map_err(|e| Error::Custom(e.to_string()))?;
-
-            println!("this address {:?} liquidity {:?}", pool_id, liquidity);
-
             let kind = 0;
             let base_asset: Address = "0x5806e416da447b267cea759358cf22cc41fae80f"
                 .parse()
@@ -74,40 +81,58 @@ impl Swap {
                 base_asset, base_asset_amount
             );
 
-            let wbera_addr_result = wbera::approve(&client, wbera_addr(), base_asset_amount)
-                .await
-                .map_err(|e| Error::Custom(e.to_string()))?;
+            let base_swap_amount = base_asset_amount / 2;
+
+            let wbera_addr_result = loop {
+                if let Ok(result) = wbera::approve(&client, wbera_addr(), base_asset_amount).await {
+                    break result;
+                } else {
+                    continue;
+                }
+            };
             println!("approve wbera_addr result {:?}", wbera_addr_result);
 
             let quote_asset: Address = "0x7eeca4205ff31f947edbd49195a7a88e6a91161b"
                 .parse()
                 .unwrap();
-            let preview_swap = erc20_dex::get_preview_swap_exact(
-                &client,
-                kind,
-                pool_id,
-                base_asset,
-                base_asset_amount / 100,
-                quote_asset,
-            )
-            .await
-            .map_err(|e| Error::Custom(e.to_string()))?;
+            let preview_swap = loop {
+                if let Ok(result) = erc20_dex::get_preview_swap_exact(
+                    &client,
+                    kind,
+                    pool_id,
+                    base_asset,
+                    base_swap_amount,
+                    quote_asset,
+                )
+                .await
+                {
+                    break result;
+                } else {
+                    continue;
+                }
+            };
             println!("preview swap: {:?}", preview_swap);
 
             let deadline = U256::from(get_epoch_milliseconds()) + U256::from(60 * 1000);
 
-            let result_swap = erc20_dex::swap(
-                &client,
-                kind,
-                pool_id,
-                base_asset,
-                base_asset_amount / 100,
-                preview_swap.0,
-                preview_swap.1,
-                deadline,
-            )
-            .await
-            .map_err(|e| Error::Custom(e.to_string()))?;
+            let result_swap = loop {
+                if let Ok(result) = erc20_dex::swap(
+                    &client,
+                    kind,
+                    pool_id,
+                    base_asset,
+                    base_swap_amount,
+                    preview_swap.0,
+                    preview_swap.1,
+                    deadline,
+                )
+                .await
+                {
+                    break result;
+                } else {
+                    continue;
+                }
+            };
             println!("swap: {:?}", result_swap);
         }
         Ok(())
