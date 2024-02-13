@@ -39,7 +39,7 @@ impl Bank {
 
             println!(
                 "{} has All Balance {:#?}",
-                format!("{:?}", keypair.address()).blue(),
+                keypair.address().to_string().blue(),
                 all_balance
             );
         }

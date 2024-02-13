@@ -342,7 +342,7 @@ pub async fn swap(
     deadline: U256,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
-    let eth_max_spend = parse_units(0, 18)?;
+    // let eth_max_spend = parse_units(0, 18)?;
     // 设置交易的 gas 价格
     // 1_599_422_605
     // let gas_price = U256::from(4_000_000_000u64); // 以太坊网络上的标准 gas 价格，你可以根据情况调整

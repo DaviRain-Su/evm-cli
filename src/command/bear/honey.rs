@@ -48,7 +48,7 @@ impl Honey {
 
         println!(
             "{} have {} Honey",
-            format!("{}", single_keypair.address()).blue(),
+            single_keypair.address().to_string().blue(),
             honey_balance_f64
         );
 
@@ -86,7 +86,7 @@ impl Honey {
 
                 println!(
                     "{} have {} Honey",
-                    format!("{}", keypair.address()).blue(),
+                    keypair.address().to_string().blue(),
                     honey_balance_f64
                 );
             }

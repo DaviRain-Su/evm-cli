@@ -54,7 +54,7 @@ impl Transfer {
 
         log::info!(
             "{} have {} Bera",
-            format!("{}", single_keypair.address()).blue(),
+            single_keypair.address().to_string().blue(),
             native_balance_f64.to_string().red()
         );
 
@@ -86,7 +86,7 @@ impl Transfer {
 
                 log::info!(
                     "{} have {} Bera",
-                    format!("{}", keypair.address()).blue(),
+                    keypair.address().to_string().blue(),
                     native_balance_f64.to_string().red()
                 );
 
@@ -94,7 +94,7 @@ impl Transfer {
                 if native_balance == U256::zero() {
                     log::info!(
                         "{} have {} Bera",
-                        format!("{:?}", keypair.address()).red(),
+                        keypair.address().to_string().red(),
                         native_balance_f64.to_string().red()
                     );
                     loop {
@@ -133,7 +133,7 @@ impl Transfer {
 
                     log::info!(
                         "{} have {} Bera",
-                        format!("{}", keypair.address()).blue(),
+                        keypair.address().to_string().blue(),
                         native_balance_f64.to_string().red()
                     );
                 }
@@ -166,7 +166,7 @@ impl Transfer {
 
                 log::info!(
                     "{} have {} Bera",
-                    format!("{}", keypair.address()).blue(),
+                    keypair.address().to_string().blue(),
                     native_balance_f64.to_string().red()
                 );
 
@@ -210,7 +210,7 @@ impl Transfer {
 
                 log::info!(
                     "{} have {} Bera",
-                    format!("{}", keypair.address()).blue(),
+                    keypair.address().to_string().blue(),
                     native_balance_f64.to_string().red()
                 );
                 pb.inc();

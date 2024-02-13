@@ -3,6 +3,7 @@ use crate::bear::precompile_contracts::erc20_dex::{self};
 use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
 use crate::utils::{get_all_keypairs, get_config};
+use colored::Colorize;
 use ethers::prelude::SignerMiddleware;
 use ethers::providers::{Http, Middleware, Provider};
 use ethers_core::types::Address;
@@ -46,7 +47,7 @@ impl Liquidity {
 
             println!(
                 "Address({}) have {} Bera",
-                keypair.address(),
+                keypair.address().to_string().green(),
                 native_balance_f64
             );
 

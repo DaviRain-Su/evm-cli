@@ -66,7 +66,7 @@ impl BoobaOnBera {
 
             println!(
                 "{} have {} Bera",
-                format!("{}", keypair.address()).blue(),
+                keypair.address().to_string().blue(),
                 native_balance_f64.to_string().red()
             );
 

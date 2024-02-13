@@ -70,7 +70,7 @@ impl Single {
                         .collect::<Vec<LocalWallet>>(),
                 );
                 log::info!(
-                    "keypairs: {:?}",
+                    "keypairs: {}",
                     keypairs
                         .keypairs
                         .iter()
@@ -116,7 +116,7 @@ impl Multi {
                 .collect::<Vec<LocalWallet>>(),
         );
         log::info!(
-            "keypairs: {:?}",
+            "keypairs: {}",
             keypairs
                 .keypairs
                 .iter()

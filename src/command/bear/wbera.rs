@@ -107,7 +107,7 @@ impl Deposit {
             }
             log::info!(
                 "deposit Before {} has {} Bera",
-                format!("{}", keypair.address()).blue(),
+                keypair.address().to_string().blue(),
                 native_balance_f64.to_string().green()
             );
 
@@ -117,7 +117,7 @@ impl Deposit {
 
                 log::info!(
                     "{} has deposit {} Bera",
-                    format!("{}", keypair.address()).blue(),
+                    keypair.address().to_string().blue(),
                     self.amount
                 );
 
@@ -158,7 +158,7 @@ impl Deposit {
 
                 log::info!(
                     "Deposit After {} has {} Bera",
-                    format!("{}", keypair.address()).blue(),
+                    keypair.address().to_string().blue(),
                     native_balance_f64.to_string().green()
                 );
                 thread::sleep(duration);
@@ -203,7 +203,7 @@ impl Withdraw {
 
             log::info!(
                 "Withdraw before {} has {} Bera",
-                format!("{}", keypair.address()).blue(),
+                keypair.address().to_string().blue(),
                 native_balance_f64
             );
 
@@ -213,7 +213,7 @@ impl Withdraw {
 
             log::info!(
                 "{} has withdraw {} Bera",
-                format!("{}", keypair.address()).blue(),
+                keypair.address().to_string().blue(),
                 withdraw_half_balance_f64
             );
 
@@ -230,7 +230,7 @@ impl Withdraw {
 
             log::info!(
                 "Withdraw {} has {} Wbera",
-                format!("{:?}", keypair.address()).blue(),
+                keypair.address().to_string().blue(),
                 native_balance_f64
             );
         }
