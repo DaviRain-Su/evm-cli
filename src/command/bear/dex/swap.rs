@@ -58,7 +58,11 @@ impl Swap {
 
             let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
 
-            println!("Address({}) have {}", keypair.address(), native_balance_f64);
+            println!(
+                "Address({}) have {} Bera",
+                keypair.address().to_string().blue(),
+                native_balance_f64.to_string().green()
+            );
 
             let pool_id: Address = "0xa88572F08f79D28b8f864350f122c1CC0AbB0d96"
                 .parse()
@@ -67,7 +71,11 @@ impl Swap {
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
 
-            println!("this address {:?} pool name is {}", pool_id, pool_name);
+            println!(
+                "this address {} pool name is {}",
+                pool_id.to_string().red(),
+                pool_name.to_string().green()
+            );
 
             let kind = 0;
             let base_asset: Address = "0x5806e416da447b267cea759358cf22cc41fae80f"
@@ -116,7 +124,7 @@ impl Swap {
             let deadline = U256::from(get_epoch_milliseconds()) + U256::from(60 * 1000);
 
             let result_swap = loop {
-                if let Ok(result) = erc20_dex::swap(
+                if let Err(result) = erc20_dex::swap(
                     &client,
                     kind,
                     pool_id,
@@ -128,9 +136,10 @@ impl Swap {
                 )
                 .await
                 {
-                    break result;
-                } else {
+                    log::warn!("Warn Error({})", result);
                     continue;
+                } else {
+                    break;
                 }
             };
             println!("swap: {:?}", result_swap);
