@@ -137,6 +137,7 @@ impl Swap {
 
             let deadline = U256::from(get_epoch_milliseconds()) + U256::from(60 * 1000);
 
+            let mut counter = 0;
             let swap_result = loop {
                 log::info!("Process erc20 dex Swap");
                 if let Err(result) = erc20_dex::swap(
@@ -151,8 +152,13 @@ impl Swap {
                 )
                 .await
                 {
-                    println!("Warn Error({})", result.to_string().red());
-                    continue;
+                    if counter == 3 {
+                        break;
+                    } else {
+                        println!("Warn Error({})", result.to_string().red());
+                        counter += 1;
+                        continue;
+                    }
                 } else {
                     break;
                 }
