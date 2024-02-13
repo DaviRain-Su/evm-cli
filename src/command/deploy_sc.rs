@@ -33,7 +33,7 @@ impl DeploySc {
             println!("Address({:?}) deploy contract", keypair.address());
 
             let mut counter = 0;
-            loop {
+            'a: loop {
                 let result = compile_deploy_contract(&client)
                     .await
                     .map_err(|e| Error::Custom(e.to_string()));
@@ -80,7 +80,7 @@ impl DeploySc {
                             log::warn!("read_number have error: {e:?}");
                             continue;
                         } else {
-                            break;
+                            break 'a;
                         }
                     }
                 } else if counter == 3 {

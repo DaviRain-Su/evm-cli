@@ -105,20 +105,28 @@ impl Swap {
 
             let base_swap_amount = base_asset_amount / 2;
 
-            let wbera_addr_result = loop {
-                if let Ok(result) = wbera::approve(&client, wbera_addr(), base_asset_amount).await {
-                    break result;
+            let mut counter = 0;
+            loop {
+                if let Err(result) = wbera::approve(&client, wbera_addr(), base_asset_amount).await
+                {
+                    if counter == 3 {
+                        break;
+                    } else {
+                        log::warn!("Wbera approce Error({:?})", result);
+                        counter += 1;
+                        continue;
+                    }
                 } else {
-                    continue;
+                    break;
                 }
-            };
-            println!("approve wbera_addr result {:?}", wbera_addr_result);
+            }
 
             let quote_asset: Address = "0x7eeca4205ff31f947edbd49195a7a88e6a91161b"
                 .parse()
                 .unwrap();
+
             let preview_swap = loop {
-                if let Ok(result) = erc20_dex::get_preview_swap_exact(
+                let result = erc20_dex::get_preview_swap_exact(
                     &client,
                     kind,
                     pool_id,
@@ -126,9 +134,9 @@ impl Swap {
                     base_swap_amount,
                     quote_asset,
                 )
-                .await
-                {
-                    break result;
+                .await;
+                if let Ok(r) = result {
+                    break r;
                 } else {
                     continue;
                 }
