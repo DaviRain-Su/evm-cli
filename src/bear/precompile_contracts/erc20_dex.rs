@@ -323,15 +323,15 @@ pub async fn swap(
 ) -> Result<(), Box<dyn std::error::Error>> {
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
     let eth_max_spend = parse_units(0, 18)?;
-    // let gas_price = U256::from(20_624_066_551u64); // 以太坊网络上的标准 gas 价格，你可以根据情况调整
+    let gas_price = U256::from(10_624_066_551u64); // 以太坊网络上的标准 gas 价格，你可以根据情况调整
     let tx = contract
         .swap(
             kind, pool_id, asset_in, amount_in, asset_out, amount_out, deadline,
         )
         .value(eth_max_spend)
         .from(client.address())
-        // .gas_price(gas_price) // 设置交易的 gas 价格
-        .gas(U256::from(4000_000u64)) // this is crucial otherwise tx will get reverted without a reason
+        .gas_price(gas_price) // 设置交易的 gas 价格
+        .gas(U256::from(400_000u64)) // this is crucial otherwise tx will get reverted without a reason
         .send()
         .await?
         .await?;
@@ -351,13 +351,13 @@ pub async fn batch_swap(
 ) -> Result<(), Box<dyn std::error::Error>> {
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
     let eth_max_spend = parse_units(0, 18)?;
-    // let gas_price = U256::from(100_624_066_551u64);
+    let gas_price = U256::from(10_624_066_551u64);
     let tx = contract
         .batch_swap(kind, swaps, deadline)
         .value(eth_max_spend)
         .from(client.address())
-        // .gas_price(gas_price)
-        .gas(U256::from(30_000_000u64))
+        .gas_price(gas_price)
+        .gas(U256::from(400_000u64))
         .send()
         .await?
         .await?;

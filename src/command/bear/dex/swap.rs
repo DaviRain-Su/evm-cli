@@ -1,10 +1,12 @@
 use crate::bear::deploy_contracts::{honey, wbera};
 use crate::bear::precompile_contracts::erc20_bank::erc20_bank_addr;
 use crate::bear::precompile_contracts::erc20_dex;
+use crate::command::bear::dex::swap::erc20_dex::erc20_dex_module;
 use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
 use crate::utils::{get_all_keypairs, get_config};
 use colored::*;
+use ethers::abi::Bytes;
 use ethers::prelude::SignerMiddleware;
 use ethers::providers::{Http, Middleware, Provider};
 use ethers::types::U256;
@@ -110,24 +112,6 @@ impl Swap {
                 .parse()
                 .unwrap();
 
-            let preview_swap = loop {
-                let result = erc20_dex::get_preview_swap_exact(
-                    &client,
-                    kind,
-                    pool_id,
-                    base_asset,
-                    half_base_swap_amount,
-                    quote_asset,
-                )
-                .await;
-                if let Ok(r) = result {
-                    break r;
-                } else {
-                    continue;
-                }
-            };
-            println!("preview swap: {:?}", preview_swap);
-
             let deadline = U256::from(get_epoch_milliseconds()) + U256::from(60 * 1000);
 
             let honey_amount = honey::balance_of(&client, keypair.address())
@@ -138,29 +122,79 @@ impl Swap {
                 let approve_result =
                     wbera::approve(&client, erc20_bank_addr(), base_asset_amount).await;
                 println!("Approve Result:{:?}", approve_result);
-                let mut counter = 0;
-                let swap_result = loop {
-                    let honey_amount = honey::balance_of(&client, keypair.address())
-                        .await
-                        .map_err(|e| Error::Custom(e.to_string()))?;
-                    println!(
-                        "Address({}) have {} honey",
-                        keypair.address().to_string().red(),
-                        honey_amount.to_string().red()
-                    );
-                    log::info!("Process erc20 dex Swap");
 
-                    if let Err(result) = erc20_dex::swap(
+                let preview_swap = loop {
+                    let result = erc20_dex::get_preview_swap_exact(
                         &client,
                         kind,
                         pool_id,
                         base_asset,
                         half_base_swap_amount,
-                        preview_swap.0,
-                        preview_swap.1,
-                        deadline,
+                        quote_asset,
                     )
-                    .await
+                    .await;
+                    if let Ok(r) = result {
+                        break r;
+                    } else {
+                        continue;
+                    }
+                };
+                println!("preview swap: {:?}", preview_swap);
+
+                let mut counter = 0;
+                let swap_result = loop {
+                    // let honey_amount = honey::balance_of(&client, keypair.address())
+                    //     .await
+                    //     .map_err(|e| Error::Custom(e.to_string()))?;
+                    // println!(
+                    //     "Address({}) have {} honey",
+                    //     keypair.address().to_string().red(),
+                    //     honey_amount.to_string().red()
+                    // );
+                    log::info!("Process erc20 dex Swap");
+
+                    // if let Err(result) = erc20_dex::swap(
+                    //     &client,
+                    //     kind,
+                    //     pool_id,
+                    //     base_asset,
+                    //     half_base_swap_amount,
+                    //     preview_swap.0,
+                    //     preview_swap.1,
+                    //     deadline,
+                    // )
+                    // .await
+                    // {
+                    //     if counter == 3 {
+                    //         break;
+                    //     } else {
+                    //         println!("Warn Error({})", result.to_string().red());
+                    //         counter += 1;
+                    //         continue;
+                    //     }
+                    // } else {
+                    //     if honey_amount != U256::zero() {
+                    //         println!("Address({}) have {} honey", keypair.address(), honey_amount);
+                    //         break;
+                    //     } else {
+                    //         println!(
+                    //             "Address({:?}) have {} honey",
+                    //             keypair.address(),
+                    //             honey_amount.to_string().red()
+                    //         );
+                    //         // continue;
+                    //         break;
+                    //     }
+                    // }
+                    let swaps = vec![erc20_dex_module::BatchSwapStep {
+                        pool_id,
+                        asset_in: base_asset,
+                        amount_in: half_base_swap_amount,
+                        asset_out: preview_swap.0,
+                        amount_out: preview_swap.1,
+                        user_data: Bytes::new().into(),
+                    }];
+                    if let Err(result) = erc20_dex::batch_swap(&client, kind, swaps, deadline).await
                     {
                         if counter == 3 {
                             break;
@@ -170,18 +204,7 @@ impl Swap {
                             continue;
                         }
                     } else {
-                        if honey_amount != U256::zero() {
-                            println!("Address({}) have {} honey", keypair.address(), honey_amount);
-                            break;
-                        } else {
-                            println!(
-                                "Address({:?}) have {} honey",
-                                keypair.address(),
-                                honey_amount.to_string().red()
-                            );
-                            // continue;
-                            break;
-                        }
+                        break;
                     }
                 };
                 println!("swap: {:?}", swap_result);
