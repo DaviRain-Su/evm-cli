@@ -331,7 +331,7 @@ pub async fn swap(
         .value(eth_max_spend)
         .from(client.address())
         .gas_price(gas_price) // 设置交易的 gas 价格
-        .gas(U256::from(50_000u64)) // this is crucial otherwise tx will get reverted without a reason
+        .gas(U256::from(5000_000u64)) // this is crucial otherwise tx will get reverted without a reason
         .send()
         .await?
         .await?;

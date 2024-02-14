@@ -1,4 +1,8 @@
-use crate::bear::deploy_contracts::wbera::{self, wbera_addr};
+use crate::bear::deploy_contracts::{
+    honey,
+    wbera::{self, wbera_addr},
+};
+use crate::bear::precompile_contracts::erc20_bank::{self, erc20_bank_addr};
 use crate::bear::precompile_contracts::erc20_dex::{self, erc20_dex_module};
 use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
@@ -107,7 +111,9 @@ impl Swap {
 
             let mut counter = 0;
             loop {
-                if let Err(result) = wbera::approve(&client, wbera_addr(), base_asset_amount).await
+                // NOTE: must approve to erc20 bank addr
+                if let Err(result) =
+                    wbera::approve(&client, erc20_bank_addr(), base_asset_amount).await
                 {
                     if counter == 3 {
                         break;
@@ -145,52 +151,89 @@ impl Swap {
 
             let deadline = U256::from(get_epoch_milliseconds()) + U256::from(60 * 1000);
 
-            let mut counter = 0;
-            let swap_result = loop {
-                log::info!("Process erc20 dex Swap");
-                if let Err(result) = erc20_dex::swap(
-                    &client,
-                    kind,
-                    pool_id,
-                    base_asset,
-                    half_base_swap_amount,
-                    preview_swap.0,
-                    preview_swap.1,
-                    deadline,
-                )
+            let honey_amount = honey::balance_of(&client, keypair.address())
                 .await
-                {
-                    if counter == 3 {
-                        break;
+                .map_err(|e| Error::Custom(e.to_string()))?;
+
+            if honey_amount == U256::zero() {
+                let mut counter = 0;
+                let swap_result = loop {
+                    log::info!("Process erc20 dex Swap");
+                    if let Err(result) = erc20_dex::swap(
+                        &client,
+                        kind,
+                        pool_id,
+                        base_asset,
+                        half_base_swap_amount,
+                        preview_swap.0,
+                        preview_swap.1,
+                        deadline,
+                    )
+                    .await
+                    {
+                        if counter == 3 {
+                            break;
+                        } else {
+                            println!("Warn Error({})", result.to_string().red());
+                            counter += 1;
+                            continue;
+                        }
                     } else {
-                        println!("Warn Error({})", result.to_string().red());
-                        counter += 1;
+                        break;
+                    }
+                };
+                println!("swap: {:?}", swap_result);
+            } else {
+                let mut counter = 0;
+                let balance = loop {
+                    if let Ok(v) = provider.get_balance(keypair.address(), None).await {
+                        if (v != U256::zero()) & (counter < 3) {
+                            break v;
+                        } else if counter == 3 {
+                            break v;
+                        } else {
+                            log::warn!("Try {} time", counter.to_string().red());
+                            counter += 1;
+                            continue;
+                        }
+                    } else {
                         continue;
                     }
-                } else {
-                    break;
-                }
-                // let swaps = vec![erc20_dex_module::BatchSwapStep {
-                //     pool_id,
-                //     asset_in: base_asset,
-                //     amount_in: base_swap_amount,
-                //     asset_out: preview_swap.0,
-                //     amount_out: preview_swap.1,
-                //     user_data: Bytes::new(),
-                // }];
-                // if let Err(result) = erc20_dex::batch_swap(&client, kind, swaps, deadline).await {
-                //     if counter == 3 {
-                //         break;
-                //     } else {
-                //         println!("Warn Error({})", result.to_string().red());
-                //         counter += 1;
-                //         continue;
-                //     }
-                // } else {
-                //     break;
-                // }
-            };
-            println!("swap: {:?}", swap_result);
+                };
+
+                let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
+
+                let honey_decimal = honey::decimals(&client)
+                    .await
+                    .map_err(|e| Error::Custom(e.to_string()))?;
+
+                let exponent: u32 = honey_decimal as u32; // 自定义指数值
+                let divisor: u128 = 10u128.pow(exponent); // 计算除数
+                let honey_balance_f64 = honey_amount.as_u128() as f64 / divisor as f64;
+
+                let base_asset_amount = wbera::balance_of(&client, keypair.address())
+                    .await
+                    .map_err(|e| Error::Custom(e.to_string()))?;
+                let wbera_decimal = loop {
+                    if let Ok(v) = wbera::decimals(&client).await {
+                        break v;
+                    } else {
+                        continue;
+                    }
+                };
+
+                let exponent: u32 = wbera_decimal as u32; // 自定义指数值
+                let divisor: u128 = 10u128.pow(exponent); // 计算除数
+                let base_asset_amount_f64 = base_asset_amount.as_u128() as f64 / divisor as f64;
+
+                println!(
+                    "Address({}) Have {} Bera {} Wbera {} Honey",
+                    keypair.address(),
+                    native_balance_f64.to_string().green(),
+                    base_asset_amount_f64.to_string().green(),
+                    honey_balance_f64.to_string().green()
+                );
+            }
         }
         Ok(())
     }
