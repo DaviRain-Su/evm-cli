@@ -218,8 +218,8 @@ impl Multi {
                         "{:?} has ({}) Bera 🍤 {} Wbera ({}) 🍤 Honey 🍤 ({}) Lunar New Year NFT ",
                         keypair.address(),
                         native_balance_f64.to_string().red(),
-                        wbera_balance_f64.to_string().red(),
-                        honey_balance_f64.to_string().blink(),
+                        wbera_balance_f64.to_string().bright_purple(),
+                        honey_balance_f64.to_string().bright_cyan(),
                         lunar_new_year_balance.to_string().green()
                     );
                 } else {
@@ -227,8 +227,8 @@ impl Multi {
                         "{} has ({}) Bera 🍤 {} Wbera ({}) 🍤 Honey 🍤 ({}) Lunar New Year NFT ",
                         keypair.address().to_string().blue(),
                         native_balance_f64.to_string().red(),
-                        wbera_balance_f64.to_string().red(),
-                        honey_balance_f64.to_string().blink(),
+                        wbera_balance_f64.to_string().bright_magenta(),
+                        honey_balance_f64.to_string().bright_yellow(),
                         lunar_new_year_balance.to_string().green()
                     );
                 }

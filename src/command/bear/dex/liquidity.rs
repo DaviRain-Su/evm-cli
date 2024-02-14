@@ -1,11 +1,12 @@
-use crate::bear::deploy_contracts::wbera::{self, wbera_addr};
-use crate::bear::precompile_contracts::erc20_dex::{self};
+use crate::bear::deploy_contracts::wbera;
+use crate::bear::precompile_contracts::{erc20_bank::erc20_bank_addr, erc20_dex};
 use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
 use crate::utils::{get_all_keypairs, get_config};
 use colored::Colorize;
 use ethers::prelude::SignerMiddleware;
 use ethers::providers::{Http, Middleware, Provider};
+use ethers::types::U256;
 use ethers_core::types::Address;
 use ethers_signers::Signer;
 use structopt::StructOpt;
@@ -48,7 +49,7 @@ impl Liquidity {
             println!(
                 "Address({}) have {} Bera",
                 keypair.address().to_string().green(),
-                native_balance_f64
+                native_balance_f64.to_string().bright_blue()
             );
 
             let pool_id: Address = "0xa88572F08f79D28b8f864350f122c1CC0AbB0d96"
@@ -58,7 +59,11 @@ impl Liquidity {
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
 
-            println!("this address {:?} pool name is {}", pool_id, pool_name);
+            println!(
+                "this address {} pool name is {}",
+                pool_id.to_string().bright_magenta(),
+                pool_name.bright_red()
+            );
 
             let kind = 0;
             let base_asset: Address = "0x5806e416da447b267cea759358cf22cc41fae80f"
@@ -68,13 +73,12 @@ impl Liquidity {
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
             println!(
-                "Base Asset({:?}) balance: {}",
-                base_asset, base_asset_amount
+                "Base Asset({}) balance: {}",
+                base_asset.to_string().bright_blue(),
+                base_asset_amount.to_string().bright_red()
             );
 
-            let half_base_asset_amount = base_asset_amount / 2;
-
-            let wbera_addr_result = wbera::approve(&client, wbera_addr(), base_asset_amount)
+            let wbera_addr_result = wbera::approve(&client, erc20_bank_addr(), base_asset_amount)
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
             println!("approve wbera_addr result {:?}", wbera_addr_result);
@@ -87,21 +91,23 @@ impl Liquidity {
                 kind,
                 pool_id,
                 base_asset,
-                half_base_asset_amount,
+                base_asset_amount,
                 quote_asset,
             )
             .await
             .map_err(|e| Error::Custom(e.to_string()))?;
             println!("preview swap: {:?}", preview_swap);
 
-            let receiver = keypair.address();
-            let asset_in = vec![base_asset, quote_asset];
-            let asset_amount = vec![half_base_asset_amount, preview_swap.1];
-            let result_add_liquidity =
-                erc20_dex::add_liquidity(&client, pool_id, receiver, asset_in, asset_amount)
-                    .await
-                    .map_err(|e| Error::Custom(e.to_string()))?;
-            println!("add_liquidity: {:?}", result_add_liquidity);
+            if base_asset_amount > U256::zero() {
+                let receiver = keypair.address();
+                let asset_in = vec![base_asset, quote_asset];
+                let asset_amount = vec![base_asset_amount, preview_swap.1];
+                let result_add_liquidity =
+                    erc20_dex::add_liquidity(&client, pool_id, receiver, asset_in, asset_amount)
+                        .await
+                        .map_err(|e| Error::Custom(e.to_string()))?;
+                println!("add_liquidity: {:?}", result_add_liquidity);
+            }
         }
         Ok(())
     }
