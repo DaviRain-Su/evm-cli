@@ -35,26 +35,6 @@ pub async fn add_liquidity(
     Ok(())
 }
 
-/// # batchSwap
-/// 与单个池执行交换。注意：如果限制设置为 0，则不设置最大滑点。
-/// 注意：交换的类型（GIVEN_IN 与 GIVEN_OUT）决定限制是最大输入还是最小输出。
-pub async fn batch_swap(
-    client: &Client,
-    kind: u8,
-    swaps: Vec<erc20_dex_module::BatchSwapStep>,
-    deadline: U256,
-) -> Result<(), Box<dyn std::error::Error>> {
-    let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
-    let tx = contract
-        .batch_swap(kind, swaps, deadline)
-        .send()
-        .await?
-        .await?;
-    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
-
-    Ok(())
-}
-
 /// # createPool
 /// 创建一个新池。
 pub async fn create_pool(
@@ -342,18 +322,42 @@ pub async fn swap(
     deadline: U256,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
-    // let eth_max_spend = parse_units(0, 18)?;
-    // 设置交易的 gas 价格
-    // 1_599_422_605
-    // let gas_price = U256::from(4_000_000_000u64); // 以太坊网络上的标准 gas 价格，你可以根据情况调整
+    let eth_max_spend = parse_units(0, 18)?;
+    let gas_price = U256::from(10_624_066_551u64); // 以太坊网络上的标准 gas 价格，你可以根据情况调整
     let tx = contract
         .swap(
             kind, pool_id, asset_in, amount_in, asset_out, amount_out, deadline,
         )
-        .value(amount_in)
+        .value(eth_max_spend)
         .from(client.address())
-        // .gas_price(gas_price) // 设置交易的 gas 价格
-        .gas(U256::from(30_000_000)) // this is crucial otherwise tx will get reverted without a reason
+        .gas_price(gas_price) // 设置交易的 gas 价格
+        .gas(U256::from(50_000u64)) // this is crucial otherwise tx will get reverted without a reason
+        .send()
+        .await?
+        .await?;
+    println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
+
+    Ok(())
+}
+
+/// # batchSwap
+/// 与单个池执行交换。注意：如果限制设置为 0，则不设置最大滑点。
+/// 注意：交换的类型（GIVEN_IN 与 GIVEN_OUT）决定限制是最大输入还是最小输出。
+pub async fn batch_swap(
+    client: &Client,
+    kind: u8,
+    swaps: Vec<erc20_dex_module::BatchSwapStep>,
+    deadline: U256,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
+    let eth_max_spend = parse_units(0, 18)?;
+    // let gas_price = U256::from(100_624_066_551u64);
+    let tx = contract
+        .batch_swap(kind, swaps, deadline)
+        .value(eth_max_spend)
+        .from(client.address())
+        // .gas_price(gas_price)
+        .gas(U256::from(30_000_000u64))
         .send()
         .await?
         .await?;

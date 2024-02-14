@@ -1,5 +1,5 @@
 use crate::bear::deploy_contracts::wbera::{self, wbera_addr};
-use crate::bear::precompile_contracts::erc20_dex::{self};
+use crate::bear::precompile_contracts::erc20_dex::{self, erc20_dex_module};
 use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
 use crate::utils::{get_all_keypairs, get_config};
@@ -7,7 +7,7 @@ use colored::*;
 use ethers::prelude::SignerMiddleware;
 use ethers::providers::{Http, Middleware, Provider};
 use ethers::types::U256;
-use ethers_core::types::Address;
+use ethers_core::types::{Address, Bytes};
 use ethers_signers::Signer;
 use std::time::{SystemTime, UNIX_EPOCH};
 use structopt::StructOpt;
@@ -103,7 +103,7 @@ impl Swap {
                 base_asset_amount_f64.to_string().green()
             );
 
-            let base_swap_amount = base_asset_amount / 2;
+            let half_base_swap_amount = base_asset_amount / 2;
 
             let mut counter = 0;
             loop {
@@ -131,7 +131,7 @@ impl Swap {
                     kind,
                     pool_id,
                     base_asset,
-                    base_swap_amount,
+                    half_base_swap_amount,
                     quote_asset,
                 )
                 .await;
@@ -153,7 +153,7 @@ impl Swap {
                     kind,
                     pool_id,
                     base_asset,
-                    base_swap_amount,
+                    half_base_swap_amount,
                     preview_swap.0,
                     preview_swap.1,
                     deadline,
@@ -170,6 +170,25 @@ impl Swap {
                 } else {
                     break;
                 }
+                // let swaps = vec![erc20_dex_module::BatchSwapStep {
+                //     pool_id,
+                //     asset_in: base_asset,
+                //     amount_in: base_swap_amount,
+                //     asset_out: preview_swap.0,
+                //     amount_out: preview_swap.1,
+                //     user_data: Bytes::new(),
+                // }];
+                // if let Err(result) = erc20_dex::batch_swap(&client, kind, swaps, deadline).await {
+                //     if counter == 3 {
+                //         break;
+                //     } else {
+                //         println!("Warn Error({})", result.to_string().red());
+                //         counter += 1;
+                //         continue;
+                //     }
+                // } else {
+                //     break;
+                // }
             };
             println!("swap: {:?}", swap_result);
         }
