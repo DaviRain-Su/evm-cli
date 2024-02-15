@@ -26,7 +26,7 @@ pub async fn add_liquidity(
 ) -> Result<(), Box<dyn std::error::Error>> {
     let contract = ERC20DexModule::new(erc20_dex_addr(), Arc::new(client.clone()));
     let eth_max_spend = parse_units(0, 18)?;
-    let gas_price = U256::from(10_624_066_551u64);
+    let gas_price = U256::from(20_624_066_551u64);
     let tx = contract
         .add_liquidity(pool, receiver, assets_in, amounts_in)
         .value(eth_max_spend)

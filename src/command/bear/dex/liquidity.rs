@@ -1,3 +1,4 @@
+use crate::bear::deploy_contracts::honey;
 use crate::bear::deploy_contracts::wbera;
 use crate::bear::precompile_contracts::{erc20_bank::erc20_bank_addr, erc20_dex};
 use crate::constant::BERA_DECIMAL;
@@ -9,6 +10,8 @@ use ethers::providers::{Http, Middleware, Provider};
 use ethers::types::U256;
 use ethers_core::types::Address;
 use ethers_signers::Signer;
+use std::thread;
+use std::time::Duration;
 use structopt::StructOpt;
 
 // notice must use erc20 dex
@@ -65,48 +68,78 @@ impl Liquidity {
                 pool_name.bright_red()
             );
 
-            let kind = 0;
+            // let kind = 0;
             let base_asset: Address = "0x5806e416da447b267cea759358cf22cc41fae80f"
                 .parse()
                 .unwrap();
+
+            let wbera_decimal = wbera::decimals(&client)
+                .await
+                .map_err(|e| Error::Custom(e.to_string()))?;
+
             let base_asset_amount = wbera::balance_of(&client, keypair.address())
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
+
+            let exponent: u32 = wbera_decimal as u32; // 自定义指数值
+            let divisor: u128 = 10u128.pow(exponent); // 计算除数
+            let base_asset_amount_f64 = base_asset_amount.as_u128() as f64 / divisor as f64;
+
             println!(
                 "Base Asset({}) balance: {}",
                 base_asset.to_string().bright_blue(),
-                base_asset_amount.to_string().bright_red()
+                base_asset_amount_f64.to_string().bright_red(),
             );
-
-            let wbera_addr_result = wbera::approve(&client, erc20_bank_addr(), base_asset_amount)
-                .await
-                .map_err(|e| Error::Custom(e.to_string()))?;
-            println!("approve wbera_addr result {:?}", wbera_addr_result);
 
             let quote_asset: Address = "0x7eeca4205ff31f947edbd49195a7a88e6a91161b"
                 .parse()
                 .unwrap();
-            let preview_swap = erc20_dex::get_preview_swap_exact(
-                &client,
-                kind,
-                pool_id,
-                base_asset,
-                base_asset_amount,
-                quote_asset,
-            )
-            .await
-            .map_err(|e| Error::Custom(e.to_string()))?;
-            println!("preview swap: {:?}", preview_swap);
+            let honey_decimal = honey::decimals(&client)
+                .await
+                .map_err(|e| Error::Custom(e.to_string()))?;
 
-            if base_asset_amount > U256::zero() {
+            let quote_asset_amount = honey::balance_of(&client, keypair.address())
+                .await
+                .map_err(|e| Error::Custom(e.to_string()))?;
+
+            let exponent: u32 = honey_decimal as u32; // 自定义指数值
+            let divisor: u128 = 10u128.pow(exponent); // 计算除数
+            let quote_asset_amount_f64 = quote_asset_amount.as_u128() as f64 / divisor as f64;
+
+            println!(
+                "Quote Asset({}) balance: {}",
+                quote_asset.to_string().bright_blue(),
+                quote_asset_amount_f64.to_string().bright_red(),
+            );
+
+            if base_asset_amount > U256::zero() && quote_asset_amount > U256::zero() {
+                let wbera_addr_result =
+                    wbera::approve(&client, erc20_bank_addr(), base_asset_amount)
+                        .await
+                        .map_err(|e| Error::Custom(e.to_string()))?;
+                println!("approve wbera_addr result {:?}", wbera_addr_result);
+
+                // let preview_swap = erc20_dex::get_preview_swap_exact(
+                //     &client,
+                //     kind,
+                //     pool_id,
+                //     base_asset,
+                //     base_asset_amount,
+                //     quote_asset,
+                // )
+                // .await
+                // .map_err(|e| Error::Custom(e.to_string()))?;
+                // println!("preview swap: {:?}", preview_swap);
+
                 let receiver = keypair.address();
                 let asset_in = vec![base_asset, quote_asset];
-                let asset_amount = vec![base_asset_amount, preview_swap.1];
+                let asset_amount = vec![base_asset_amount, quote_asset_amount];
                 let result_add_liquidity =
                     erc20_dex::add_liquidity(&client, pool_id, receiver, asset_in, asset_amount)
                         .await
                         .map_err(|e| Error::Custom(e.to_string()))?;
                 println!("add_liquidity: {:?}", result_add_liquidity);
+                thread::sleep(Duration::from_secs(1));
             }
         }
         Ok(())

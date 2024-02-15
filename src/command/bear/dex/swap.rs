@@ -12,6 +12,8 @@ use ethers::providers::{Http, Middleware, Provider};
 use ethers::types::U256;
 use ethers_core::types::Address;
 use ethers_signers::Signer;
+use std::thread;
+use std::time::Duration;
 use std::time::{SystemTime, UNIX_EPOCH};
 use structopt::StructOpt;
 
@@ -208,6 +210,7 @@ impl Swap {
                     }
                 };
                 println!("swap: {:?}", swap_result);
+                thread::sleep(Duration::from_secs(1));
             } else {
                 let mut counter = 0;
                 let balance = loop {

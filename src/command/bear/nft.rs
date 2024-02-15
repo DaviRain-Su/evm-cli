@@ -357,7 +357,7 @@ impl NftBuy {
 
             if lunar_new_year_balance < U256::from(2u64)
                 && native_token_balance > U256::zero()
-                && honey_balance == U256::from(2_000_000_000_000_000_000u64)
+                && honey_balance >= U256::from(2_000_000_000_000_000_000u64)
             {
                 println!(
                     "Address({}) have {} Lunar New Year NFT",

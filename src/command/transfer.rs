@@ -175,6 +175,7 @@ impl Transfer {
                     keypair.clone().with_chain_id(self.chain_id),
                 );
 
+                let mut counter = 0;
                 loop {
                     if let Err(_) = send_transaction(
                         &client,
@@ -184,7 +185,13 @@ impl Transfer {
                     )
                     .await
                     {
-                        continue;
+                        if counter == 3 {
+                            break;
+                        } else {
+                            log::warn!("Try {} time", counter.to_string().red());
+                            counter += 1;
+                            continue;
+                        }
                     } else {
                         break;
                     }
