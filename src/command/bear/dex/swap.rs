@@ -120,7 +120,7 @@ impl Swap {
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
 
-            if honey_amount == U256::zero() {
+            if base_asset_amount != U256::zero() && honey_amount == U256::zero() {
                 let approve_result =
                     wbera::approve(&client, erc20_bank_addr(), base_asset_amount).await;
                 println!("Approve Result:{:?}", approve_result);
