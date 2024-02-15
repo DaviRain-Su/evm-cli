@@ -1,4 +1,5 @@
 use crate::bear::deploy_contracts::{honey, wbera};
+use crate::bear::nft::balentines;
 use crate::bear::nft::lunar_new_year;
 use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
@@ -59,6 +60,10 @@ impl Balance {
                             .await
                             .map_err(|e| Error::Custom(e.to_string()))?;
 
+                    let balentines_balance = balentines::balance_of(&client, keypair.address())
+                        .await
+                        .map_err(|e| Error::Custom(e.to_string()))?;
+
                     let mut counter = 0;
                     let wbera_balance = loop {
                         if let Ok(v) = wbera::balance_of(&client, keypair.address()).await {
@@ -89,12 +94,13 @@ impl Balance {
                     let wbera_balance_f64 = wbera_balance.as_u128() as f64 / divisor as f64;
 
                     println!(
-                        "{} have ({}) Bera  🍤 {} Wbera 🍤 ({}) Honey 🍤 ({}) Lunar New Year NFT",
+                        "{} have ({}) Bera  🍤 {} Wbera 🍤 ({}) Honey 🍤 ({}) Lunar New Year NFT 🍤 {} Balentines",
                         keypair.address().to_string().blue(),
                         native_balance_f64.to_string().red(),
                         wbera_balance_f64.to_string().red(),
                         honey_balance_f64.to_string().blink(),
-                        lunar_new_year_balance.to_string().green()
+                        lunar_new_year_balance.to_string().green(),
+                        balentines_balance.to_string().bright_yellow()
                     );
                 }
                 Ok(())
@@ -176,6 +182,14 @@ impl Multi {
                 }
             };
 
+            let balentine_balance = loop {
+                if let Ok(v) = balentines::balance_of(&client, keypair.address()).await {
+                    break v;
+                } else {
+                    continue;
+                }
+            };
+
             let mut counter = 0;
             let wbera_balance = loop {
                 if let Ok(v) = wbera::balance_of(&client, keypair.address()).await {
@@ -207,29 +221,34 @@ impl Multi {
 
             if wbera_balance == U256::zero() {
                 println!(
-                    "💨💨💨Warn {} Have ({}) Bera 💨💨 ({}) Wbera",
+                    "💨💨💨Warn {} Have ({}) Bera 💨💨 ({}) Wbera ({}) 💨💨 Honey  💨💨 ({}) Lunar New Year NFT  💨💨 {} balentine ",
                     keypair.address().to_string().green(),
                     native_balance_f64.to_string().red(),
-                    wbera_balance_f64.to_string().green()
+                    wbera_balance_f64.to_string().green(),
+                    honey_balance_f64.to_string().bright_cyan(),
+                    lunar_new_year_balance.to_string().green(),
+                    balentine_balance.to_string().bright_blue()
                 );
             } else {
                 if native_balance == U256::from(5 * BERA_DECIMAL as u128) {
                     println!(
-                        "{:?} has ({}) Bera 🍤 {} Wbera ({}) 🍤 Honey 🍤 ({}) Lunar New Year NFT ",
+                        "{:?} has ({}) Bera 🍤 {} Wbera ({}) 🍤 Honey 🍤 ({}) Lunar New Year NFT 🍤 {} balentine ",
                         keypair.address(),
                         native_balance_f64.to_string().red(),
                         wbera_balance_f64.to_string().bright_purple(),
                         honey_balance_f64.to_string().bright_cyan(),
-                        lunar_new_year_balance.to_string().green()
+                        lunar_new_year_balance.to_string().green(),
+                        balentine_balance.to_string().bright_blue()
                     );
                 } else {
                     println!(
-                        "{} has ({}) Bera 🍤 {} Wbera ({}) 🍤 Honey 🍤 ({}) Lunar New Year NFT ",
+                        "{} has ({}) Bera 🍤 {} Wbera ({}) 🍤 Honey 🍤 ({}) Lunar New Year NFT 🍤 {} balentine",
                         keypair.address().to_string().blue(),
                         native_balance_f64.to_string().red(),
                         wbera_balance_f64.to_string().bright_magenta(),
                         honey_balance_f64.to_string().bright_yellow(),
-                        lunar_new_year_balance.to_string().green()
+                        lunar_new_year_balance.to_string().green(),
+                        balentine_balance.to_string().bright_blue()
                     );
                 }
             }
