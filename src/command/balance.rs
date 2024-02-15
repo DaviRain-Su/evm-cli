@@ -1,6 +1,7 @@
 use crate::bear::deploy_contracts::{honey, wbera};
 use crate::bear::nft::balentines;
 use crate::bear::nft::lunar_new_year;
+use crate::command::keys::{KeyPairs, KeyPairsString};
 use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
 use crate::utils::{get_all_keypairs, get_config, get_single_keypairs};
@@ -16,6 +17,8 @@ pub enum Balance {
     Single { chain_id: u64 },
     /// Display multi wallet balance
     Multi(Multi),
+    /// Check
+    Check(CheckEmpty),
 }
 
 impl Balance {
@@ -106,6 +109,7 @@ impl Balance {
                 Ok(())
             }
             Balance::Multi(multi) => multi.run().await,
+            Balance::Check(check) => check.run().await,
         }
     }
 }
@@ -253,6 +257,69 @@ impl Multi {
                 }
             }
         }
+        Ok(())
+    }
+}
+
+#[derive(Debug, StructOpt)]
+pub struct CheckEmpty {
+    #[structopt(long)]
+    pub chain_id: u64,
+    /// keypair file name
+    #[structopt(short, long)]
+    pub file_name: String,
+}
+
+impl CheckEmpty {
+    pub async fn run(&self) -> Result<(), Error> {
+        let config = get_config().map_err(|e| Error::from(e.to_string()))?;
+
+        let provider = Provider::<Http>::try_from(config.rpc_endpoint)
+            .map_err(|e| Error::Custom(e.to_string()))?;
+
+        let keypairs =
+            get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
+
+        let mut no_zero_balance_balance = vec![];
+        for keypair in keypairs.keypairs {
+            let mut counter = 0;
+            let native_balance = loop {
+                if let Ok(v) = provider.get_balance(keypair.address(), None).await {
+                    if (v != U256::zero()) & (counter < 3) {
+                        break v;
+                    } else if counter == 3 {
+                        break v;
+                    } else {
+                        log::warn!("Try {} time", counter.to_string().red());
+                        counter += 1;
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+            };
+
+            if native_balance != U256::zero() {
+                no_zero_balance_balance.push(keypair);
+            } else {
+                println!("Address({:?}) native balanze is zero", keypair.address());
+            }
+        }
+
+        let keypairs_str = KeyPairsString::from(KeyPairs {
+            keypairs: no_zero_balance_balance,
+        });
+
+        let home_path = dirs::home_dir().ok_or(Error::Custom("can't open home dir".into()))?;
+        let keypairs_path = home_path
+            .join(".config")
+            .join("evm-cli")
+            .join(format!("{}_not_zero_balance_keypairs.json", self.file_name));
+
+        keypairs_str
+            .write(keypairs_path.clone())
+            .map_err(|e| Error::Custom(e.to_string()))?;
+
         Ok(())
     }
 }
