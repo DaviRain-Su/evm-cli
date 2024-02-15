@@ -7,6 +7,21 @@
 
 ## Bera Chain
 
+### Network info
+
+- Network: Berachain Artio
+- ChainId: 80085
+- Currency: Bera
+- Block Explorer URL:
+    - [Offical](https://artio.beratrail.io/)
+    - [Lore Explorer](https://berascan.ai/)
+    - [DexGuru](https://bera-test.dex.guru/)
+- Third RPC
+    - [offical](https://artio.rpc.berachain.com/)
+    - [Ankr](https://rpc.ankr.com/berachain_testnet)
+
+
+
 ```bash
 evm-cli 0.1.0
 
