@@ -334,6 +334,8 @@ impl NftBuy {
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
 
+            let native_balance_f64 = native_token_balance.as_u128() as f64 / BERA_DECIMAL;
+
             let honey_balance = honey::balance_of(&client, keypair.address())
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
@@ -373,7 +375,7 @@ impl NftBuy {
                 let honey_balance_f64 = honey_balance.as_u128() as f64 / divisor as f64;
 
                 println!(
-                    "Address({}) have {} honey num",
+                    "Address({}) have {} honey",
                     keypair.address().to_string().blue(),
                     honey_balance_f64
                 );
@@ -400,7 +402,7 @@ impl NftBuy {
                     .map_err(|e| Error::Custom(e.to_string()))?;
 
                 println!(
-                    "Address({}) have {} num Lunar New Year NFT",
+                    "Address({}) have {} Lunar New Year NFT",
                     keypair.address().to_string().blue(),
                     balance
                 );
@@ -418,7 +420,7 @@ impl NftBuy {
                 let honey_balance_f64 = honey_balance.as_u128() as f64 / divisor as f64;
 
                 println!(
-                    "Address({}) have {} honey num",
+                    "Address({}) have {} honey",
                     keypair.address().to_string().red(),
                     honey_balance_f64
                 );
@@ -431,7 +433,7 @@ impl NftBuy {
                 println!(
                     "Address({}) have {} Bera",
                     keypair.address().to_string().red(),
-                    native_token_balance
+                    native_balance_f64
                 );
                 println!(
                     "Address({}) have {} Honey",
