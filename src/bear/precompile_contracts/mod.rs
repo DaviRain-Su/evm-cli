@@ -14,6 +14,7 @@ pub mod governance;
 pub mod honey;
 pub mod oracle;
 pub mod rewards;
+pub mod staking;
 
 pub fn staking_addr() -> H160 {
     H160::from_str("0xd9A998CaC66092748FfEc7cFBD155Aae1737C2fF").unwrap()
