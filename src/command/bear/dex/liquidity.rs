@@ -137,7 +137,7 @@ impl Liquidity {
                 let result_add_liquidity =
                     erc20_dex::add_liquidity(&client, pool_id, receiver, asset_in, asset_amount)
                         .await
-                        .map_err(|e| Error::Custom(e.to_string()))?;
+                        .map_err(|e| Error::Custom(e.to_string()));
                 println!("add_liquidity: {:?}", result_add_liquidity);
                 thread::sleep(Duration::from_secs(1));
             }
