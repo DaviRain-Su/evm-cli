@@ -24,8 +24,8 @@ pub enum Command {
     #[structopt(name = "transfer")]
     Transfer(transfer::Transfer),
     /// Now support deploy incrementer smart contract
-    #[structopt(name = "deploy-sc")]
-    Deploy(deploy_sc::DeploySc),
+    #[structopt(name = "deploy")]
+    Deploy(deploy_sc::Deploy),
     /// bera module
     #[structopt(name = "bera")]
     Bera(bear::Bera),
