@@ -38,7 +38,7 @@ impl Command {
     pub async fn run(&self) -> Result<(), Error> {
         match &self {
             Command::Auto(auto) => auto.run(),
-            Command::Generator(generator) => generator.run(),
+            Command::Keys(generator) => generator.run(),
             Command::Balance(balance) => balance.run().await,
             Command::Transfer(trnasfer) => trnasfer.run().await,
             Command::Deploy(deploy_sc) => deploy_sc.run().await,

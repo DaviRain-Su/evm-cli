@@ -74,13 +74,13 @@ impl NewFormat {
     }
 }
 
-impl Generator {
+impl Keys {
     pub fn run(&self) -> Result<(), Error> {
         match self {
-            Generator::Single(single) => single.run(),
-            Generator::Multi(multi) => multi.run(),
-            Generator::NewStore(new_store) => new_store.run(),
-            Generator::NewFormat(new_format) => new_format.run(),
+            Keys::Single(single) => single.run(),
+            Keys::Multi(multi) => multi.run(),
+            Keys::NewStore(new_store) => new_store.run(),
+            Keys::NewFormat(new_format) => new_format.run(),
         }
     }
 }
