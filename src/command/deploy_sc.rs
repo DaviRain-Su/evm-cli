@@ -3,7 +3,7 @@ use crate::incrementer::call_incrementer::{
     call_target_function, compile_deploy_contract as call_incrementer_compile_deploy_contract,
 };
 use crate::incrementer::{compile_deploy_contract, increment_number, read_number, reset};
-use crate::utils::{get_all_keypairs, get_config};
+use crate::utils::{get_all_keypairs_string_with_balance, get_config};
 use ethers::prelude::*;
 use structopt::StructOpt;
 
@@ -39,8 +39,8 @@ impl Incrementer {
         let provider = Provider::<Http>::try_from(config.rpc_endpoint)
             .map_err(|e| Error::Custom(e.to_string()))?;
 
-        let keypairs =
-            get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
+        let keypairs = get_all_keypairs_string_with_balance(&self.file_name)
+            .map_err(|e| Error::Custom(e.to_string()))?;
 
         for keypair in keypairs.keypairs {
             let client = SignerMiddleware::new(
@@ -131,8 +131,8 @@ impl CallIncrementer {
         let provider = Provider::<Http>::try_from(config.rpc_endpoint)
             .map_err(|e| Error::Custom(e.to_string()))?;
 
-        let keypairs =
-            get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
+        let keypairs = get_all_keypairs_string_with_balance(&self.file_name)
+            .map_err(|e| Error::Custom(e.to_string()))?;
 
         for keypair in keypairs.keypairs {
             let client = SignerMiddleware::new(

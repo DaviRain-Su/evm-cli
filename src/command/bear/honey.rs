@@ -1,6 +1,8 @@
 use crate::bear::deploy_contracts::honey::{self, honey_token_addr};
 use crate::errors::Error;
-use crate::utils::{get_all_keypairs, get_config, get_single_keypairs};
+use crate::utils::{
+    get_all_keypairs_string_with_balance, get_config, get_single_keypairs_string_with_balance,
+};
 use colored::*;
 use ethers::prelude::SignerMiddleware;
 use ethers::providers::{Http, Provider};
@@ -25,7 +27,8 @@ impl Honey {
         let provider = Provider::<Http>::try_from(config.rpc_endpoint)
             .map_err(|e| Error::Custom(e.to_string()))?;
 
-        let single_keypair = get_single_keypairs().map_err(|e| Error::Custom(e.to_string()))?;
+        let single_keypair =
+            get_single_keypairs_string_with_balance().map_err(|e| Error::Custom(e.to_string()))?;
 
         let single_keypair = single_keypair.keypairs[0].clone();
 
@@ -61,8 +64,8 @@ impl Honey {
         };
         println!("approve result : {:?}", approve_result);
 
-        let keypairs =
-            get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
+        let keypairs = get_all_keypairs_string_with_balance(&self.file_name)
+            .map_err(|e| Error::Custom(e.to_string()))?;
 
         for keypair in &keypairs.keypairs {
             let balance = honey::balance_of(&client, keypair.address())

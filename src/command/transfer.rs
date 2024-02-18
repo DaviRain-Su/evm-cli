@@ -1,6 +1,9 @@
 use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
-use crate::utils::{get_all_keypairs, get_config, get_single_keypairs, send_transaction};
+use crate::utils::{
+    get_all_keypairs_string_with_balance, get_config, get_single_keypairs_string_with_balance,
+    send_transaction,
+};
 use colored::*;
 use ethers::prelude::SignerMiddleware;
 use ethers::prelude::*;
@@ -33,7 +36,8 @@ impl Transfer {
         let provider = Provider::<Http>::try_from(config.rpc_endpoint)
             .map_err(|e| Error::Custom(e.to_string()))?;
 
-        let single_keypair = get_single_keypairs().map_err(|e| Error::Custom(e.to_string()))?;
+        let single_keypair =
+            get_single_keypairs_string_with_balance().map_err(|e| Error::Custom(e.to_string()))?;
         assert!(single_keypair.keypairs.len() == 1);
 
         let single_keypair = single_keypair.keypairs[0]
@@ -58,7 +62,7 @@ impl Transfer {
             native_balance_f64.to_string().red()
         );
 
-        let keypairs = get_all_keypairs(&self.file_name)?;
+        let keypairs = get_all_keypairs_string_with_balance(&self.file_name)?;
 
         if self.is_one_to_more {
             let mut pb = ProgressBar::new(keypairs.keypairs.len() as u64);

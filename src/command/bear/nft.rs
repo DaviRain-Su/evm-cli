@@ -4,7 +4,7 @@ use crate::bear::nft::booba_on_bera::{self};
 use crate::bear::nft::lunar_new_year::{self, lunar_new_year_addr};
 use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
-use crate::utils::{get_all_keypairs, get_config};
+use crate::utils::{get_all_keypairs_string_with_balance, get_config};
 use colored::*;
 use ethers::prelude::SignerMiddleware;
 use ethers::providers::{Http, Middleware, Provider};
@@ -52,8 +52,8 @@ impl BoobaOnBera {
         let provider = Provider::<Http>::try_from(config.rpc_endpoint)
             .map_err(|e| Error::Custom(e.to_string()))?;
 
-        let keypairs =
-            get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
+        let keypairs = get_all_keypairs_string_with_balance(&self.file_name)
+            .map_err(|e| Error::Custom(e.to_string()))?;
 
         for keypair in &keypairs.keypairs {
             let client = SignerMiddleware::new(
@@ -137,8 +137,8 @@ impl Balentines {
         let provider = Provider::<Http>::try_from(config.rpc_endpoint)
             .map_err(|e| Error::Custom(e.to_string()))?;
 
-        let keypairs =
-            get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
+        let keypairs = get_all_keypairs_string_with_balance(&self.file_name)
+            .map_err(|e| Error::Custom(e.to_string()))?;
 
         for keypair in &keypairs.keypairs {
             let client = SignerMiddleware::new(
@@ -279,8 +279,8 @@ impl NftCheck {
         let provider = Provider::<Http>::try_from(config.rpc_endpoint)
             .map_err(|e| Error::Custom(e.to_string()))?;
 
-        let keypairs =
-            get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
+        let keypairs = get_all_keypairs_string_with_balance(&self.file_name)
+            .map_err(|e| Error::Custom(e.to_string()))?;
 
         for keypair in &keypairs.keypairs {
             let client = SignerMiddleware::new(
@@ -320,8 +320,8 @@ impl NftBuy {
         let provider = Provider::<Http>::try_from(config.rpc_endpoint)
             .map_err(|e| Error::Custom(e.to_string()))?;
 
-        let keypairs =
-            get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
+        let keypairs = get_all_keypairs_string_with_balance(&self.file_name)
+            .map_err(|e| Error::Custom(e.to_string()))?;
 
         for keypair in &keypairs.keypairs {
             let client = SignerMiddleware::new(

@@ -4,7 +4,7 @@ use crate::bear::precompile_contracts::erc20_dex;
 use crate::command::bear::dex::swap::erc20_dex::erc20_dex_module;
 use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
-use crate::utils::{get_all_keypairs, get_config};
+use crate::utils::{get_all_keypairs_string_with_balance, get_config};
 use colored::*;
 use ethers::abi::Bytes;
 use ethers::prelude::SignerMiddleware;
@@ -35,8 +35,8 @@ impl Swap {
         let provider = Provider::<Http>::try_from(config.rpc_endpoint)
             .map_err(|e| Error::Custom(e.to_string()))?;
 
-        let keypairs =
-            get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
+        let keypairs = get_all_keypairs_string_with_balance(&self.file_name)
+            .map_err(|e| Error::Custom(e.to_string()))?;
 
         for keypair in keypairs.keypairs.iter() {
             let client = SignerMiddleware::new(

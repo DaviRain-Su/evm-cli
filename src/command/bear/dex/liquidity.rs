@@ -3,7 +3,7 @@ use crate::bear::deploy_contracts::wbera;
 use crate::bear::precompile_contracts::{erc20_bank::erc20_bank_addr, erc20_dex};
 use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
-use crate::utils::{get_all_keypairs, get_config};
+use crate::utils::{get_all_keypairs_string_with_balance, get_config};
 use colored::Colorize;
 use ethers::prelude::SignerMiddleware;
 use ethers::providers::{Http, Middleware, Provider};
@@ -32,8 +32,8 @@ impl Liquidity {
         let provider = Provider::<Http>::try_from(config.rpc_endpoint)
             .map_err(|e| Error::Custom(e.to_string()))?;
 
-        let keypairs =
-            get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
+        let keypairs = get_all_keypairs_string_with_balance(&self.file_name)
+            .map_err(|e| Error::Custom(e.to_string()))?;
         // let keypairs = get_single_keypairs().map_err(|e| Error::Custom(e.to_string()))?;
 
         for keypair in keypairs.keypairs.iter() {

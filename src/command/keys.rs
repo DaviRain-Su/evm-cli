@@ -1,5 +1,5 @@
 use crate::errors::Error;
-use crate::utils::get_all_keypairs;
+use crate::utils::{get_all_keypairs_string, get_all_keypairs_string_with_balance};
 use ethers::core::rand::thread_rng;
 use ethers_signers::LocalWallet;
 use ethers_signers::Signer;
@@ -27,8 +27,8 @@ pub struct NewStore {
 
 impl NewStore {
     pub fn run(&self) -> Result<(), Error> {
-        let all_keypairs =
-            get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
+        let all_keypairs = get_all_keypairs_string_with_balance(&self.file_name)
+            .map_err(|e| Error::Custom(e.to_string()))?;
 
         let keyparis_str = KeyPairsString::convert_from_keypairs(all_keypairs);
 
@@ -56,7 +56,7 @@ pub struct NewFormat {
 impl NewFormat {
     pub fn run(&self) -> Result<(), Error> {
         let all_keypairs =
-            get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
+            get_all_keypairs_string(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
 
         let keyparis_str = KeyPairsStringWithbalance::from(all_keypairs);
 

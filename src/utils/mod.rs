@@ -1,5 +1,5 @@
 use super::Client;
-use crate::command::keys::{KeyPairs, KeyPairsStringWithbalance};
+use crate::command::keys::{KeyPairs, KeyPairsString, KeyPairsStringWithbalance};
 use crate::config::Config;
 use crate::errors::Error;
 use ethers::{prelude::*, utils as ethers_utils};
@@ -21,7 +21,7 @@ pub fn get_config() -> Result<Config, Error> {
     Ok(config)
 }
 
-pub fn get_all_keypairs(file_name: &str) -> Result<KeyPairs, Error> {
+pub fn get_all_keypairs_string_with_balance(file_name: &str) -> Result<KeyPairs, Error> {
     let home_path = dirs::home_dir().ok_or(Error::Custom("can't open home dir".to_string()))?;
     let config_path = home_path
         .join(".config")
@@ -43,7 +43,44 @@ pub fn get_all_keypairs(file_name: &str) -> Result<KeyPairs, Error> {
     Ok(keypairs)
 }
 
-pub fn get_single_keypairs() -> Result<KeyPairs, Error> {
+pub fn get_all_keypairs_string(file_name: &str) -> Result<KeyPairs, Error> {
+    let home_path = dirs::home_dir().ok_or(Error::Custom("can't open home dir".to_string()))?;
+    let config_path = home_path
+        .join(".config")
+        .join("evm-cli")
+        .join(format!("{}_keypairs.json", file_name));
+    log::info!(
+        "{}",
+        format!(
+            "{}_keypairs.json Path({})",
+            file_name,
+            config_path.display()
+        )
+    );
+    let keypairs_str = KeyPairsString::read(config_path).map_err(|e| {
+        let location = std::panic::Location::caller();
+        Error::from(format!("Error({}): {})", location, e.to_string()))
+    })?;
+    let keypairs = KeyPairs::from(keypairs_str);
+    Ok(keypairs)
+}
+
+pub fn get_single_keypairs_string() -> Result<KeyPairs, Error> {
+    let home_path = dirs::home_dir().ok_or(Error::Custom("can't open home dir".to_string()))?;
+    let config_path = home_path
+        .join(".config")
+        .join("evm-cli")
+        .join("keypairs.json");
+    log::info!("keypairs.json Path({})", config_path.display());
+    let keypairs_str = KeyPairsString::read(config_path).map_err(|e| {
+        let location = std::panic::Location::caller();
+        Error::from(format!("Error({}): {})", location, e.to_string()))
+    })?;
+    let keypairs = KeyPairs::from(keypairs_str);
+    Ok(keypairs)
+}
+
+pub fn get_single_keypairs_string_with_balance() -> Result<KeyPairs, Error> {
     let home_path = dirs::home_dir().ok_or(Error::Custom("can't open home dir".to_string()))?;
     let config_path = home_path
         .join(".config")
