@@ -185,6 +185,8 @@ pub struct KeyPairsString {
 pub struct Item {
     pub pubkey: String,
     pub secret: String,
+    pub balance: String,
+    pub verify: bool,
 }
 
 impl KeyPairsString {
@@ -227,6 +229,8 @@ impl From<KeyPairs> for KeyPairsString {
                     pubkey: format!("{:?}", k.address()),
                     secret: serde_json::to_string(&raw_keypairs.to_bytes().to_vec())
                         .expect("failed ser"),
+                    balance: String::new(),
+                    verify: false,
                 }
             })
             .collect::<Vec<_>>();
@@ -251,6 +255,8 @@ impl KeyPairsString {
                 Item {
                     pubkey: format!("{:?}", k.address()),
                     secret: secret_hex,
+                    balance: String::new(),
+                    verify: false,
                 }
             })
             .collect::<Vec<_>>();
