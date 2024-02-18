@@ -1,5 +1,5 @@
 use super::Client;
-use crate::command::keys::{KeyPairs, KeyPairsString};
+use crate::command::keys::{KeyPairs, KeyPairsStringWithbalance};
 use crate::config::Config;
 use crate::errors::Error;
 use ethers::{prelude::*, utils as ethers_utils};
@@ -35,7 +35,7 @@ pub fn get_all_keypairs(file_name: &str) -> Result<KeyPairs, Error> {
             config_path.display()
         )
     );
-    let keypairs_str = KeyPairsString::read(config_path).map_err(|e| {
+    let keypairs_str = KeyPairsStringWithbalance::read(config_path).map_err(|e| {
         let location = std::panic::Location::caller();
         Error::from(format!("Error({}): {})", location, e.to_string()))
     })?;
@@ -50,7 +50,7 @@ pub fn get_single_keypairs() -> Result<KeyPairs, Error> {
         .join("evm-cli")
         .join("keypairs.json");
     log::info!("keypairs.json Path({})", config_path.display());
-    let keypairs_str = KeyPairsString::read(config_path).map_err(|e| {
+    let keypairs_str = KeyPairsStringWithbalance::read(config_path).map_err(|e| {
         let location = std::panic::Location::caller();
         Error::from(format!("Error({}): {})", location, e.to_string()))
     })?;

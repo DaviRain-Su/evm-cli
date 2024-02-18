@@ -107,7 +107,7 @@ impl Load {
             keypairs: vec![wallet],
         };
 
-        let keyparis_str = KeyPairsString::from(keypairs);
+        let keyparis_str = KeyPairsStringWithbalance::from(keypairs);
 
         let home_path = dirs::home_dir().ok_or(Error::Custom("can't open home dir".into()))?;
         let keypairs_path = home_path
@@ -140,7 +140,7 @@ impl Single {
                         .collect::<Vec<_>>()
                 );
 
-                let keypairs_str = KeyPairsString::from(keypairs);
+                let keypairs_str = KeyPairsStringWithbalance::from(keypairs);
 
                 let home_path =
                     dirs::home_dir().ok_or(Error::Custom("can't open home dir".into()))?;
@@ -186,7 +186,7 @@ impl Multi {
                 .collect::<Vec<_>>()
         );
 
-        let keypairs_str = KeyPairsString::from(keypairs);
+        let keypairs_str = KeyPairsStringWithbalance::from(keypairs);
 
         let home_path = dirs::home_dir().ok_or(Error::Custom("can't open home dir".into()))?;
         let keypairs_path = home_path
@@ -345,6 +345,10 @@ pub struct ItemWithBalance {
     pub secret: String,
     pub balance: String,
     pub verify: bool,
+    /// is or not call 💦
+    pub on_task: bool,
+    /// call 💦 time
+    pub update_time: String,
 }
 
 impl KeyPairsStringWithbalance {
@@ -389,6 +393,8 @@ impl From<KeyPairs> for KeyPairsStringWithbalance {
                         .expect("failed ser"),
                     balance: String::new(),
                     verify: false,
+                    on_task: false,
+                    update_time: String::new(),
                 }
             })
             .collect::<Vec<_>>();
@@ -404,6 +410,21 @@ impl From<KeyPairsStringWithbalance> for KeyPairsString {
             .map(|k| Item {
                 pubkey: k.pubkey.clone(),
                 secret: k.secret.clone(),
+            })
+            .collect::<Vec<_>>();
+        Self { keypairs }
+    }
+}
+
+impl From<KeyPairsStringWithbalance> for KeyPairs {
+    fn from(value: KeyPairsStringWithbalance) -> Self {
+        let keypairs = value
+            .keypairs
+            .iter()
+            .map(|k| {
+                let raw_keypairs =
+                    serde_json::from_str::<Vec<u8>>(&k.secret).expect("serde keypairs error");
+                LocalWallet::from_bytes(&raw_keypairs).expect("keypairs from bytes error")
             })
             .collect::<Vec<_>>();
         Self { keypairs }
