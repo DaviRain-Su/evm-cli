@@ -395,3 +395,17 @@ impl From<KeyPairs> for KeyPairsStringWithbalance {
         Self { keypairs }
     }
 }
+
+impl From<KeyPairsStringWithbalance> for KeyPairsString {
+    fn from(value: KeyPairsStringWithbalance) -> Self {
+        let keypairs = value
+            .keypairs
+            .iter()
+            .map(|k| Item {
+                pubkey: k.pubkey.clone(),
+                secret: k.secret.clone(),
+            })
+            .collect::<Vec<_>>();
+        Self { keypairs }
+    }
+}
