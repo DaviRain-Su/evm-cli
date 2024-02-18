@@ -15,8 +15,8 @@ pub enum Command {
     #[structopt(name = "auto")]
     Auto(auto::Auto),
     /// generate new keypair, support single or multi keypair generate and load single keypair
-    #[structopt(name = "generator")]
-    Generator(keys::Generator),
+    #[structopt(name = "keys")]
+    Keys(keys::Keys),
     /// Display single or multi Wallet Balance
     #[structopt(name = "balance")]
     Balance(balance::Balance),

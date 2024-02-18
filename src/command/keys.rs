@@ -8,13 +8,15 @@ use std::path::PathBuf;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
-pub enum Generator {
+pub enum Keys {
     /// Single wallet generate or load
     Single(Single),
     /// multi wallet generate
     Multi(Multi),
     /// generator new key file
     NewStore(NewStore),
+    /// new format
+    NewFormat(NewFormat),
 }
 
 #[derive(Debug, StructOpt)]
@@ -44,12 +46,41 @@ impl NewStore {
     }
 }
 
+/// NewFormat
+#[derive(Debug, StructOpt)]
+pub struct NewFormat {
+    #[structopt(short, long)]
+    pub file_name: String,
+}
+
+impl NewFormat {
+    pub fn run(&self) -> Result<(), Error> {
+        let all_keypairs =
+            get_all_keypairs(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
+
+        let keyparis_str = KeyPairsString::convert_to_new_format(all_keypairs);
+
+        let home_path = dirs::home_dir().ok_or(Error::Custom("can't open home dir".into()))?;
+        let keypairs_path = home_path
+            .join(".config")
+            .join("evm-cli")
+            .join(format!("{}_convert.json", self.file_name));
+
+        keyparis_str
+            .write(keypairs_path.clone())
+            .map_err(|e| Error::Custom(e.to_string()))?;
+
+        Ok(())
+    }
+}
+
 impl Generator {
     pub fn run(&self) -> Result<(), Error> {
         match self {
             Generator::Single(single) => single.run(),
             Generator::Multi(multi) => multi.run(),
             Generator::NewStore(new_store) => new_store.run(),
+            Generator::NewFormat(new_format) => new_format.run(),
         }
     }
 }
@@ -255,6 +286,24 @@ impl KeyPairsString {
                 Item {
                     pubkey: format!("{:?}", k.address()),
                     secret: secret_hex,
+                    balance: String::new(),
+                    verify: false,
+                }
+            })
+            .collect::<Vec<_>>();
+        Self { keypairs }
+    }
+
+    pub fn convert_to_new_format(keypairs: KeyPairs) -> Self {
+        let keypairs = keypairs
+            .keypairs
+            .iter()
+            .map(|k| {
+                let raw_keypairs = k.signer();
+                Item {
+                    pubkey: format!("{:?}", k.address()),
+                    secret: serde_json::to_string(&raw_keypairs.to_bytes().to_vec())
+                        .expect("failed ser"),
                     balance: String::new(),
                     verify: false,
                 }
