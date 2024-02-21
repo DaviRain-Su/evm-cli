@@ -144,49 +144,7 @@ impl Swap {
 
                 let mut counter = 0;
                 let swap_result = loop {
-                    // let honey_amount = honey::balance_of(&client, keypair.address())
-                    //     .await
-                    //     .map_err(|e| Error::Custom(e.to_string()))?;
-                    // println!(
-                    //     "Address({}) have {} honey",
-                    //     keypair.address().to_string().red(),
-                    //     honey_amount.to_string().red()
-                    // );
                     log::info!("Process erc20 dex Swap");
-
-                    // if let Err(result) = erc20_dex::swap(
-                    //     &client,
-                    //     kind,
-                    //     pool_id,
-                    //     base_asset,
-                    //     half_base_swap_amount,
-                    //     preview_swap.0,
-                    //     preview_swap.1,
-                    //     deadline,
-                    // )
-                    // .await
-                    // {
-                    //     if counter == 3 {
-                    //         break;
-                    //     } else {
-                    //         println!("Warn Error({})", result.to_string().red());
-                    //         counter += 1;
-                    //         continue;
-                    //     }
-                    // } else {
-                    //     if honey_amount != U256::zero() {
-                    //         println!("Address({}) have {} honey", keypair.address(), honey_amount);
-                    //         break;
-                    //     } else {
-                    //         println!(
-                    //             "Address({:?}) have {} honey",
-                    //             keypair.address(),
-                    //             honey_amount.to_string().red()
-                    //         );
-                    //         // continue;
-                    //         break;
-                    //     }
-                    // }
                     let swaps = vec![erc20_dex_module::BatchSwapStep {
                         pool_id,
                         asset_in: base_asset,
