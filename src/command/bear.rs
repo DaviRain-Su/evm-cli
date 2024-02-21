@@ -6,6 +6,7 @@ pub mod dex;
 pub mod epoch;
 pub mod honey;
 pub mod nft;
+pub mod reward;
 pub mod wbera;
 
 #[derive(Debug, StructOpt)]
@@ -22,6 +23,8 @@ pub enum Bera {
     Honey(honey::Honey),
     /// Bera chain Wbera module
     WBera(wbera::WBera),
+    /// reward
+    Reward(reward::Reward),
 }
 
 impl Bera {
@@ -33,6 +36,7 @@ impl Bera {
             Bera::NFT(nft) => nft.run().await,
             Bera::Honey(honey) => honey.run().await,
             Bera::WBera(wbera) => wbera.run().await,
+            Bera::Reward(reward) => reward.run().await,
         }
     }
 }
