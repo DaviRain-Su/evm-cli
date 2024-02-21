@@ -58,7 +58,8 @@ impl NewFormat {
         let all_keypairs =
             get_all_keypairs_string(&self.file_name).map_err(|e| Error::Custom(e.to_string()))?;
 
-        let keyparis_str = KeyPairsStringWithbalance::from(all_keypairs);
+        let keypairs_str = KeyPairsString::from(all_keypairs);
+        let keypairs_str_with_balance = KeyPairsStringWithbalance::from(keypairs_str);
 
         let home_path = dirs::home_dir().ok_or(Error::Custom("can't open home dir".into()))?;
         let keypairs_path = home_path
@@ -66,7 +67,7 @@ impl NewFormat {
             .join("evm-cli")
             .join(format!("{}_new_format.json", self.file_name));
 
-        keyparis_str
+        keypairs_str_with_balance
             .write(keypairs_path.clone())
             .map_err(|e| Error::Custom(e.to_string()))?;
 
@@ -410,6 +411,24 @@ impl From<KeyPairsStringWithbalance> for KeyPairsString {
             .map(|k| Item {
                 pubkey: k.pubkey.clone(),
                 secret: k.secret.clone(),
+            })
+            .collect::<Vec<_>>();
+        Self { keypairs }
+    }
+}
+
+impl From<KeyPairsString> for KeyPairsStringWithbalance {
+    fn from(value: KeyPairsString) -> Self {
+        let keypairs = value
+            .keypairs
+            .iter()
+            .map(|k| ItemWithBalance {
+                pubkey: k.pubkey.clone(),
+                secret: k.secret.clone(),
+                balance: String::new(),
+                verify: false,
+                on_task: false,
+                update_time: String::new(),
             })
             .collect::<Vec<_>>();
         Self { keypairs }
