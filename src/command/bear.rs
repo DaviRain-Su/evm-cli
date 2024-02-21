@@ -7,6 +7,7 @@ pub mod epoch;
 pub mod honey;
 pub mod nft;
 pub mod reward;
+pub mod swap_usdc;
 pub mod wbera;
 
 #[derive(Debug, StructOpt)]
@@ -25,6 +26,8 @@ pub enum Bera {
     WBera(wbera::WBera),
     /// reward
     Reward(reward::Reward),
+    /// Mint honey
+    SwapUSDC(swap_usdc::SwapUSDC),
 }
 
 impl Bera {
@@ -37,6 +40,7 @@ impl Bera {
             Bera::Honey(honey) => honey.run().await,
             Bera::WBera(wbera) => wbera.run().await,
             Bera::Reward(reward) => reward.run().await,
+            Bera::SwapUSDC(mint) => mint.run().await,
         }
     }
 }

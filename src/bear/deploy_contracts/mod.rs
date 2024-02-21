@@ -3,6 +3,7 @@ pub mod erc20_bribe;
 pub mod erc20_honey;
 pub mod honey;
 pub mod multicall3;
+pub mod stg_usdc;
 pub mod wbera;
 pub mod wbtc;
 pub mod weth;

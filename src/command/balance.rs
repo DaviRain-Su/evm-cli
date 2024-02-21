@@ -1,4 +1,4 @@
-use crate::bear::deploy_contracts::{honey, wbera};
+use crate::bear::deploy_contracts::{honey, stg_usdc, wbera};
 use crate::bear::nft::balentines;
 use crate::bear::nft::lunar_new_year;
 use crate::command::keys::{KeyPairs, KeyPairsString};
@@ -225,36 +225,68 @@ impl Multi {
             let divisor: u128 = 10u128.pow(exponent); // 计算除数
             let wbera_balance_f64 = wbera_balance.as_u128() as f64 / divisor as f64;
 
+            let mut counter = 0;
+            let stg_usdc_balance = loop {
+                if let Ok(v) = stg_usdc::balance_of(&client, keypair.address()).await {
+                    if (v != U256::zero()) & (counter < 3) {
+                        break v;
+                    } else if counter == 3 {
+                        break v;
+                    } else {
+                        log::warn!("Try {} time", counter.to_string().red());
+                        counter += 1;
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+            };
+
+            let stg_usdc_decimal = loop {
+                if let Ok(v) = stg_usdc::decimals(&client).await {
+                    break v;
+                } else {
+                    continue;
+                }
+            };
+
+            let exponent: u32 = stg_usdc_decimal as u32; // 自定义指数值
+            let divisor: u128 = 10u128.pow(exponent); // 计算除数
+            let stg_usdc_balance_f64 = stg_usdc_balance.as_u128() as f64 / divisor as f64;
+
             if wbera_balance == U256::zero() {
                 println!(
-                    "💨💨💨Warn {} Have ({}) Bera 💨💨 ({}) Wbera ({}) 💨💨 Honey  💨💨 ({}) Lunar New Year NFT  💨💨 {} balentine ",
+                    "💨💨💨Warn {} Have ({}) Bera 💨💨 ({}) Wbera ({}) 💨💨 Honey  💨💨 ({}) Lunar New Year NFT  💨💨 {} balentine 💨💨 {} STGUSDC ",
                     keypair.address().to_string().green(),
                     native_balance_f64.to_string().red(),
                     wbera_balance_f64.to_string().green(),
                     honey_balance_f64.to_string().bright_cyan(),
                     lunar_new_year_balance.to_string().green(),
-                    balentine_balance.to_string().bright_blue()
+                    balentine_balance.to_string().bright_blue(),
+                    stg_usdc_balance_f64.to_string().bright_red(),
                 );
             } else {
                 if native_balance == U256::from(5 * BERA_DECIMAL as u128) {
                     println!(
-                        "{:?} has ({}) Bera 🍤 {} Wbera ({}) 🍤 Honey 🍤 ({}) Lunar New Year NFT 🍤 {} balentine ",
+                        "{:?} has ({}) Bera 🍤 {} Wbera ({}) 🍤 Honey 🍤 ({}) Lunar New Year NFT 🍤 {} balentine 🍤 {} STGUSDC ",
                         keypair.address(),
                         native_balance_f64.to_string().red(),
                         wbera_balance_f64.to_string().bright_purple(),
                         honey_balance_f64.to_string().bright_cyan(),
                         lunar_new_year_balance.to_string().green(),
-                        balentine_balance.to_string().bright_blue()
+                        balentine_balance.to_string().bright_blue(),
+                        stg_usdc_balance_f64.to_string().bright_red(),
                     );
                 } else {
                     println!(
-                        "{} has ({}) Bera 🍤 {} Wbera ({}) 🍤 Honey 🍤 ({}) Lunar New Year NFT 🍤 {} balentine",
+                        "{} has ({}) Bera 🍤 {} Wbera ({}) 🍤 Honey 🍤 ({}) Lunar New Year NFT 🍤 {} balentine 🍤 {} STGUSDC",
                         keypair.address().to_string().blue(),
                         native_balance_f64.to_string().red(),
                         wbera_balance_f64.to_string().bright_magenta(),
                         honey_balance_f64.to_string().bright_yellow(),
                         lunar_new_year_balance.to_string().green(),
-                        balentine_balance.to_string().bright_blue()
+                        balentine_balance.to_string().bright_blue(),
+                        stg_usdc_balance_f64.to_string().bright_red()
                     );
                 }
             }

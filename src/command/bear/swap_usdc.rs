@@ -1,4 +1,4 @@
-use crate::bear::deploy_contracts::{honey, wbera};
+use crate::bear::deploy_contracts::{stg_usdc, wbera};
 use crate::bear::precompile_contracts::erc20_bank::erc20_bank_addr;
 use crate::bear::precompile_contracts::erc20_dex::{self, erc20_dex_module};
 use crate::constant::BERA_DECIMAL;
@@ -18,7 +18,7 @@ use structopt::StructOpt;
 
 // notice must use erc20 dex
 #[derive(Debug, StructOpt)]
-pub struct Swap {
+pub struct SwapUSDC {
     /// chain id
     #[structopt(long)]
     pub chain_id: u64,
@@ -27,7 +27,7 @@ pub struct Swap {
     pub file_name: String,
 }
 
-impl Swap {
+impl SwapUSDC {
     pub async fn run(&self) -> Result<(), Error> {
         let config = get_config().map_err(|e| Error::from(e.to_string()))?;
 
@@ -68,7 +68,7 @@ impl Swap {
                 native_balance_f64.to_string().green()
             );
 
-            let pool_id: Address = "0xa88572F08f79D28b8f864350f122c1CC0AbB0d96"
+            let pool_id: Address = "0x7D5b5C1937ff1b18B45AbC64aeAB68663a7a58Ab"
                 .parse()
                 .unwrap();
             let pool_name = erc20_dex::get_pool_name(&client, pool_id.clone())
@@ -107,19 +107,20 @@ impl Swap {
                 base_asset_amount_f64.to_string().green()
             );
 
-            let half_base_swap_amount = base_asset_amount / 2;
+            //TODO
+            let half_base_swap_amount = base_asset_amount;
 
-            let quote_asset: Address = "0x7eeca4205ff31f947edbd49195a7a88e6a91161b"
+            let quote_asset: Address = "0x6581e59A1C8dA66eD0D313a0d4029DcE2F746Cc5"
                 .parse()
                 .unwrap();
 
             let deadline = U256::from(get_epoch_milliseconds()) + U256::from(60 * 1000);
 
-            let honey_amount = honey::balance_of(&client, keypair.address())
+            let stg_usdc_amount = stg_usdc::balance_of(&client, keypair.address())
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
 
-            if base_asset_amount != U256::zero() && honey_amount == U256::zero() {
+            if base_asset_amount != U256::zero() && stg_usdc_amount == U256::zero() {
                 let approve_result =
                     wbera::approve(&client, erc20_bank_addr(), base_asset_amount).await;
                 println!("Approve Result:{:?}", approve_result);
@@ -144,49 +145,8 @@ impl Swap {
 
                 let mut counter = 0;
                 let swap_result = loop {
-                    // let honey_amount = honey::balance_of(&client, keypair.address())
-                    //     .await
-                    //     .map_err(|e| Error::Custom(e.to_string()))?;
-                    // println!(
-                    //     "Address({}) have {} honey",
-                    //     keypair.address().to_string().red(),
-                    //     honey_amount.to_string().red()
-                    // );
                     log::info!("Process erc20 dex Swap");
 
-                    // if let Err(result) = erc20_dex::swap(
-                    //     &client,
-                    //     kind,
-                    //     pool_id,
-                    //     base_asset,
-                    //     half_base_swap_amount,
-                    //     preview_swap.0,
-                    //     preview_swap.1,
-                    //     deadline,
-                    // )
-                    // .await
-                    // {
-                    //     if counter == 3 {
-                    //         break;
-                    //     } else {
-                    //         println!("Warn Error({})", result.to_string().red());
-                    //         counter += 1;
-                    //         continue;
-                    //     }
-                    // } else {
-                    //     if honey_amount != U256::zero() {
-                    //         println!("Address({}) have {} honey", keypair.address(), honey_amount);
-                    //         break;
-                    //     } else {
-                    //         println!(
-                    //             "Address({:?}) have {} honey",
-                    //             keypair.address(),
-                    //             honey_amount.to_string().red()
-                    //         );
-                    //         // continue;
-                    //         break;
-                    //     }
-                    // }
                     let swaps = vec![erc20_dex_module::BatchSwapStep {
                         pool_id,
                         asset_in: base_asset,
@@ -230,13 +190,13 @@ impl Swap {
 
                 let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
 
-                let honey_decimal = honey::decimals(&client)
+                let stg_usdc_decimal = stg_usdc::decimals(&client)
                     .await
                     .map_err(|e| Error::Custom(e.to_string()))?;
 
-                let exponent: u32 = honey_decimal as u32; // 自定义指数值
+                let exponent: u32 = stg_usdc_decimal as u32; // 自定义指数值
                 let divisor: u128 = 10u128.pow(exponent); // 计算除数
-                let honey_balance_f64 = honey_amount.as_u128() as f64 / divisor as f64;
+                let stg_usdc_balance_f64 = stg_usdc_amount.as_u128() as f64 / divisor as f64;
 
                 let base_asset_amount = wbera::balance_of(&client, keypair.address())
                     .await
@@ -258,7 +218,7 @@ impl Swap {
                     keypair.address().to_string().blue(),
                     native_balance_f64.to_string().green(),
                     base_asset_amount_f64.to_string().green(),
-                    honey_balance_f64.to_string().green()
+                    stg_usdc_balance_f64.to_string().green()
                 );
             }
         }
