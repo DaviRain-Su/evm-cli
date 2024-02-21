@@ -18,7 +18,6 @@ abigen!(
 
 /// name 是一个公共视图方法，用于读取此 erc20 的 sdk.Coin 名称。
 pub async fn name(client: &Client) -> Result<String, Box<dyn std::error::Error>> {
-    // log::info!("Honey module: Function(name)");
     let contract = Honey::new(honey_token_addr(), Arc::new(client.clone()));
     let value = contract.name().call().await?;
     Ok(value)
@@ -26,7 +25,6 @@ pub async fn name(client: &Client) -> Result<String, Box<dyn std::error::Error>>
 
 /// symbol 是一个公共视图方法，用于读取此 erc20 的 sdk.Coin 符号。
 pub async fn symbol(client: &Client) -> Result<String, Box<dyn std::error::Error>> {
-    // log::info!("Honey module: Function(symbol)");
     let contract = Honey::new(honey_token_addr(), Arc::new(client.clone()));
     let value = contract.symbol().call().await?;
     Ok(value)
@@ -34,7 +32,6 @@ pub async fn symbol(client: &Client) -> Result<String, Box<dyn std::error::Error
 
 /// decimals 是一个公共视图方法，用于读取此 erc20 的 sdk.Coin 小数。
 pub async fn decimals(client: &Client) -> Result<u8, Box<dyn std::error::Error>> {
-    // log::info!("Honey module: Function(decimals)");
     let contract = Honey::new(honey_token_addr(), Arc::new(client.clone()));
     let value = contract.decimals().call().await?;
     Ok(value)
@@ -42,7 +39,6 @@ pub async fn decimals(client: &Client) -> Result<u8, Box<dyn std::error::Error>>
 
 /// TotalSupply 是一个公共视图方法，用于读取此 erc20 的 sdk.Coin 总供应量。
 pub async fn total_supply(client: &Client) -> Result<U256, Box<dyn std::error::Error>> {
-    // log::info!("Honey module: Function(total_supply)");
     let contract = Honey::new(honey_token_addr(), Arc::new(client.clone()));
     let value = contract.total_supply().call().await?;
     Ok(value)
@@ -53,7 +49,6 @@ pub async fn balance_of(
     client: &Client,
     address: Address,
 ) -> Result<U256, Box<dyn std::error::Error>> {
-    // log::info!("Honey module: Function(balance_of(Address({:?})))", address);
     let contract = Honey::new(honey_token_addr(), Arc::new(client.clone()));
     let value = contract.balance_of(address).call().await?;
     Ok(value)
@@ -65,11 +60,6 @@ pub async fn approve(
     address: Address,
     amount: U256,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    // log::info!(
-    //     "Honey module: Function(approve(Address({:?}), Amount({})))",
-    //     address,
-    //     amount
-    // );
     let eth_max_spend = parse_units(0, 18)?;
     let contract = Honey::new(honey_token_addr(), Arc::new(client.clone()));
     let tx = contract
@@ -91,11 +81,6 @@ pub async fn transfer(
     address: Address,
     amount: U256,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    // log::info!(
-    //     "Honey module: Function(transfer(Address({:?}), Amount({})))",
-    //     address,
-    //     amount
-    // );
     let contract = Honey::new(honey_token_addr(), Arc::new(client.clone()));
     let tx = contract.transfer(address, amount).send().await?.await?;
     println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
@@ -110,12 +95,6 @@ pub async fn transfer_from(
     to: Address,
     amount: U256,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    // log::info!(
-    //     "Honey module: Function(transfer_from(From({:?}), To({:?}), Amount({})))",
-    //     from,
-    //     to,
-    //     amount
-    // );
     let contract = Honey::new(honey_token_addr(), Arc::new(client.clone()));
     let tx = contract
         .transfer_from(from, to, amount)
@@ -129,7 +108,6 @@ pub async fn transfer_from(
 
 /// TransferFrom 是一种将代币从一个地址转移到另一个地址的公共方法。
 pub async fn nonces(client: &Client, address: Address) -> Result<U256, Box<dyn std::error::Error>> {
-    // log::info!("Honey module: Function(nonces(Address({:?})))", address);
     let contract = Honey::new(honey_token_addr(), Arc::new(client.clone()));
     let value = contract.nonces(address).call().await?;
     Ok(value)
