@@ -3,6 +3,7 @@ use crate::bear::precompile_contracts::erc20_bank::erc20_bank_addr;
 use crate::bear::precompile_contracts::erc20_dex::{self, erc20_dex_module};
 use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
+use crate::utils::calc_balance;
 use crate::utils::{get_all_keypairs_string_with_balance, get_config};
 use colored::*;
 use ethers::abi::Bytes;
@@ -97,9 +98,7 @@ impl SwapUSDC {
                 }
             };
 
-            let exponent: u32 = wbera_decimal as u32; // 自定义指数值
-            let divisor: u128 = 10u128.pow(exponent); // 计算除数
-            let base_asset_amount_f64 = base_asset_amount.as_u128() as f64 / divisor as f64;
+            let base_asset_amount_f64 = calc_balance(wbera_decimal as u32, base_asset_amount);
 
             println!(
                 "Base Asset({}) balance: {}",
@@ -194,9 +193,7 @@ impl SwapUSDC {
                     .await
                     .map_err(|e| Error::Custom(e.to_string()))?;
 
-                let exponent: u32 = stg_usdc_decimal as u32; // 自定义指数值
-                let divisor: u128 = 10u128.pow(exponent); // 计算除数
-                let stg_usdc_balance_f64 = stg_usdc_amount.as_u128() as f64 / divisor as f64;
+                let stg_usdc_balance_f64 = calc_balance(stg_usdc_decimal as u32, stg_usdc_amount);
 
                 let base_asset_amount = wbera::balance_of(&client, keypair.address())
                     .await
@@ -209,9 +206,7 @@ impl SwapUSDC {
                     }
                 };
 
-                let exponent: u32 = wbera_decimal as u32; // 自定义指数值
-                let divisor: u128 = 10u128.pow(exponent); // 计算除数
-                let base_asset_amount_f64 = base_asset_amount.as_u128() as f64 / divisor as f64;
+                let base_asset_amount_f64 = calc_balance(wbera_decimal as u32, base_asset_amount);
 
                 println!(
                     "Address({}) Have {} Bera {} Wbera {} Honey",

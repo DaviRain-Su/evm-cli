@@ -3,6 +3,7 @@ use crate::bear::deploy_contracts::wbera;
 use crate::bear::precompile_contracts::{erc20_bank::erc20_bank_addr, erc20_dex};
 use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
+use crate::utils::calc_balance;
 use crate::utils::{get_all_keypairs_string_with_balance, get_config};
 use colored::Colorize;
 use ethers::prelude::SignerMiddleware;
@@ -81,9 +82,7 @@ impl Liquidity {
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
 
-            let exponent: u32 = wbera_decimal as u32; // 自定义指数值
-            let divisor: u128 = 10u128.pow(exponent); // 计算除数
-            let base_asset_amount_f64 = base_asset_amount.as_u128() as f64 / divisor as f64;
+            let base_asset_amount_f64 = calc_balance(wbera_decimal as u32, base_asset_amount);
 
             println!(
                 "Base Asset({}) balance: {}",
@@ -102,9 +101,7 @@ impl Liquidity {
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
 
-            let exponent: u32 = honey_decimal as u32; // 自定义指数值
-            let divisor: u128 = 10u128.pow(exponent); // 计算除数
-            let quote_asset_amount_f64 = quote_asset_amount.as_u128() as f64 / divisor as f64;
+            let quote_asset_amount_f64 = calc_balance(honey_decimal as u32, quote_asset_amount);
 
             println!(
                 "Quote Asset({}) balance: {}",
@@ -118,18 +115,6 @@ impl Liquidity {
                         .await
                         .map_err(|e| Error::Custom(e.to_string()))?;
                 println!("approve wbera_addr result {:?}", wbera_addr_result);
-
-                // let preview_swap = erc20_dex::get_preview_swap_exact(
-                //     &client,
-                //     kind,
-                //     pool_id,
-                //     base_asset,
-                //     base_asset_amount,
-                //     quote_asset,
-                // )
-                // .await
-                // .map_err(|e| Error::Custom(e.to_string()))?;
-                // println!("preview swap: {:?}", preview_swap);
 
                 let receiver = keypair.address();
                 let asset_in = vec![base_asset, quote_asset];

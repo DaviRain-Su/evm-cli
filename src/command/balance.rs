@@ -4,6 +4,7 @@ use crate::bear::nft::lunar_new_year;
 use crate::command::keys::{KeyPairs, KeyPairsString};
 use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
+use crate::utils::calc_balance;
 use crate::utils::{
     get_all_keypairs_string_with_balance, get_config, get_single_keypairs_string_with_balance,
 };
@@ -56,9 +57,7 @@ impl Balance {
                         .await
                         .map_err(|e| Error::Custom(e.to_string()))?;
 
-                    let exponent: u32 = honey_decimal as u32; // 自定义指数值
-                    let divisor: u128 = 10u128.pow(exponent); // 计算除数
-                    let honey_balance_f64 = honey_balance.as_u128() as f64 / divisor as f64;
+                    let honey_balance_f64 = calc_balance(honey_decimal as u32, honey_balance);
 
                     let lunar_new_year_balance =
                         lunar_new_year::balance_of(&client, keypair.address())
@@ -94,9 +93,7 @@ impl Balance {
                         }
                     };
 
-                    let exponent: u32 = wbera_decimal as u32; // 自定义指数值
-                    let divisor: u128 = 10u128.pow(exponent); // 计算除数
-                    let wbera_balance_f64 = wbera_balance.as_u128() as f64 / divisor as f64;
+                    let wbera_balance_f64 = calc_balance(wbera_decimal as u32, wbera_balance);
 
                     println!(
                         "{} have ({}) Bera  🍤 {} Wbera 🍤 ({}) Honey 🍤 ({}) Lunar New Year NFT 🍤 {} Balentines",
@@ -176,9 +173,7 @@ impl Multi {
                 }
             };
 
-            let exponent: u32 = honey_decimal as u32; // 自定义指数值
-            let divisor: u128 = 10u128.pow(exponent); // 计算除数
-            let honey_balance_f64 = honey_balance.as_u128() as f64 / divisor as f64;
+            let honey_balance_f64 = calc_balance(honey_decimal as u32, honey_balance);
 
             let lunar_new_year_balance = loop {
                 if let Ok(v) = lunar_new_year::balance_of(&client, keypair.address()).await {
@@ -221,9 +216,7 @@ impl Multi {
                 }
             };
 
-            let exponent: u32 = wbera_decimal as u32; // 自定义指数值
-            let divisor: u128 = 10u128.pow(exponent); // 计算除数
-            let wbera_balance_f64 = wbera_balance.as_u128() as f64 / divisor as f64;
+            let wbera_balance_f64 = calc_balance(wbera_decimal as u32, wbera_balance);
 
             let mut counter = 0;
             let stg_usdc_balance = loop {
@@ -250,9 +243,7 @@ impl Multi {
                 }
             };
 
-            let exponent: u32 = stg_usdc_decimal as u32; // 自定义指数值
-            let divisor: u128 = 10u128.pow(exponent); // 计算除数
-            let stg_usdc_balance_f64 = stg_usdc_balance.as_u128() as f64 / divisor as f64;
+            let stg_usdc_balance_f64 = calc_balance(stg_usdc_decimal as u32, stg_usdc_balance);
 
             if wbera_balance == U256::zero() {
                 println!(

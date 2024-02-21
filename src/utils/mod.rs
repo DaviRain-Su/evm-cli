@@ -134,6 +134,13 @@ pub async fn send_transaction(
     Ok(())
 }
 
+pub fn calc_balance(decimal: u32, amount: U256) -> f64 {
+    let exponent: u32 = decimal as u32; // 自定义指数值
+    let divisor: u128 = 10u128.pow(exponent); // 计算除数
+    let balance_f64 = amount.as_u128() as f64 / divisor as f64;
+    balance_f64
+}
+
 #[test]
 fn test_get_config() {
     let config = get_config().unwrap();

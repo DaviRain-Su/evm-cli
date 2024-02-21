@@ -1,5 +1,6 @@
 use crate::bear::deploy_contracts::honey::{self, honey_token_addr};
 use crate::errors::Error;
+use crate::utils::calc_balance;
 use crate::utils::{
     get_all_keypairs_string_with_balance, get_config, get_single_keypairs_string_with_balance,
 };
@@ -45,9 +46,7 @@ impl Honey {
             .await
             .map_err(|e| Error::Custom(e.to_string()))?;
 
-        let exponent: u32 = honey_decimal as u32; // 自定义指数值
-        let divisor: u128 = 10u128.pow(exponent); // 计算除数
-        let honey_balance_f64 = honey_balance.as_u128() as f64 / divisor as f64;
+        let honey_balance_f64 = calc_balance(honey_decimal as u32, honey_balance);
 
         println!(
             "{} have {} Honey",
@@ -85,7 +84,8 @@ impl Honey {
                 let honey_balance = honey::balance_of(&client, keypair.address())
                     .await
                     .map_err(|e| Error::Custom(e.to_string()))?;
-                let honey_balance_f64 = honey_balance.as_u128() as f64 / divisor as f64;
+
+                let honey_balance_f64 = calc_balance(honey_decimal as u32, honey_balance);
 
                 println!(
                     "{} have {} Honey",
