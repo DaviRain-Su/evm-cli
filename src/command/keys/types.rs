@@ -145,7 +145,7 @@ pub struct KeyPairsStringWithbalance {
 pub struct ItemWithBalance {
     pub pubkey: String,
     pub secret: String,
-    pub balance: String,
+    pub balance: f64,
     pub verify: bool,
     /// is or not call 💦
     pub on_task: bool,
@@ -193,7 +193,7 @@ impl From<KeyPairs> for KeyPairsStringWithbalance {
                     pubkey: format!("{:?}", k.address()),
                     secret: serde_json::to_string(&raw_keypairs.to_bytes().to_vec())
                         .expect("failed ser"),
-                    balance: String::new(),
+                    balance: 0.0,
                     verify: false,
                     on_task: false,
                     update_time: String::new(),
@@ -226,7 +226,7 @@ impl From<KeyPairsString> for KeyPairsStringWithbalance {
             .map(|k| ItemWithBalance {
                 pubkey: k.pubkey.clone(),
                 secret: k.secret.clone(),
-                balance: String::new(),
+                balance: 0.0,
                 verify: false,
                 on_task: false,
                 update_time: String::new(),
