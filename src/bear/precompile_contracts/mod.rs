@@ -7,7 +7,6 @@ pub mod bgt;
 pub mod bribe;
 pub mod dex;
 pub mod distribution;
-pub mod epochs;
 pub mod erc20_bank;
 pub mod erc20_dex;
 pub mod governance;
