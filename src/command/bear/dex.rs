@@ -1,6 +1,7 @@
 use crate::errors::Error;
 use structopt::StructOpt;
 
+pub mod bex;
 pub mod liquidity;
 pub mod swap;
 
@@ -11,6 +12,8 @@ pub enum Dex {
     Swap(swap::Swap),
     /// liquidity
     Liquidity(liquidity::Liquidity),
+    /// bex
+    Bex(bex::Swap),
 }
 
 impl Dex {
@@ -18,6 +21,7 @@ impl Dex {
         match self {
             Dex::Swap(swap) => swap.run().await,
             Dex::Liquidity(liq) => liq.run().await,
+            Dex::Bex(bex) => bex.run().await,
         }
     }
 }
