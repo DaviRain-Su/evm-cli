@@ -1,6 +1,4 @@
 use crate::bear::deploy_contracts::{honey, stg_usdc, wbera};
-use crate::bear::nft::balentines;
-use crate::bear::nft::lunar_new_year;
 use crate::command::keys::{KeyPairs, KeyPairsString};
 use crate::constant::BERA_DECIMAL;
 use crate::errors::Error;
@@ -17,7 +15,7 @@ use structopt::StructOpt;
 #[derive(Debug, StructOpt)]
 pub enum Balance {
     /// Display single wallet balance
-    Single { chain_id: u64 },
+    Single,
     /// Display multi wallet balance
     Multi(Multi),
     /// Check
@@ -27,7 +25,7 @@ pub enum Balance {
 impl Balance {
     pub async fn run(&self) -> Result<(), Error> {
         match self {
-            Balance::Single { chain_id } => {
+            Balance::Single => {
                 let config = get_config().map_err(|e| Error::from(e.to_string()))?;
 
                 let provider = Provider::<Http>::try_from(config.rpc_endpoint)
@@ -39,7 +37,7 @@ impl Balance {
                 for keypair in single_keypair.keypairs {
                     let client = SignerMiddleware::new(
                         provider.clone(),
-                        keypair.clone().with_chain_id(*chain_id),
+                        keypair.clone().with_chain_id(config.chain_id),
                     );
 
                     let native_balance = provider
@@ -59,15 +57,6 @@ impl Balance {
 
                     let honey_balance_f64 = calc_balance(honey_decimal as u32, honey_balance);
 
-                    let lunar_new_year_balance =
-                        lunar_new_year::balance_of(&client, keypair.address())
-                            .await
-                            .map_err(|e| Error::Custom(e.to_string()))?;
-
-                    let balentines_balance = balentines::balance_of(&client, keypair.address())
-                        .await
-                        .map_err(|e| Error::Custom(e.to_string()))?;
-
                     let mut counter = 0;
                     let wbera_balance = loop {
                         if let Ok(v) = wbera::balance_of(&client, keypair.address()).await {
@@ -76,7 +65,7 @@ impl Balance {
                             } else if counter == 3 {
                                 break v;
                             } else {
-                                println!("Try {} time", counter.to_string().red());
+                                log::warn!("Try {} time", counter.to_string().red());
                                 counter += 1;
                                 continue;
                             }
@@ -96,13 +85,11 @@ impl Balance {
                     let wbera_balance_f64 = calc_balance(wbera_decimal as u32, wbera_balance);
 
                     println!(
-                        "{} have ({}) Bera  🍤 {} Wbera 🍤 ({}) Honey 🍤 ({}) Lunar New Year NFT 🍤 {} Balentines",
+                        "{} have ({}) Bera  🍤 {} Wbera 🍤 ({}) Honey 🍤 ",
                         keypair.address().to_string().blue(),
                         native_balance_f64.to_string().red(),
                         wbera_balance_f64.to_string().red(),
                         honey_balance_f64.to_string().blink(),
-                        lunar_new_year_balance.to_string().green(),
-                        balentines_balance.to_string().bright_yellow()
                     );
                 }
                 Ok(())
@@ -115,8 +102,6 @@ impl Balance {
 
 #[derive(Debug, StructOpt)]
 pub struct Multi {
-    #[structopt(long)]
-    pub chain_id: u64,
     /// keypair file name
     #[structopt(short, long)]
     pub file_name: String,
@@ -135,7 +120,7 @@ impl Multi {
         for keypair in keypairs.keypairs {
             let client = SignerMiddleware::new(
                 provider.clone(),
-                keypair.clone().with_chain_id(self.chain_id),
+                keypair.clone().with_chain_id(config.chain_id),
             );
 
             let mut counter = 0;
@@ -174,22 +159,6 @@ impl Multi {
             };
 
             let honey_balance_f64 = calc_balance(honey_decimal as u32, honey_balance);
-
-            let lunar_new_year_balance = loop {
-                if let Ok(v) = lunar_new_year::balance_of(&client, keypair.address()).await {
-                    break v;
-                } else {
-                    continue;
-                }
-            };
-
-            let balentine_balance = loop {
-                if let Ok(v) = balentines::balance_of(&client, keypair.address()).await {
-                    break v;
-                } else {
-                    continue;
-                }
-            };
 
             let mut counter = 0;
             let wbera_balance = loop {
@@ -247,36 +216,30 @@ impl Multi {
 
             if wbera_balance == U256::zero() {
                 println!(
-                    "💨💨💨Warn {} Have ({}) Bera 💨💨 ({}) Wbera ({}) 💨💨 Honey  💨💨 ({}) Lunar New Year NFT  💨💨 {} balentine 💨💨 {} STGUSDC ",
+                    "💨💨💨Warn {} Have ({}) Bera 💨💨 ({}) Wbera ({}) 💨💨 Honey 💨💨 {} STGUSDC ",
                     keypair.address().to_string().green(),
                     native_balance_f64.to_string().red(),
                     wbera_balance_f64.to_string().green(),
                     honey_balance_f64.to_string().bright_cyan(),
-                    lunar_new_year_balance.to_string().green(),
-                    balentine_balance.to_string().bright_blue(),
                     stg_usdc_balance_f64.to_string().bright_red(),
                 );
             } else {
                 if native_balance == U256::from(5 * BERA_DECIMAL as u128) {
                     println!(
-                        "{:?} has ({}) Bera 🍤 {} Wbera ({}) 🍤 Honey 🍤 ({}) Lunar New Year NFT 🍤 {} balentine 🍤 {} STGUSDC ",
+                        "{:?} has ({}) Bera 🍤 {} Wbera ({}) 🍤 Honey 🍤 {} STGUSDC ",
                         keypair.address(),
                         native_balance_f64.to_string().red(),
                         wbera_balance_f64.to_string().bright_purple(),
                         honey_balance_f64.to_string().bright_cyan(),
-                        lunar_new_year_balance.to_string().green(),
-                        balentine_balance.to_string().bright_blue(),
                         stg_usdc_balance_f64.to_string().bright_red(),
                     );
                 } else {
                     println!(
-                        "{} has ({}) Bera 🍤 {} Wbera ({}) 🍤 Honey 🍤 ({}) Lunar New Year NFT 🍤 {} balentine 🍤 {} STGUSDC",
+                        "{} has ({}) Bera 🍤 {} Wbera ({}) 🍤 Honey 🍤 {} STGUSDC",
                         keypair.address().to_string().blue(),
                         native_balance_f64.to_string().red(),
                         wbera_balance_f64.to_string().bright_magenta(),
                         honey_balance_f64.to_string().bright_yellow(),
-                        lunar_new_year_balance.to_string().green(),
-                        balentine_balance.to_string().bright_blue(),
                         stg_usdc_balance_f64.to_string().bright_red()
                     );
                 }
@@ -288,8 +251,6 @@ impl Multi {
 
 #[derive(Debug, StructOpt)]
 pub struct CheckEmpty {
-    #[structopt(long)]
-    pub chain_id: u64,
     /// keypair file name
     #[structopt(short, long)]
     pub file_name: String,

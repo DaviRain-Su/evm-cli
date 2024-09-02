@@ -6,7 +6,7 @@ use std::str::FromStr;
 use std::sync::Arc;
 
 pub fn honey_token_addr() -> H160 {
-    H160::from_str("0x7EeCA4205fF31f947EdBd49195a7A88E6A91161B").unwrap()
+    H160::from_str("0x0E4aaF1351de4c0264C5c7056Ef3777b41BD8e03").unwrap()
 }
 
 // 1. Generate a type-safe interface for the Incrementer smart contract

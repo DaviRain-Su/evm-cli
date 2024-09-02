@@ -6,7 +6,7 @@ use std::str::FromStr;
 use std::sync::Arc;
 
 pub fn wbera_addr() -> H160 {
-    H160::from_str("0x5806E416dA447b267cEA759358cF22Cc41FAE80F").unwrap()
+    H160::from_str("0x7507c1dc16935B82698e4C63f2746A2fCf994dF8").unwrap()
 }
 
 // 1. Generate a type-safe interface for the Incrementer smart contract

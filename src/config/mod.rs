@@ -6,4 +6,6 @@ use serde::Deserialize;
 pub struct Config {
     /// rpc endpoint
     pub rpc_endpoint: String,
+    /// chain id
+    pub chain_id: u64,
 }
