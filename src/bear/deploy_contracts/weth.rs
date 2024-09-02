@@ -5,7 +5,7 @@ use std::str::FromStr;
 use std::sync::Arc;
 
 pub fn weth_addr() -> H160 {
-    H160::from_str("0x8239FBb3e3D0C2cDFd7888D8aF7701240Ac4DcA4").unwrap()
+    H160::from_str("0xE28AfD8c634946833e89ee3F122C06d7C537E8A8").unwrap()
 }
 
 // 1. Generate a type-safe interface for the Incrementer smart contract

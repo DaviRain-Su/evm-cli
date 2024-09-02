@@ -5,7 +5,7 @@ use std::str::FromStr;
 use std::sync::Arc;
 
 pub fn wbtc_addr() -> H160 {
-    H160::from_str("0x9DAD8A1F64692adeB74ACa26129e0F16897fF4BB").unwrap()
+    H160::from_str("0x286F1C3f0323dB9c91D1E8f45c8DF2d065AB5fae").unwrap()
 }
 
 // 1. Generate a type-safe interface for the Incrementer smart contract

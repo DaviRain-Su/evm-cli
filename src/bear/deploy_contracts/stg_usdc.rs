@@ -6,7 +6,7 @@ use std::str::FromStr;
 use std::sync::Arc;
 
 pub fn stg_usdc_addr() -> H160 {
-    H160::from_str("0x6581e59A1C8dA66eD0D313a0d4029DcE2F746Cc5").unwrap()
+    H160::from_str("0xd6D83aF58a19Cd14eF3CF6fe848C9A4d21e5727c").unwrap()
 }
 
 // 1. Generate a type-safe interface for the Incrementer smart contract
