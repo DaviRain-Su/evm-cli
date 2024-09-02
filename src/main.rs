@@ -9,7 +9,6 @@ use ethers::providers::{Http, Provider};
 use structopt::StructOpt;
 
 pub mod bear;
-pub mod blast;
 pub mod command;
 pub mod config;
 pub mod constant;
