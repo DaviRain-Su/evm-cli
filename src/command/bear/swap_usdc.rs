@@ -41,22 +41,10 @@ impl SwapUSDC {
                 keypair.clone().with_chain_id(config.chain_id),
             );
 
-            let mut counter = 0;
-            let balance = loop {
-                if let Ok(v) = provider.get_balance(keypair.address(), None).await {
-                    if (v != U256::zero()) & (counter < 3) {
-                        break v;
-                    } else if counter == 3 {
-                        break v;
-                    } else {
-                        log::warn!("Try {} time", counter.to_string().red());
-                        counter += 1;
-                        continue;
-                    }
-                } else {
-                    continue;
-                }
-            };
+            let balance = provider
+                .get_balance(keypair.address(), None)
+                .await
+                .map_err(|e| Error::Custom(e.to_string()))?;
 
             let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
 
@@ -87,13 +75,9 @@ impl SwapUSDC {
             let base_asset_amount = wbera::balance_of(&client, keypair.address())
                 .await
                 .map_err(|e| Error::Custom(e.to_string()))?;
-            let wbera_decimal = loop {
-                if let Ok(v) = wbera::decimals(&client).await {
-                    break v;
-                } else {
-                    continue;
-                }
-            };
+            let wbera_decimal = wbera::decimals(&client)
+                .await
+                .map_err(|e| Error::Custom(e.to_string()))?;
 
             let base_asset_amount_f64 = calc_balance(wbera_decimal as u32, base_asset_amount);
 
@@ -121,68 +105,37 @@ impl SwapUSDC {
                     wbera::approve(&client, erc20_bank_addr(), base_asset_amount).await;
                 println!("Approve Result:{:?}", approve_result);
 
-                let preview_swap = loop {
-                    let result = erc20_dex::get_preview_swap_exact(
-                        &client,
-                        kind,
-                        pool_id,
-                        base_asset,
-                        half_base_swap_amount,
-                        quote_asset,
-                    )
-                    .await;
-                    if let Ok(r) = result {
-                        break r;
-                    } else {
-                        continue;
-                    }
-                };
+                let preview_swap = erc20_dex::get_preview_swap_exact(
+                    &client,
+                    kind,
+                    pool_id,
+                    base_asset,
+                    half_base_swap_amount,
+                    quote_asset,
+                )
+                .await
+                .map_err(|e| Error::Custom(e.to_string()))?;
                 println!("preview swap: {:?}", preview_swap);
 
-                let mut counter = 0;
-                let swap_result = loop {
-                    log::info!("Process erc20 dex Swap");
+                let swaps = vec![erc20_dex_module::BatchSwapStep {
+                    pool_id,
+                    asset_in: base_asset,
+                    amount_in: half_base_swap_amount,
+                    asset_out: preview_swap.0,
+                    amount_out: preview_swap.1,
+                    user_data: Bytes::new().into(),
+                }];
+                let swap_result = erc20_dex::batch_swap(&client, kind, swaps, deadline)
+                    .await
+                    .map_err(|e| Error::Custom(e.to_string()))?;
 
-                    let swaps = vec![erc20_dex_module::BatchSwapStep {
-                        pool_id,
-                        asset_in: base_asset,
-                        amount_in: half_base_swap_amount,
-                        asset_out: preview_swap.0,
-                        amount_out: preview_swap.1,
-                        user_data: Bytes::new().into(),
-                    }];
-                    if let Err(result) = erc20_dex::batch_swap(&client, kind, swaps, deadline).await
-                    {
-                        if counter == 3 {
-                            break;
-                        } else {
-                            println!("Warn Error({})", result.to_string().red());
-                            counter += 1;
-                            continue;
-                        }
-                    } else {
-                        break;
-                    }
-                };
                 println!("swap: {:?}", swap_result);
                 thread::sleep(Duration::from_secs(1));
             } else {
-                let mut counter = 0;
-                let balance = loop {
-                    if let Ok(v) = provider.get_balance(keypair.address(), None).await {
-                        if (v != U256::zero()) & (counter < 3) {
-                            break v;
-                        } else if counter == 3 {
-                            break v;
-                        } else {
-                            log::warn!("Try {} time", counter.to_string().red());
-                            counter += 1;
-                            continue;
-                        }
-                    } else {
-                        continue;
-                    }
-                };
+                let balance = provider
+                    .get_balance(keypair.address(), None)
+                    .await
+                    .map_err(|e| Error::Custom(e.to_string()))?;
 
                 let native_balance_f64 = balance.as_u128() as f64 / BERA_DECIMAL;
 
@@ -195,13 +148,9 @@ impl SwapUSDC {
                 let base_asset_amount = wbera::balance_of(&client, keypair.address())
                     .await
                     .map_err(|e| Error::Custom(e.to_string()))?;
-                let wbera_decimal = loop {
-                    if let Ok(v) = wbera::decimals(&client).await {
-                        break v;
-                    } else {
-                        continue;
-                    }
-                };
+                let wbera_decimal = wbera::decimals(&client)
+                    .await
+                    .map_err(|e| Error::Custom(e.to_string()))?;
 
                 let base_asset_amount_f64 = calc_balance(wbera_decimal as u32, base_asset_amount);
 
