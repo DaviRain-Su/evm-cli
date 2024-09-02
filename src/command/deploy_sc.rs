@@ -24,9 +24,6 @@ impl Deploy {
 
 #[derive(Debug, StructOpt)]
 pub struct Incrementer {
-    /// chain id
-    #[structopt(long)]
-    pub chain_id: u64,
     /// wallet file name
     #[structopt(long)]
     pub file_name: String,
@@ -45,7 +42,7 @@ impl Incrementer {
         for keypair in keypairs.keypairs {
             let client = SignerMiddleware::new(
                 provider.clone(),
-                keypair.clone().with_chain_id(self.chain_id),
+                keypair.clone().with_chain_id(config.chain_id),
             );
 
             println!("Address({:?}) deploy contract", keypair.address());
@@ -116,9 +113,6 @@ impl Incrementer {
 
 #[derive(Debug, StructOpt)]
 pub struct CallIncrementer {
-    /// chain id
-    #[structopt(long)]
-    pub chain_id: u64,
     /// wallet file name
     #[structopt(long)]
     pub file_name: String,
@@ -137,7 +131,7 @@ impl CallIncrementer {
         for keypair in keypairs.keypairs {
             let client = SignerMiddleware::new(
                 provider.clone(),
-                keypair.clone().with_chain_id(self.chain_id),
+                keypair.clone().with_chain_id(config.chain_id),
             );
 
             println!("Address({:?}) deploy contract", keypair.address());

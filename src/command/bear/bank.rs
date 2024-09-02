@@ -9,9 +9,6 @@ use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 pub struct Bank {
-    /// chain id
-    #[structopt(long)]
-    pub chain_id: u64,
     /// wallet file name
     #[structopt(long)]
     pub file_name: String,
@@ -30,7 +27,7 @@ impl Bank {
         for keypair in &keypairs.keypairs {
             let client = SignerMiddleware::new(
                 provider.clone(),
-                keypair.clone().with_chain_id(self.chain_id),
+                keypair.clone().with_chain_id(config.chain_id),
             );
 
             let all_balance = bank::get_all_balances(&client, keypair.address())

@@ -15,9 +15,6 @@ use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 pub struct Transfer {
-    /// chain id
-    #[structopt(long)]
-    pub chain_id: u64,
     /// keypair file name
     #[structopt(long)]
     pub file_name: String,
@@ -42,11 +39,11 @@ impl Transfer {
 
         let single_keypair = single_keypair.keypairs[0]
             .clone()
-            .with_chain_id(self.chain_id);
+            .with_chain_id(config.chain_id);
 
         let client = SignerMiddleware::new(
             provider.clone(),
-            single_keypair.clone().with_chain_id(self.chain_id),
+            single_keypair.clone().with_chain_id(config.chain_id),
         );
 
         let balance = provider
@@ -176,7 +173,7 @@ impl Transfer {
 
                 let client = SignerMiddleware::new(
                     provider.clone(),
-                    keypair.clone().with_chain_id(self.chain_id),
+                    keypair.clone().with_chain_id(config.chain_id),
                 );
 
                 let mut counter = 0;

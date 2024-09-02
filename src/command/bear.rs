@@ -5,7 +5,6 @@ pub mod bank;
 pub mod dex;
 pub mod epoch;
 pub mod honey;
-pub mod nft;
 pub mod reward;
 pub mod swap_usdc;
 pub mod wbera;
@@ -18,8 +17,6 @@ pub enum Bera {
     Epoch(epoch::Epoch),
     /// Bera Chain Dex module
     Dex(dex::Dex),
-    /// Bera chain batch buy nft
-    NFT(nft::NFT),
     /// Bera chain Honey module
     Honey(honey::Honey),
     /// Bera chain Wbera module
@@ -36,7 +33,6 @@ impl Bera {
             Bera::Bank(bank) => bank.run().await,
             Bera::Epoch(epochs) => epochs.run().await,
             Bera::Dex(dex) => dex.run().await,
-            Bera::NFT(nft) => nft.run().await,
             Bera::Honey(honey) => honey.run().await,
             Bera::WBera(wbera) => wbera.run().await,
             Bera::Reward(reward) => reward.run().await,

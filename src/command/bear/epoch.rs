@@ -7,11 +7,7 @@ use ethers_signers::Signer;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
-pub struct Epoch {
-    /// chain id
-    #[structopt(long)]
-    pub chain_id: u64,
-}
+pub struct Epoch {}
 
 impl Epoch {
     pub async fn run(&self) -> Result<(), Error> {
@@ -26,7 +22,7 @@ impl Epoch {
         let keypair = keypairs.keypairs[0].clone();
         let client = SignerMiddleware::new(
             provider.clone(),
-            keypair.clone().with_chain_id(self.chain_id),
+            keypair.clone().with_chain_id(config.chain_id),
         );
 
         let current_epoch =

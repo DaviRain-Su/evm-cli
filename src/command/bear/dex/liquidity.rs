@@ -18,9 +18,6 @@ use structopt::StructOpt;
 // notice must use erc20 dex
 #[derive(Debug, StructOpt)]
 pub struct Liquidity {
-    /// chain id
-    #[structopt(long)]
-    pub chain_id: u64,
     /// wallet file name
     #[structopt(long)]
     pub file_name: String,
@@ -40,7 +37,7 @@ impl Liquidity {
         for keypair in keypairs.keypairs.iter() {
             let client = SignerMiddleware::new(
                 provider.clone(),
-                keypair.clone().with_chain_id(self.chain_id),
+                keypair.clone().with_chain_id(config.chain_id),
             );
 
             let balance = provider

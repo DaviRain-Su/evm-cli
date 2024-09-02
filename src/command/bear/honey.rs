@@ -13,9 +13,6 @@ use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 pub struct Honey {
-    /// chain id
-    #[structopt(long)]
-    pub chain_id: u64,
     /// wallet file name
     #[structopt(long)]
     pub file_name: String,
@@ -35,7 +32,7 @@ impl Honey {
 
         let client = SignerMiddleware::new(
             provider.clone(),
-            single_keypair.clone().with_chain_id(self.chain_id),
+            single_keypair.clone().with_chain_id(config.chain_id),
         );
 
         let honey_balance = honey::balance_of(&client, single_keypair.address())
