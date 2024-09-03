@@ -47,11 +47,33 @@ pub async fn multi_swap(
         .value(eth_max_spend)
         .from(client.address())
         .gas_price(gas_price) // 设置交易的 gas 价格
-        .gas(U256::from(400_000u64)) // this is crucial otherwise tx will get reverted without a reason
+        .gas(U256::from(500_000u64)) // this is crucial otherwise tx will get reverted without a reason
         .send()
         .await?
         .await?;
 
     println!("Transaction Receipt: {}", serde_json::to_string(&tx)?);
     Ok(())
+}
+
+/// previewMultiSwap
+pub async fn preview_multi_swap(
+    client: &Client,
+    pool_idx: U256,
+    base: H160,
+    quote: H160,
+    is_buy: bool,
+    amount: u128,
+) -> Result<(u128, U256), Box<dyn std::error::Error>> {
+    log::info!("preview_multi_swap");
+    let contract = BeraCrocMultiSwap::new(bera_croc_multi_swap(), Arc::new(client.clone()));
+    let steps = vec![SwapStep {
+        pool_idx,
+        base,
+        quote,
+        is_buy,
+    }];
+    let result = contract.preview_multi_swap(steps, amount).call().await?;
+    log::info!("result: {:?}", result);
+    Ok(result)
 }

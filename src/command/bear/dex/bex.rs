@@ -45,6 +45,12 @@ impl Swap {
             native_balance_f64.to_string().green()
         );
 
+        // bera croc multi swap address
+        let address = bera_croc_multi_swap::croc_swap_dex(&client)
+            .await
+            .map_err(|e| Error::Custom(e.to_string()))?;
+        println!("croc swap dex address is: {:?}", address);
+
         // pool index
         let pool_idx = U256::from(36000);
         // honey base
@@ -52,9 +58,9 @@ impl Swap {
         // bera quote
         let quote = H160::from_str("0x0000000000000000000000000000000000000000").unwrap();
         let is_buy = false;
-
         let amount = 100000000000000000;
-        let mint_out = 2729383319007357558;
+        let mint_out: u128 = 2617882831051640457;
+        println!("mint out is: {}", mint_out);
         let swap_result = bera_croc_multi_swap::multi_swap(
             &client, pool_idx, base, quote, is_buy, amount, mint_out,
         )
